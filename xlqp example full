@@ -1,0 +1,5738 @@
+getgenv().XLQP_SECURE = true
+getgenv().XLQP_ASSET_ID = nil
+getgenv().XLQP_ASSET_IDS = nil
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/josediaz765/XLQP-UIS/main/xlqp%20gen1"))()
+
+Library:SetFolder("VerbalHubExample")
+
+local Watermark = Library:AddDraggableLabel({
+    Text = "VERBAL v6.0.1",
+    fps = true
+})
+
+local Window = Library:MakeWindow({
+    Branding = {
+        Name = "Verbal Hub",
+        Subtitle = "private build",
+        Icon = "home",
+        IntroText = "Verbal Hub",
+        Tags = {
+            {Text = "V6.0.1"},
+            {Text = "BETA", BackgroundColor = Color3.fromRGB(116, 82, 190)}
+        }
+    },
+    Config = {
+        Enabled = true,
+        Folder = "VerbalHubExample"
+    },
+    SaveUIPosition = true,
+    SaveUISize = true,
+    TabButtonsStyle = {
+        Gap = 4,
+        Padding = 8,
+        CornerRadius = 6,
+        Indicator = true,
+        IndicatorWidth = 2,
+        IndicatorHeight = 20
+    },
+    PluginsEnabled = true,
+    PluginsFolder = "VerbalHubExample/plugins",
+    PrebuiltPlugins = {},
+    TopBarQuickPanels = {
+        Enabled = true,
+        Toggles = true,
+        Notifications = true,
+        TogglesTitle = "Active Toggles",
+        NotificationsTitle = "Notifications",
+        ToggleIcon = "list-checks",
+        NotificationIcon = "bell",
+        NotificationLimit = 100,
+        PanelWidth = 320,
+        PanelHeight = 360,
+        NotificationPanelWidth = 340,
+        NotificationPanelHeight = 380,
+        BadgeColor = Color3.fromRGB(93, 125, 255)
+    },
+    PrivateTabs = {
+        Enabled = true,
+        Password = "",
+        TopName = "Private",
+        TopIcon = "lock",
+        EditorName = "Edit",
+        EditorIcon = "pencil",
+        EditorTitle = "Private Tab Editor",
+        EditorSubtitle = "Create tabs, groupboxes, mini tabs, and elements without leaving this page.",
+        EditorWidth = 900,
+        EditorHeight = 560,
+        DefaultName = "Custom Tab"
+    },
+    LoadingTitle = "Loading modules...",
+    LoadingTasks = {
+        "Creating navigation",
+        "Loading themes and layout",
+        "Building interface modules",
+        "Finalizing interface"
+    },
+    GlowEnabled = true,
+    GlowSpeed = 6,
+    GlowColor = Color3.fromRGB(255, 90, 200),
+    betabuttonslist = true,
+    Widgets = {
+        Enabled = true,
+        BetaButton = true,
+        StartOpen = false,
+        ButtonText = "Widgets",
+        Icon = "layout-dashboard",
+        Width = 1020,
+        Height = 560,
+        ScreenPadding = 32,
+        CornerRadius = 18,
+        DimBackground = false,
+        BackgroundTransparency = 1,
+        HideMainWindow = true,
+        CloseOnOutside = false
+    },
+    tablistspacing = 6,
+    statusbar = {
+        Region = "US-East"
+    },
+    uishadow = false,
+    Appearance = {
+        Shiny = true,
+        NewUI = true,
+        BigUI = false,
+        LiquidGlass = true,
+        AutoResizeText = false,
+		CustomCursor = false,
+        CornerRadius = 18,
+        ResizeHandle = {
+            Size = 42,
+            Color = Color3.fromRGB(255, 90, 200)
+        },
+        ShowTabInfo = true,
+        SidebarWidth = 170,
+        ColorfulTabs = true,
+        SidebarCollapsedWidth = 76,
+        LiveColor = true,
+        LiveColorBackground = true,
+        LiveColorThemeImages = true,
+        LiveColorElementBackground = false,
+        LiveColorElements = true,
+        LiveColorTheme = "Royal",
+        LiveColorFolder = "XLQPGen1/LiveColors",
+        LiveColorScriptsEnabled = true,
+        LiveColorSpeed = 0.22,
+		RainbowUpdateRate = 20,
+        LiveColorSettingsBackground = true,
+        LiveColorTransparency = 0.04,
+        BackgroundEnabled = false,
+        URLBackgroundEnabled = false,
+        BackgroundImage = "https://wallpapercave.com/wp/wp4575207.jpg",
+        BackgroundTransparency = 0.2,
+        BackgroundScaleType = "Crop",
+        GifBackgroundEnabled = false,
+        GifBackgroundUrl = "",
+        GifBackgroundTransparency = 0.2,
+        DecorationsEnabled = true,
+        DecorationStyle = "Cute Pets",
+        WindowDesignsEnabled = true,
+        WindowDesignStyle = "Gothic Cathedral",
+        Size = UDim2.new(0, 860, 0, 560)
+    },
+    Loading = {
+        IntroEnabled = true,
+        IntroText = "Verbal Hub",
+        IntroSubtitle = "Private build",
+		IntroAccentColor = Color3.fromRGB(255, 72, 88),
+		IntroDuration = 0.08,
+        LoadingProgress = true,
+        FastLoad = true,
+		AutoInit = false,
+		Delay = 0.1,
+		LoadTimeout = 120,
+        PerformanceMode = true
+    },
+    Setup = {
+        Enabled = true,
+        Version = 5,
+        RequireVersionMatch = false,
+        OwnerOnly = false,
+        Folder = "VerbalHubExample",
+        FileName = "first_run_setup",
+        Name = "Verbal Hub",
+        Title = "Verbal Hub",
+        AccentColor = Color3.fromRGB(146, 110, 246),
+        DefaultLanguage = "en",
+        DefaultLook = "Modern Dark",
+        DefaultScale = 1,
+        DefaultNewUI = true,
+        DefaultLiquidGlass = true,
+        Welcome = {
+            Width = 560,
+            Height = 280,
+            Greeting = "Welcome,",
+            ShowAvatar = true,
+            ShowDisplayName = true,
+            AvatarSize = 30,
+            GreetingWidth = 82,
+            NameSuffix = ".",
+            PageNames = {"Welcome", "Language", "Appearance", "Interface Size", "Finish"},
+            NextSuffix = " →",
+            BackPrefix = "← "
+        }
+    },
+    UpdateLog = {
+        Enabled = true,
+        Folder = "VerbalHubExample",
+        FileName = "update_log_seen",
+        Title = "News!",
+        Icon = "info",
+        FontColor = Color3.fromRGB(245, 246, 249),
+        DescriptionColor = Color3.fromRGB(220, 223, 230),
+        ButtonText = "Proceed",
+        Logs = {
+            {
+                Id = "6.0.1-update-1",
+                Title = "News!",
+                Description = "Yoooo, a new update just dropped.",
+                Image = "eye",
+                FontColor = Color3.fromRGB(245, 246, 249),
+                DescriptionColor = Color3.fromRGB(225, 228, 234)
+            },
+            {
+                Id = "6.0.1-update-2",
+                Title = "Verbal Hub 6.0.1",
+                Description = "The interface update includes the new setup flow, improved navigation, movable content, and visual polish.",
+                Icon = "sparkles",
+                Image = "sparkles",
+                FontColor = Color3.fromRGB(180, 205, 255),
+                DescriptionColor = Color3.fromRGB(210, 216, 230)
+            }
+        }
+    },
+    Behavior = {
+        ToggleKey = "RightShift",
+        UnlockMouse = true,
+        Guide = false,
+        AutoStartGuide = false,
+        EditableAllElements = false
+    },
+    Navigation = {
+        Enabled = true,
+        SidebarTab = true,
+        TabList = {
+            Detached = true,
+            Width = 168,
+            Gap = 12,
+            CornerRadius = 14,
+            Logo = {
+                Image = "home",
+                Text = "VERBAL HUB",
+                Subtitle = "PRIVATE BUILD",
+                Layout = "Horizontal",
+                Size = 40,
+                Height = 78
+            }
+        },
+        Tabs = {
+            {Name = "Dashboard", Icon = "layout-dashboard"},
+            {Name = "Security", Icon = "shield"},
+            {Name = "Settings", Icon = "settings"}
+        }
+    },
+    Typewriter = {
+        Enabled = true,
+        Multiple = true,
+        Text = {"Verbal Hub", "loaded", "private build"},
+        Speed = 1.2,
+        SoundDelay = 0.035,
+        Sound = "rbxassetid://9120299506",
+        Pitch = 1
+    },
+    Discord = {
+        Enabled = true,
+        Invite = "QEW8ap3MuV",
+        InviteUrl = "https://discord.gg/QEW8ap3MuV",
+        AuthEnabled = true,
+        AutoStartAuth = false,
+        PollInterval = 2.5,
+        Timeout = 600,
+        Whitelist = {
+            "https://discord.gg/QEW8ap3MuV"
+        }
+    },
+    YouTubeMusic = {
+        APIKey = "",
+        ConverterAPI = "https://yt-api.org",
+        Folder = "VerbalHubExample/Music"
+    },
+    Spotify = {
+        BridgeUrl = "",
+        ConnectUrl = ""
+    },
+    Security = {
+        AntiLogger = true,
+        Mode = "Better",
+        DiscordWebhookWhitelist = {
+            "https://discord.com/api/webhooks/WEBHOOK_ID/WEBHOOK_TOKEN",
+            "https://discordapp.com/api/webhooks/SECOND_WEBHOOK_ID/SECOND_WEBHOOK_TOKEN"
+        }
+    },
+    BuiltInTabs = {
+        Enabled = true,
+        Group = "Configs",
+        GroupIcon = "folder",
+        Settings = {
+            Enabled = true,
+            WatermarkText = "☾ VERBAL UI EXAMPLE",
+            AutoStartAuth = false
+        },
+        Security = {
+            Enabled = true
+        },
+        PVP = {
+            Enabled = true,
+            Icon = "swords",
+            Risky = true,
+            RiskTitle = "Risky PVP tools",
+            RiskDescription = "This tab contains features that can affect other players. Do you want to continue?",
+            RiskTimeout = 5,
+            RememberRisk = true,
+            RiskDimBackground = false
+        }
+    },
+    Premium = {
+        Enabled = true,
+        Title = "Unlock Premium",
+        Subtitle = "Free. Paste a key to unlock Pro or Max",
+        FieldLabel = "Licence key",
+        Placeholder = "VERBAL-XXXX-XXXX-XXXX",
+        ButtonText = "Activate",
+        ButtonLabel = "Unlock Premium",
+        Note = "The key locks to this Roblox account. Three changes a month.",
+        GetKeyUrl = "https://discord.gg/QEW8ap3MuV",
+        Benefits = "Premium unlocks every locked element in this hub:\n\nPremium Card, Premium Button, Premium Toggle,\nPremium Slider and Premium Dropdown.",
+        Save = true,
+        AutoRedeem = true,
+        Validate = function(key, player)
+            key = tostring(key or ""):lower()
+            if key == "testing" then
+                return true, "Max"
+            end
+            if key:match("^verbal%-") then
+                return true, "Pro"
+            end
+            return false, "That key is not valid. Try testing."
+        end,
+        Callback = function(unlocked, tier)
+            print("premium", unlocked, tier)
+        end
+    },
+    KeySystem = {
+        Enabled = true,
+        Title = "Verbal Hub Key",
+        Subtitle = "Enter your key to continue.",
+        Note = "Join the Discord or paste your saved key.",
+        Keys = {"verbal", "VerbalHub"},
+        Hashes = {
+            "536905ml0i69219k524844i12l3689h937755h30mi4291942k65k21ki7j0km7i",
+            "j557k73537j1l93l9ljil7mjikj638hk160j1li8h36jli825kih9m1707279i92"
+        },
+        Save = true,
+        Skip = true,
+        FileName = "VerbalHubKey",
+        Links = {
+            "https://discord.gg/QEW8ap3MuV"
+        }
+    },
+    SearchBar = {
+        Default = "Search everything...",
+        ClearTextOnFocus = false,
+        filter = true
+    }
+})
+
+Window:SetTabButtonsStyle({
+    Gap = 4,
+    Padding = 8,
+    CornerRadius = 6,
+    Indicator = true,
+    IndicatorWidth = 2,
+    IndicatorHeight = 20
+})
+
+local TabStyleParameters = Window:GetTabButtonsStyleParameters()
+local NewAPIParameters = Library:GetNewAPIParameters()
+
+local Loading = Library:GetLoading()
+
+if type(Library.RegisterTheme) == "function" then
+    Library:RegisterTheme("Verbal Ember", {
+        Main = "#120F17",
+        Second = "#211722",
+        Stroke = "#633849",
+        Divider = "#442B38",
+        Text = "#FFF5F7",
+        TextDark = "#C6A8B2",
+        Bloom = "#FF526F",
+        Accent = "#FF765E"
+    }, true)
+end
+
+Library:MakeNotification({
+    Name = "Loaded",
+    Content = "Verbal Hub example ready.",
+    Image = "bell",
+    Pos = "BottomRight",
+    Time = 4,
+    Buttons = {
+        {Name = "Nice", Callback = function() print("notification clicked") end}
+    }
+})
+
+Loading:SetStage("Loading modules...")
+Loading:SetTask(3, "Creating navigation modules...", 0.55)
+
+Window:newmaketabtop({
+    Name = "Main",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+
+local GameWidget = Window:AddWidget({
+    GameInfo = {
+        Enabled = true,
+        Image = true,
+        Creator = true,
+        Rejoin = true,
+        ServerHop = true
+    },
+    CurrentGame = true,
+    Position = UDim2.new(0, 0, 0, 0),
+    Size = UDim2.fromOffset(285, 104)
+})
+
+local RecentWidget = Window:AddWidget({
+    Name = "Recent scripts",
+    Icon = "history",
+    Position = UDim2.new(0, 300, 0, 0),
+    Size = UDim2.fromOffset(300, 220)
+})
+
+RecentWidget:AddButton({
+    Name = "⭐ My script",
+    Description = "42 minutes ago",
+    Callback = function()
+        print("execute my script")
+    end
+})
+
+RecentWidget:AddButton({
+    Name = "Dex explorer",
+    Description = "Yesterday",
+    Callback = function()
+        print("execute dex")
+    end
+})
+
+local QuickWidget = Window:AddWidget({
+    Name = "Quick controls",
+    Icon = "sliders-horizontal",
+    Position = UDim2.new(0, 615, 0, 0),
+    Size = UDim2.fromOffset(190, 220)
+})
+
+QuickWidget:AddToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Callback = function(value)
+        print("widget auto farm", value)
+    end
+})
+
+QuickWidget:AddToggle({
+    Name = "ESP",
+    Default = false,
+    Callback = function(value)
+        print("widget esp", value)
+    end
+})
+
+local PlayerWidget = Window:AddWidget({
+    Name = "Player",
+    Icon = "user-round",
+    Position = UDim2.new(0, 820, 0, 0),
+    Size = UDim2.fromOffset(190, 220)
+})
+
+PlayerWidget:AddSlider({
+    Name = "Walk Speed",
+    Min = 16,
+    Max = 100,
+    Default = 16,
+    Increment = 1,
+    input = true,
+    Callback = function(value)
+        print("widget speed", value)
+    end
+})
+
+local LeftMiddleWidget = Window:AddWidget({
+    Name = "Session",
+    Icon = "activity",
+    Position = UDim2.new(0, 0, 0, 118),
+    Size = UDim2.fromOffset(285, 190)
+})
+
+LeftMiddleWidget:AddInfoCard({
+    Name = "Status",
+    Content = "Everything ready",
+    Icon = "circle-check"
+})
+
+local CenterActionWidget = Window:AddWidget({
+    Name = "Actions",
+    Icon = "mouse-pointer-click",
+    Position = UDim2.new(0, 300, 0, 235),
+    Size = UDim2.fromOffset(400, 90)
+})
+
+CenterActionWidget:AddActionRow({
+    Name = "Quick Actions",
+    Buttons = {
+        {Name = "Run", Callback = function() print("run") end},
+        {Name = "Reset", Callback = function() print("reset") end},
+        {Name = "Clear", Callback = function() print("clear") end}
+    }
+})
+
+local NotesWidget = Window:AddWidget({
+    Name = "Notes",
+    Icon = "notebook-pen",
+    Position = UDim2.new(0, 300, 0, 340),
+    Size = UDim2.fromOffset(400, 165)
+})
+
+NotesWidget:AddTextbox({
+    Name = "Quick note",
+    Placeholder = "Type here...",
+    Callback = function(value)
+        print("widget note", value)
+    end
+})
+
+local RightBottomWidget = Window:AddWidget({
+    Name = "System",
+    Icon = "cpu",
+    Position = UDim2.new(0, 715, 0, 235),
+    Size = UDim2.fromOffset(295, 270),
+    Moveable = true
+})
+
+RightBottomWidget:AddDropdown({
+    Name = "Mode",
+    Options = {"Normal", "Fast", "Safe"},
+    Default = "Normal",
+    Search = false,
+    Callback = function(value)
+        print("widget mode", value)
+    end
+})
+
+RightBottomWidget:AddToggle({
+    Name = "Notifications",
+    Default = true,
+    Callback = function(value)
+        print("widget notifications", value)
+    end
+})
+
+local BottomLeftWidget = Window:AddWidget({
+    Name = "Empty widget",
+    Position = UDim2.new(0, 0, 0, 322),
+    Size = UDim2.fromOffset(285, 188),
+    Header = false
+})
+
+
+local Home = Window:MakeTab({
+    Name = "Home",
+    Icon = "home",
+    Group = "Elements",
+    GroupIcon = "layers",
+    AutoHome = true,
+    FeedbackWebhook = "",
+    DiscordInvite = "https://discord.gg/QEW8ap3MuV",
+    Changelog = {
+        {Version = "Verbal Hub 6.0.1", Subtitle = "Current release", Changes = {
+            {Type = "Added", Text = "Dynamic Island can now mirror notifications or show island-only alerts"},
+            {Type = "Added", Text = "New Config Reference top tab documents every canonical element and its complete constructor-specific properties"},
+            {Type = "Added", Text = "Latest UX showcase with media shortcuts, nested-scroll demos and notification controls"},
+            {Type = "Added", Text = "Rebuilt Music Center with Music Player, Spotify Player, Favorites and searchable Bytebeat presets"},
+            {Type = "Added", Text = "YouTube search, GitHub/direct audio, Roblox audio, local files and Spotify bridge support"},
+            {Type = "Changed", Text = "Executor AI companion can be resized and keeps generated code ready to apply"},
+            {Type = "Changed", Text = "Settings font picker previews each font using its own sample text"},
+            {Type = "Changed", Text = "Admin tabs can remember a successful unlock across re-execution"},
+            {Type = "Fixed", Text = "Nested code, global chat, dropdowns and toggle settings capture their own scrolling"},
+            {Type = "Fixed", Text = "Color picker handles track the cursor accurately on mouse and touch"},
+            {Type = "Fixed", Text = "Dialogs and the private editor no longer pass input through to the main page"},
+            {Type = "Fixed", Text = "UI text stays readable without neon outlines and executor text remains visible"}
+        }},
+        {Version = "Previous release", Subtitle = "Earlier update", Changes = {
+            {Type = "Added", Text = "Password-gated admin tabs and customizable loadout cards"},
+            {Type = "Added", Text = "Dedicated Home changelog mini-tab with release cards"},
+            {Type = "Changed", Text = "Executor editor and AI Chat gained integrated tooling"}
+        }}
+    }
+})
+
+local Controls = Window:MakeTab({
+    Name = "Controls",
+    Icon = "sliders-horizontal",
+    Color = "#5ac8fa",
+    Group = "Elements",
+    GroupIcon = "layers"
+})
+
+local RightQuickMenu = Controls:AddRightSidebarMenu({
+    Name = "Quick Settings",
+    Icon = "settings",
+    Width = 320,
+    Height = 420,
+    MinWidth = 240,
+    MinHeight = 220,
+    MaxWidth = 620,
+    MaxHeight = 720,
+    Resizable = true,
+    Gap = 12,
+    Detached = true,
+    DimBackground = false,
+    CloseOnOutside = false
+})
+
+RightQuickMenu:AddToggle({
+    Name = "Animated Window",
+    TextColor = "Cyan",
+    Default = true,
+    Callback = function(value)
+        print("Animated Window", value)
+    end
+})
+
+RightQuickMenu:AddDropdown({
+    Name = "Theme",
+    TextColor = "Orange",
+    Options = {
+        {Name = "Verbal Ember", TextColor = "Purple"},
+        {Name = "Default", TextColor = "White"},
+        {Name = "Dark"},
+        {Name = "Light"},
+        {Name = "Mocha"},
+        {Name = "Aqua"},
+        {Name = "Rose"},
+        {Name = "DeepBlack"}
+    },
+    Default = "Verbal Ember",
+    Search = true,
+    MaxElements = 5,
+    Callback = function(value)
+        Library:SetTheme(value)
+    end
+})
+
+RightQuickMenu:AddButton({
+    Name = "Close Menu",
+    TextColor = "Red",
+    Callback = function()
+        RightQuickMenu:Close()
+    end
+})
+
+Controls:AddButton({
+    Name = "Open Right Menu",
+    TextColor = "#a855f7",
+    Callback = function()
+        RightQuickMenu:Open()
+    end
+})
+
+local LeftQuickMenu = Controls:AddLeftSidebarMenu({
+    Name = "Tools",
+    Icon = "panel-left",
+    Width = 320,
+    Height = 420,
+    MinWidth = 240,
+    MinHeight = 220,
+    MaxWidth = 620,
+    MaxHeight = 720,
+    Resizable = true,
+    Gap = 12,
+    Detached = true,
+    DimBackground = false,
+    CloseOnOutside = false
+})
+
+LeftQuickMenu:AddParagraph({
+    Name = "Left sidebar menu",
+    TextColor = "Cyan",
+    Content = "This menu sits beside the detached tab list and can be resized from its bottom-right corner.",
+    DoesWrap = true
+})
+
+LeftQuickMenu:AddButton({
+    Name = "Close Menu",
+    Callback = function()
+        LeftQuickMenu:Close()
+    end
+})
+
+Controls:AddButton({
+    Name = "Open Left Menu",
+    Callback = function()
+        LeftQuickMenu:Open()
+    end
+})
+
+Controls:AddSmoothToggle({
+    Name = "Smooth Live Toggle",
+    TextColor = "Lime",
+    Description = "Animated left and right switch",
+    Default = true,
+    LiveColor = "Cold Heat",
+    Flag = "SmoothLiveToggle",
+    Callback = function(value)
+        print("Smooth toggle", value)
+    end
+})
+
+Controls:AddButton({
+    Name = "Live Color Button",
+    LiveColor = "Cyber",
+    LiveColorSpeed = 0.38,
+    Callback = function()
+        print("Live color button")
+    end
+})
+
+
+local Visuals = Window:MakeTab({
+    Name = "Visuals",
+    Icon = "palette",
+    Group = "Elements",
+    GroupIcon = "layers"
+})
+
+Visuals:AddPlayerVisualizer({
+    Name = "My Player",
+    Player = game:GetService("Players").LocalPlayer,
+    Height = 238,
+    LiveColor = "Cold Heat",
+    LiveColorSpeed = 0.24,
+    BoxCallback = function(enabled, player, box)
+        print(box.Name, enabled, player.Name)
+    end,
+    Callback = function(player)
+        print("Visualizing", player.Name)
+    end
+})
+
+local Metrics = Window:MakeTab({
+    Name = "Metrics",
+    Icon = "activity",
+    Group = "Other",
+    GroupIcon = "circle-ellipsis"
+})
+
+Window:newmaketabtop({
+    Name = "Network",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+local Server = Window:MakeTab({
+    Name = "Server",
+    Icon = "server",
+    Group = "Network",
+    GroupIcon = "folder"
+})
+
+local Logs = Window:MakeTab({
+    Name = "Logs",
+    Icon = "scroll-text",
+    Group = "Other",
+    GroupIcon = "circle-ellipsis"
+})
+
+Window:newmaketabtop({
+    Name = "Scripts",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+local ExecutorTab = Window:MakeTab({
+    Name = "Executor",
+    Icon = "terminal",
+    Group = "Scripts",
+    GroupIcon = "folder"
+})
+
+local AITab = Window:MakeTab({
+    Name = "XLQP Gen1 AI",
+    Icon = "bot",
+    Group = "Scripts",
+    GroupIcon = "folder"
+})
+
+local SoccerTab = Window:MakeTab({
+    Name = "Soccer",
+    Icon = "trophy",
+    Group = "Scripts",
+    GroupIcon = "folder"
+})
+
+local ScriptBloxTab = Window:MakeTab({
+    Name = "ScriptBlox",
+    Icon = "rbxassetid://7733920644",
+    Group = "Scripts",
+    GroupIcon = "folder"
+})
+
+local Direct = Window:newmaketabtop({
+    Name = "Direct",
+    MultiTab = false,
+    Effects = true,
+    flames = true
+})
+
+local WidgetsTop = Window:newmaketabtop({
+    Name = "Widgets",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+local Widgets = Window:MakeTab({
+    Name = "New Widgets",
+    Icon = "boxes",
+    Group = "Showcase",
+    GroupIcon = "sparkles"
+})
+
+local EmptyFireTab = Window:MakeTab({
+    Name = "Empty Fire",
+    Icon = "flame",
+    Group = "Showcase",
+    GroupIcon = "sparkles",
+    Effects = true,
+    flames = true,
+    messages = {
+        "This MakeTab is intentionally empty",
+        "Fire text and visual particles only appear while it has no elements"
+    }
+})
+
+Loading:SetTask(3, "Building controls and panels...", 0.68)
+
+local _GameSession = Server:AddGameSession({
+    Name = "Game Session",
+    IdType = "Place",
+    AutoExecute = true,
+    SourceUrl = XLQPSourceUrl,
+    AutoExecFile = true,
+    SupportedGameIds = {
+        game.PlaceId,
+    },
+    HistoryLimit = 8,
+    Height = 480
+})
+
+local function XLQPExampleGreeting()
+    local hour = tonumber(os.date("%H")) or 12
+    if hour < 12 then return "Morning" end
+    if hour < 18 then return "Afternoon" end
+    return "Evening"
+end
+
+Server:AddParagraph({
+    Name = "Greetings",
+    Content = XLQPExampleGreeting() .. ', <b>' .. game:GetService("Players").LocalPlayer.Name .. '</b>\n\nWelcome to <font color="rgb(239,68,68)"><b>Verbal Hub</b></font>\n\nAuto re-execute is in Game Session > Quick Actions.',
+	RichText = true,
+    image = true,
+    UserProfile = game:GetService("Players").LocalPlayer.UserId,
+    ImageSize = 94,
+    Color = "Red"
+})
+
+local FeatureLabel = Controls:CreateLabel({
+    Content = "<b>XLQP Gen1</b> advanced element examples",
+    IsRich = true,
+    Icon = "sparkles",
+    Font = "GothamBold",
+    DoesWrap = true
+})
+
+local UnlockAdvanced = Controls:AddToggle({
+    Name = "Unlock Advanced Controls",
+    Default = false,
+	ConfigCloud = true,
+	ConfigCloudKey = "UnlockAdvancedControls",
+	ConfigCloudAutoSend = false,
+    Checkbox = true,
+    Callback = function(value)
+        Library:MakeToast({
+            Title = value and "Advanced controls unlocked" or "Advanced controls hidden",
+            Content = "Dependency boxes update automatically.",
+            Variant = value and "Success" or "Info",
+            Icon = value and "success" or "info",
+            Time = 3
+        })
+    end
+})
+
+Controls:AddButton({
+	Name = "Send Stats to Webhook",
+	Description = "Uses the Config Cloud profile assigned to Unlock Advanced Controls.",
+	Callback = function()
+		local ok, message = UnlockAdvanced:SendStatsToWebhook("Verbal Hub Stats", {
+			Player = game:GetService("Players").LocalPlayer.Name,
+			PlaceId = game.PlaceId,
+			AdvancedControls = UnlockAdvanced.Value,
+			FPS = math.floor(1 / math.max(game:GetService("RunService").RenderStepped:Wait(), 1 / 240))
+		})
+		Library:MakeToast({
+			Title = ok and "Webhook sent" or "Webhook not sent",
+			Content = tostring(message),
+			Variant = ok and "Success" or "Warning",
+			Time = 4
+		})
+	end
+})
+
+local AdvancedDependency = Controls:CreateDependencyBox({
+    Name = "Advanced Dependency",
+    Dependency = UnlockAdvanced,
+    Value = true
+})
+
+local LockedAction = AdvancedDependency:AddButton({
+    Name = "Locked Action",
+    Locked = true,
+    Callback = function()
+        print("Locked action pressed")
+    end
+})
+
+AdvancedDependency:AddButton({
+    Name = "Unlock Action",
+    Callback = function()
+        LockedAction:SetLocked(false)
+        Library:MakeToast({Title="Action unlocked",Content="The locked button can now be pressed.",Variant="Success",Icon="unlock",Time=3})
+    end
+})
+
+AdvancedDependency:AddButton({
+    Name = "Show Timed Popup",
+    Callback = function()
+        Window:CreatePopup({
+            Title = "Risk confirmation",
+            Description = "Accept stays locked for five seconds.",
+            Options = {
+                {text = "Accept", timeout = 5, Accept = true, Callback = function() print("Accepted popup") end},
+                {text = "Cancel", Callback = function() print("Cancelled popup") end}
+            }
+        })
+    end
+})
+
+Controls:AddBanner({
+    Name = "Developer Toolkit",
+    Content = "Quick access to previews, tools and layout controls.",
+    Image = "https://wallpapercave.com/wp/wp4575207.jpg",
+    ImageTransparency = 0.05,
+    Icon = "sparkles",
+    Height = 118,
+    Actions = {
+        {Name = "Preview", Icon = "eye", IconOnly = true, Callback = function() print("Preview") end},
+        {Name = "Tools", Icon = "pickaxe", IconOnly = true, Callback = function() print("Tools") end},
+        {Name = "Expand tabs", Icon = "panel-left-open", IconOnly = true, Callback = function() Window:SetSidebarCollapsed(false) end},
+        {Name = "Collapse tabs", Icon = "panel-left-close", IconOnly = true, Callback = function() Window:SetSidebarCollapsed(true) end}
+    }
+})
+
+local LeftGroup = Controls:AddLeftGroupbox({
+    Name = "Automation",
+    Icon = "wrench",
+    Dockable = true,
+    DockSnapDistance = 110,
+    DockHoldTime = 0.08,
+    DockDragThreshold = 8,
+    DockClampToScreen = true
+})
+local RightGroup = Controls:AddRightGroupbox({
+    Name = "Information",
+    Icon = "info",
+    Pin = true,
+    Popout = true,
+    Detached = false,
+    PopoutWidth = 390,
+    PopoutHeight = 520,
+    PopoutPosition = UDim2.new(1, -410, 0, 82)
+})
+local LeftTabs = Controls:AddLeftTabbox({Name = "Tool Pages", TabSize = 42})
+local RightTabs = Controls:AddRightTabbox({Name = "Session Pages", TabSize = 42})
+local KeybindList = RightGroup:AddKeybindList({
+    Title = "Keybind list",
+    Icon = "list",
+    Pin = true,
+    Popout = true,
+    Detached = false,
+    DockHeight = 236,
+    Width = 300,
+    Height = 390,
+    PopoutPosition = UDim2.new(1, -318, 0, 82)
+})
+local GroupTabs = RightGroup:AddTabbox({Name = "Groupbox Tabs", TabSize = 38, IconOnly = true})
+local GroupMain = GroupTabs:AddTab({Name = "Main", Icon = "pickaxe"})
+local GroupPlayers = GroupTabs:AddTab({Name = "Players", Icon = "users"})
+local GroupSettings = GroupTabs:AddTab({Name = "Settings", Icon = "settings"})
+local GroupLocations = GroupTabs:AddTab({Name = "Locations", Icon = "map-pin"})
+local GroupVisuals = GroupTabs:AddTab({Name = "Visuals", Icon = "eye"})
+
+local RuntimeMonitor = RightGroup:AddRuntimeMonitor({
+    Name = "Live Runtime",
+    Interval = 1,
+    Metrics = {"FPS", "Ping", "Memory", "Players"}
+})
+
+local PlayerDataTable = GroupPlayers:AddDataTable({
+    Name = "Player Data",
+    Searchable = true,
+    SearchPlaceholder = "Filter players...",
+    Height = 230,
+    Columns = {
+        {Name = "Player", Key = "Player", Width = 1.7},
+        {Name = "User ID", Key = "UserId", Width = 1},
+        {Name = "Team", Key = "Team", Width = 1.1}
+    },
+    Rows = {},
+    Callback = function(row)
+        Library:MakeToast({
+            Title = "Player selected",
+            Content = tostring(row.Player) .. " · " .. tostring(row.UserId),
+            Variant = "Info",
+            Icon = "users",
+            Time = 2
+        })
+    end
+})
+
+local function RefreshPlayerDataTable()
+    local rows = {}
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        table.insert(rows, {
+            Player = player.DisplayName,
+            UserId = player.UserId,
+            Team = player.Team and player.Team.Name or "None"
+        })
+    end
+    PlayerDataTable:SetRows(rows)
+end
+
+RefreshPlayerDataTable()
+game:GetService("Players").PlayerAdded:Connect(RefreshPlayerDataTable)
+game:GetService("Players").PlayerRemoving:Connect(function()
+    task.defer(RefreshPlayerDataTable)
+end)
+
+local ServerActionCooldown = LeftGroup:AddCooldownButton({
+    Name = "Refresh Server Data",
+    Description = "Prevents repeated requests while data refreshes.",
+    ButtonText = "Refresh",
+    CooldownText = "Ready in",
+    Duration = 5,
+    Callback = function()
+        RuntimeMonitor:Refresh()
+        RefreshPlayerDataTable()
+        Library:MakeToast({Title="Server data",Content="Runtime and player data refreshed.",Variant="Success",Icon="refresh",Time=2})
+    end
+})
+
+LeftGroup:AddLabel("Core controls")
+LeftGroup:AddDivider("Toggle Settings")
+
+
+local PlainCheckbox = LeftGroup:CreateCheckbox({
+    Name = "Plain Checkbox",
+    CurrentValue = false,
+    Flag = "PlainCheckboxDemo",
+    Save = true,
+    Callback = function(value)
+        print("plain checkbox", value)
+    end
+})
+
+local DescriptionCheckbox = LeftGroup:CreateCheckbox({
+    Name = "Checkbox with description",
+    Description = "Starts checked, has a flag, and saves to config.",
+    CurrentValue = true,
+    Flag = "DescriptionCheckboxDemo",
+    Save = true,
+    Callback = function(value)
+        print("description checkbox", value)
+    end
+})
+
+LeftGroup:AddDivider("Progress")
+
+local StaticProgress = LeftGroup:CreateProgress({
+    Name = "Static progress",
+    Icon = "battery-medium",
+    CurrentValue = 60,
+    Min = 0,
+    Max = 100,
+    Suffix = "%",
+    Flag = "StaticProgressDemo",
+    Save = true,
+    Callback = function(value, percent)
+        print("static progress", value, percent)
+    end
+})
+
+local FakeDownload = LeftGroup:CreateDownloadProgress({
+    Name = "Fake download",
+    Description = "Animates smoothly from 0 to 100.",
+    CurrentValue = 0,
+    Duration = 5,
+    Callback = function(value)
+        print("download progress", value)
+    end,
+    Completed = function()
+        Library:MakeToast({Title = "Download complete", Variant = "Success", Icon = "download", Time = 3})
+    end
+})
+
+local XPProgress = LeftGroup:CreateProgress({
+    Name = "XP this level",
+    Icon = "star",
+    CurrentValue = 340,
+    Min = 0,
+    Max = 500,
+    Suffix = " xp",
+    Description = "Live level progress with a custom maximum."
+})
+
+LeftGroup:AddActionRow({
+    Name = "Progress Actions",
+    Outline = true,
+    Buttons = {
+        {Name = "Start", Callback = function() FakeDownload:Download(5) end},
+        {Name = "Pause", Callback = function() FakeDownload:Pause() end},
+        {Name = "Resume", Callback = function() FakeDownload:Resume() end},
+        {Name = "Reset", Callback = function() FakeDownload:Cancel(true) end}
+    }
+})
+
+
+LeftGroup:AddDivider("Gen 3 Concepts")
+
+local CopyInvite = LeftGroup:CreateCopyButton({
+    Name = "Copy Discord Invite",
+    Description = "Copies the current invite in one click.",
+    Icon = "link",
+    Value = "https://discord.gg/QEW8ap3MuV",
+    Callback = function(value, success)
+        print("copy invite", value, success)
+    end
+})
+
+local CopyPlayer = LeftGroup:CreateCopyButton({
+    Name = "Copy Player Name",
+    Description = "The copied value can be changed at runtime.",
+    Icon = "user",
+    Value = function()
+        return game:GetService("Players").LocalPlayer.Name
+    end
+})
+
+local FlipDemo = LeftGroup:CreateFlipButton({
+    Front = "Hover me",
+    Back = "Now click me",
+    Callback = function(text, showingBack)
+        print("flip button", text, showingBack)
+    end
+})
+
+local FlipCounter = 0
+local CountFlip
+CountFlip = LeftGroup:CreateFlipButton({
+    Front = "Clicks: 0",
+    Back = "Click to count",
+    Callback = function()
+        FlipCounter += 1
+        CountFlip:Set({Front = "Clicks: " .. tostring(FlipCounter)})
+    end
+})
+
+local RippleDemo = LeftGroup:CreateRippleButton({
+    Name = "Ripple Button",
+    Description = "The ripple begins exactly where you press.",
+    Callback = function()
+        Library:MakeToast({Title = "Ripple pressed", Variant = "Success", Icon = "mouse-pointer-click", Time = 2})
+    end
+})
+
+local Gen3Progress = LeftGroup:CreateProgressBar({
+    Name = "Level Progress",
+    Description = "Read only progress with a smooth gradient fill.",
+    CurrentValue = 340,
+    Min = 0,
+    Max = 500,
+    Suffix = " xp",
+    ValueText = "{value} xp out of {max}",
+    Callback = function(value)
+        print("level progress", value)
+    end
+})
+
+LeftGroup:AddActionRow({
+    Name = "Gen 3 Actions",
+    Outline = true,
+    Buttons = {
+        {Name = "Add XP", Callback = function() Gen3Progress:Increment(25) end},
+        {Name = "Replay", Callback = function() Gen3Progress:Replay() end},
+        {Name = "Flip Text", Callback = function() FlipDemo:Set("Front updated", "Back updated") end},
+        {Name = "New Copy", Callback = function() CopyPlayer:Set("VERBAL-PLAYER") end}
+    }
+})
+
+LeftGroup:CreateSection("Scroll hint")
+
+local LiveScrollHint = LeftGroup:CreateScrollHint({
+    Text = "Scroll to see more",
+    Icon = "arrow-down",
+    AutoScroll = true,
+    ScrollAmount = 220,
+    AutoStart = true,
+    Callback = function(text)
+        print("scroll hint", text)
+    end
+})
+
+LeftGroup:CreateSection("Pinned list")
+
+local FavoriteTools = LeftGroup:CreatePinnedList({
+    Title = "All tools",
+    PinnedTitle = "Pinned tools",
+    Items = {
+        {Name = "Auto Farm", Description = "Farming automation", Icon = "sparkles", Pinned = true},
+        {Name = "Player ESP", Description = "Visual player helper", Icon = "eye"},
+        {Name = "Server Hop", Description = "Find another server", Icon = "server"}
+    },
+    Callback = function(name, pinned)
+        print("pinned list", name, pinned)
+    end
+})
+
+LeftGroup:CreateSection("Cursor tag")
+
+local HoverTag = LeftGroup:CreateCursorTag({
+    Text = "XLQP UI",
+    Hint = "Move your mouse here to see the live cursor tag.",
+    Height = 92,
+    Callback = function(visible)
+        print("cursor tag", visible)
+    end
+})
+
+GroupMain:AddLabel("This tabbox is inside a groupbox.")
+GroupMain:AddStatusBox({Variant = "success", Title = "Success", Content = "The requested module loaded correctly."})
+GroupMain:AddStatusBox({Variant = "error", Title = "Error", Content = "A module could not be loaded."})
+GroupMain:AddStatusBox({Variant = "warning", Title = "Warning", Content = "Review this setting before continuing."})
+GroupMain:AddStatusBox({Variant = "neutral", Title = "Information", Content = "This is the neutral status style."})
+GroupMain:AddButton({
+    Name = "Groupbox Tab Button",
+    Callback = function()
+        Library:MakeNotification({
+            Name = "Groupbox Tabbox",
+            Content = "Button clicked inside a groupbox tabbox.",
+            Time = 3
+        })
+    end
+})
+
+GroupPlayers:AddDropdown({
+    Name = "Player Tools",
+    Options = {"Nearest", "Lowest Health", "Random"},
+    Default = "Nearest",
+    Search = true,
+    Outline = true,
+    Fill = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+GroupPlayers:AddToggle({
+    Name = "Track Players",
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+GroupSettings:AddToggle({
+    Name = "Compact tools",
+    Description = "Keep the groupbox controls dense.",
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        print("compact tools", value)
+    end
+})
+
+GroupLocations:AddDropdown({
+    Name = "Travel Point",
+    Options = {"Spawn", "Shop", "Safe Zone", "Arena"},
+    Default = "Spawn",
+    Search = true,
+    Callback = function(value)
+        print("travel point", value)
+    end
+})
+
+GroupVisuals:AddToggle({
+    Name = "Highlight targets",
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        print("highlight targets", value)
+    end
+})
+
+local AutoFarm = LeftGroup:AddToggle({
+    Name = "Auto Farm",
+    Default = false,
+    Color = Color3.fromRGB(40, 40, 40),
+    Flag = "AutoFarm",
+    Save = true,
+    Moveable = true,
+    pvp = true,
+    Binded = true,
+    DefaultBind = "Q",
+    Settings = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+AutoFarm:AddSlider({
+    Name = "Speed",
+    Min = 1,
+    Max = 100,
+    Default = 25,
+    Increment = 1,
+    input = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+local PlayerDropdown = AutoFarm:AddDropdown({
+    Name = "Mode",
+    Options = {"Safe", "Fast", "Silent"},
+    Default = "Safe",
+    Search = true,
+    MaxElements = 7,
+    Fill = true,
+    FillColor = Color3.fromRGB(48, 62, 82),
+    Outline = true,
+    OutlineColor = "Blue",
+    player = true,
+    whitelist = true,
+    pvp = true,
+    Moveable = true,
+    Callback = function(value, players, whitelist)
+        print("selected", value)
+        print("players", players)
+        print("whitelist", whitelist)
+    end
+})
+
+AutoFarm:AddMiniButtons({
+    Name = "Toggle Actions",
+    Buttons = {
+        {Name = "Start", Callback = function() print("start") end},
+        {Name = "Stop", Callback = function() print("stop") end}
+    }
+})
+
+AutoFarm:AddActionRow({
+    Name = "Player Dropdown Tools",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Buttons = {
+        {Name = "All", Callback = function() PlayerDropdown:SelectAll() end},
+        {Name = "Invert", Callback = function() PlayerDropdown:Invert() end},
+        {Name = "Clear", Callback = function() PlayerDropdown:Clear() end}
+    }
+})
+
+LeftGroup:AddActionRow({
+    Name = "Quick Actions",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Moveable = true,
+    Buttons = {
+        {Name = "Run", Callback = function() print("run") end},
+        {Name = "Reset", Callback = function() print("reset") end}
+    }
+})
+
+LeftGroup:AddSlider({
+    Name = "Walk Speed",
+    Description = "Smooth movement speed control",
+    Min = 16,
+    Max = 250,
+    Default = 32,
+    Increment = 1,
+    ValueName = "studs",
+    Color = Color3.fromRGB(24, 188, 137),
+    Color2 = Color3.fromRGB(45, 232, 175),
+    Smooth = true,
+    input = true,
+    Flag = "WalkSpeed",
+    Save = true,
+    Moveable = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+LeftGroup:AddTextbox({
+    Name = "Command",
+    TextColor = "Blue",
+    Default = "hello",
+    Placeholder = "Type command",
+    Moveable = true,
+    Callback = function(value, enterPressed)
+        if enterPressed then
+            print(value)
+        end
+    end
+})
+
+LeftGroup:AddTextArea({
+    Name = "Input Textarea",
+    TextColor = "Teal",
+    Content = "Multi-line command or notes input.",
+    Default = "",
+    Placeholder = "Enter Text...",
+    Height = 120,
+    Moveable = true,
+    Callback = function(value)
+        print("textarea", value)
+    end
+})
+
+LeftGroup:AddDropdown({
+    Name = "Advanced Dropdown",
+    Options = {
+        {Name = "New file", Icon = "rbxassetid://7733715400", Description = "Create a new file"},
+        {Name = "Copy link", Icon = "rbxassetid://7733955511", Description = "Copy the file link"},
+        {Name = "Edit file", Icon = "rbxassetid://7733960981", Description = "Allows you to edit the file"},
+        {Name = "Delete file", Icon = "rbxassetid://7733765398", Description = "Permanently delete the file"}
+    },
+    Default = "New file",
+    Search = true,
+    advanceddrop = true,
+    Outline = true,
+    Moveable = true,
+    Callback = function(value)
+        print("advanced", value)
+    end
+})
+
+local BoxSection = LeftGroup:AddBoxSection({
+    Name = "Box Section",
+    Content = "Elements can be inside sections",
+    DefaultOpen = true
+})
+
+BoxSection:AddSection({Name = "Inside Section"})
+BoxSection:AddToggle({
+    Name = "Section Toggle",
+    Content = "Works inside section",
+    Default = false,
+    Moveable = true,
+    Callback = function(value)
+        print("box section toggle", value)
+    end
+})
+BoxSection:AddButton({
+    Name = "Section Button",
+    Moveable = true,
+    Callback = function()
+        print("box section button")
+    end
+})
+
+LeftGroup:AddCopyBox({
+    Name = "Server JobId",
+    Content = game.JobId
+})
+
+LeftGroup:AddCommandBar({
+    Name = "Quick Command",
+    Placeholder = "say hello",
+    ButtonText = "Run",
+    Callback = function(text)
+        print("command:", text)
+    end
+})
+
+LeftGroup:AddStepper({
+    Name = "Farm Priority",
+    Min = 1,
+    Max = 10,
+    Default = 3,
+    Increment = 1,
+    Callback = function(value)
+        print("priority", value)
+    end
+})
+
+local FAQ = RightGroup:CreateFAQ({
+    Name = "Frequently Asked Questions",
+    Exclusive = true,
+    Items = {
+        {
+            Question = "Why was this fanmade Gen 2 created?",
+            Answer = "So people can experience a Gen 2 style Rayfield right now instead of waiting for the official release. It is a fan project built from zero, not a replacement for the real thing."
+        },
+        {
+            Question = "Will my existing Rayfield scripts work?",
+            Answer = "Yes. The compatibility API keeps familiar window, tab, and element methods while using the Verbal Hub layout and themes."
+        },
+        {
+            Question = "Can more than one answer stay open?",
+            Answer = "Set Exclusive to false or AllowMultiple to true. By default, opening one answer closes the others."
+        },
+        {
+            Question = "Can questions be changed later?",
+            Answer = "Yes. Use FAQ.Items[index]:Set(), FAQ:AddItem(), FAQ:Open(), FAQ:Close(), FAQ:Toggle(), or FAQ:SetItems()."
+        },
+        {
+            Question = "Does it work on mobile?",
+            Answer = "Yes. The full question card uses Activated input, wraps long text, recalculates its height, and animates on touch and mouse."
+        }
+    },
+    Callback = function(index, opened, item)
+        print("FAQ", index, opened, item.Question)
+    end
+})
+
+RightGroup:AddParagraph({
+    Name = "Nested Support",
+    Content = "Groupboxes and tabboxes support every element from the library, including viewports, code blocks, logs, media players, AI widgets, helpers, and toggle settings.",
+    discordpar = "QEW8ap3MuV",
+    opena = true,
+    DontAskAgain = true
+})
+
+RightGroup:AddParagraph({
+    Name = "About Verbal UI",
+    Content = "This paragraph can collapse and expand with opena = true. Use it for long docs, changelogs, helper text, or setup instructions without eating the whole tab.",
+    opena = true
+})
+
+RightGroup:AddDiscordImg({
+    Name = "Verbal Discord",
+    Invite = "QEW8ap3MuV",
+    Content = "Join for updates, changelogs, and support.",
+    OpenMode = "Browser",
+    RememberOpenMode = true
+})
+
+RightGroup:AddChangelog({
+    Name = "Group Changelog",
+    Content = "Reusable changelog element.",
+    Logs = {
+        "Discord paragraph support",
+        "Discord image card",
+        "Changelog element"
+    }
+})
+
+RightGroup:AddChecklist({
+    Name = "Setup Checklist",
+    Items = {
+        {Text = "Window loaded", Checked = true},
+        {Text = "Tabs synced", Checked = true},
+        {Text = "Configs saved", Checked = false}
+    },
+    Callback = function(index, checked, text)
+        print(index, checked, text)
+    end
+})
+
+RightGroup:AddTimeline({
+    Name = "Update Timeline",
+    Items = {
+        {Title = "Corner Sync", Description = "Settings GUI and Settings tab now share corner controls.", Time = "Now", Color = Color3.fromRGB(73, 230, 133)},
+        {Title = "Nested Elements", Description = "Checklist and Timeline work inside groups and tabboxes.", Time = "New", Color = Color3.fromRGB(90, 140, 255)}
+    }
+})
+
+RightGroup:AddInfoCard({
+    Name = "Useful Info Card",
+    Content = "Info cards are compact status panels for tabs, groupboxes, and tabboxes.",
+    Icon = "info",
+    Color = Color3.fromRGB(90, 140, 255)
+})
+
+RightGroup:AddShortcutHint({
+    Name = "Open UI",
+    Key = "RightShift",
+    Content = "Fast reminder for the current window toggle key."
+})
+
+RightGroup:AddTagCloud({
+    Name = "Feature Tags",
+    Tags = {
+        {Text = "New UI", Color = Color3.fromRGB(73, 130, 230)},
+        {Text = "AI"},
+        {Text = "Discord"},
+        {Text = "Configs"},
+        {Text = "Premium"}
+    }
+})
+
+RightGroup:AddFilterList({
+    Name = "Command Finder",
+    Placeholder = "Search actions...",
+    Items = {
+        {Name = "Auto Farm", Description = "Toggle farming helpers", Callback = function() AutoFarm:Set(true) end},
+        {Name = "Clear Players", Description = "Clear selected player targets", Callback = function() PlayerDropdown:Clear() end},
+        {Name = "Copy Job", Description = "Copy the current JobId", Callback = function() if setclipboard then setclipboard(game.JobId) end end},
+        {Name = "Select Everyone", Description = "Select all player dropdown rows", Callback = function() PlayerDropdown:SelectAll() end}
+    },
+    Callback = function(item)
+        print("picked", item.Name or item.Text)
+    end
+})
+
+RightGroup:AddToastAction({
+    Name = "Toast Action",
+    Content = "Runs a callback and sends a themed notification.",
+    ButtonText = "Notify",
+    Callback = function()
+        print("toast action")
+    end
+})
+
+RightGroup:AddNotify({
+    Name = "Notify Element",
+    Content = "Sends a notification with a synced progress line.",
+    ButtonText = "Send Notify",
+    Time = 5,
+    Pos = "BottomRight",
+    Buttons = {
+        {Name = "OK", Callback = function() print("notify ok") end}
+    }
+})
+
+RightGroup:AddSection({Name = "Premium Locked"})
+
+RightGroup:AddParagraph({
+    Name = "Premium Card",
+    Content = "Premium elements show a crown badge, yellow premium text, and stay locked until unlocked.",
+    Premium = true,
+    Locked = true,
+    Color = "Yellow"
+})
+
+RightGroup:AddButton({
+    Name = "Premium Button",
+    Premium = true,
+    Locked = true,
+    Callback = function()
+        print("premium button")
+    end
+})
+
+RightGroup:AddToggle({
+    Name = "Premium Toggle",
+    Default = false,
+    Checkbox = true,
+    Premium = true,
+    Locked = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+RightGroup:AddSlider({
+    Name = "Premium Slider",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Premium = true,
+    Locked = true,
+    input = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+RightGroup:AddDropdown({
+    Name = "Premium Dropdown",
+    Options = {"Alpha", "Beta", "Gamma"},
+    Default = "Alpha",
+    Premium = true,
+    Locked = true,
+    Search = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+
+RightGroup:AddCode({
+    Name = "Quick code",
+    Language = "lua",
+    Content = "print(game.PlaceId)"
+})
+
+RightGroup:AddFriends({
+    Name = "Server Friends"
+})
+
+RightGroup:AddPlayerCount({
+    Name = "Population"
+})
+
+RightGroup:AddClock({
+    Name = "Local Clock"
+})
+
+RightGroup:AddColorpicker({
+    Name = "Accent",
+    Default = Color3.fromRGB(73, 130, 230),
+    Transparency = 0,
+    Callback = function(color, transparency)
+        print(color, transparency)
+    end
+})
+
+local MainPage = LeftTabs:AddTab("Main", "home")
+MainPage:AddToggle({
+    Name = "Enabled",
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+MainPage:AddButton({
+    Name = "Refresh",
+    Callback = function()
+        print("refresh")
+    end
+})
+MainPage:AddNotice({
+    Name = "Inside Tabbox",
+    Content = "This notice is inside a tabbox page.",
+    Color = Color3.fromRGB(230, 190, 73)
+})
+
+local ToolsPage = LeftTabs:AddTab("Tools", "wrench")
+ToolsPage:AddSlider({
+    Name = "Power",
+    Min = 0,
+    Max = 100,
+    Default = 45,
+    Increment = 1,
+    input = true,
+    Callback = function(value)
+        print(value)
+    end
+})
+ToolsPage:AddSection({Name = "Pickers"})
+
+ToolsPage:AddDropdown({
+    Name = "Target",
+    Options = {"Closest", "Random", "Selected", "All"},
+    Default = "Closest",
+    Search = true,
+    Fill = true,
+    FillColor = "Blue",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Callback = function(value)
+        print(value)
+    end
+})
+
+local MultiSelectDropdown = ToolsPage:AddDropdown({
+    Name = "Multi Select",
+    Options = {"ESP", "Tracers", "Boxes", "Names", "Health", "Distance", "Skeletons", "Chams"},
+    Default = {"ESP", "Names"},
+    Search = true,
+    MaxElements = 6,
+    MultiSelect = true,
+    SelectAll = true,
+    Fill = true,
+    FillColor = "Second",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Callback = function(values)
+        print(values)
+    end
+})
+
+ToolsPage:AddDropdown({
+    Name = "No Bulk Buttons",
+    Options = {"Walls", "Floors", "Ceilings", "Props"},
+    Default = {"Walls"},
+    Search = true,
+    MultiSelect = true,
+    SelectAll = false,
+    Callback = function(values)
+        print(values)
+    end
+})
+
+ToolsPage:AddButton({
+    Name = "Select every visible option",
+    Callback = function()
+        MultiSelectDropdown:SelectVisible()
+    end
+})
+
+ToolsPage:AddButton({
+    Name = "Clear every visible option",
+    Callback = function()
+        MultiSelectDropdown:ClearVisible()
+    end
+})
+
+ToolsPage:AddSection({Name = "Advanced"})
+
+ToolsPage:AddToggle({
+    Name = "Verbose Logging",
+    Default = false,
+    Callback = function(state)
+        print("verbose", state)
+    end
+})
+
+ToolsPage:AddTextbox({
+    Name = "Endpoint",
+    Default = "localhost",
+    Placeholder = "Type an endpoint",
+    Callback = function(text)
+        print("endpoint", text)
+    end
+})
+
+ToolsPage:AddSection({Name = "Spacing only, no line below this", Line = false})
+
+local RenamingSection = ToolsPage:AddSection({Name = "Rename Me"})
+local RenamingSectionLines = true
+
+ToolsPage:AddButton({
+    Name = "Rename the section above",
+    Callback = function()
+        RenamingSection:Set("Renamed From A Button")
+    end
+})
+
+ToolsPage:AddButton({
+    Name = "Put the old name back",
+    Callback = function()
+        RenamingSection:Set("Rename Me")
+    end
+})
+
+ToolsPage:AddButton({
+    Name = "Toggle its lines",
+    Callback = function()
+        RenamingSectionLines = not RenamingSectionLines
+        RenamingSection:SetLine(RenamingSectionLines)
+    end
+})
+
+ToolsPage:AddButton({
+    Name = "Widen its spacing",
+    Callback = function()
+        RenamingSection:SetSpacing(24, 20)
+    end
+})
+
+ToolsPage:AddSection({Name = "", Top = 16, Bottom = 16})
+
+ToolsPage:AddCopyBox({
+    Name = "Invite Code",
+    Content = "VERBAL-2028"
+})
+
+ToolsPage:AddStudioTool({
+    Name = "Studio Mesh Tool",
+    Content = "Spawn, select, move, and test parts with a small Studio-style panel.",
+    Default = false,
+    PartType = "Block",
+    Grid = 1,
+    PartSize = 4,
+    Anchored = true,
+    CanCollide = true,
+    ParentPath = "workspace",
+    MeshId = "",
+    TextureId = "",
+    Callback = function(part)
+        print("studio part", part and part.Name)
+    end
+})
+
+local LogsPage = RightTabs:AddTab("Logs", "scroll-text")
+LogsPage:AddLog({
+	Text = '[<font color="rgb(73, 230, 133)">Log</font>]: GUI loaded',
+    DoesWrap = true,
+    Size = 14
+})
+LogsPage:AddLog({
+	Text = '[<font color="rgb(73, 230, 133)">Log</font>]: Tabboxes created',
+    DoesWrap = true,
+    Size = 14
+})
+LogsPage:AddTimeline({
+    Name = "Session Timeline",
+    Items = {
+        {Title = "Boot", Description = "Loaded Verbal Hub example.", Time = "00:00", Color = Color3.fromRGB(73, 230, 133)},
+        {Title = "Ready", Description = "All nested containers accept the new elements.", Time = "00:01", Color = Color3.fromRGB(230, 190, 73)}
+    }
+})
+
+local DataPage = RightTabs:AddTab("Data", "database")
+DataPage:AddKeyValueList({
+    Name = "Runtime",
+    Items = {
+        {Key = "Executor", Value = "Supported"},
+        {Key = "FPS", Value = "144"},
+        {Key = "Ping", Value = "42 ms"}
+    }
+})
+DataPage:AddProgressBar({
+    Name = "Load",
+    Value = 64,
+    Max = 100,
+    Description = "Example progress"
+})
+DataPage:AddActionRow({
+    Name = "Data Actions",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Buttons = {
+        {Name = "Copy", Callback = function() if setclipboard then setclipboard(game.JobId) end end},
+        {Name = "Ping", Callback = function() print("ping") end}
+    }
+})
+
+Visuals:AddViewport({
+    Name = "Character Preview",
+    Object = game.Players.LocalPlayer.Character,
+    Height = 220,
+    Interactive = true,
+    AutoFocus = true,
+    Clone = true
+})
+Visuals:AddBadge({
+    Name = "Preview",
+    Text = "Live",
+    Color = Color3.fromRGB(73, 230, 133)
+})
+
+Visuals:AddNametags({
+    Name = "Nametags",
+    Content = "Renders nametags on players through walls.",
+    Default = false,
+    ShowHealth = true,
+    ShowDistance = true,
+    ShowDecimal = false,
+    PreviewName = "CyberWolf",
+    Health = 11,
+    Callback = function(state)
+        print("nametags", state.Enabled, state.ShowHealth, state.ShowDistance, state.ShowDecimal)
+    end
+})
+
+local DrawingGrid = Visuals:AddDrawingGrid({
+    Name = "Drawing Grid",
+    Height = 240,
+    Boxes = true,
+    Columns = 32,
+    Rows = 20,
+    BrushSize = 2,
+    Color = Color3.fromRGB(255, 255, 255),
+    Callback = function(grid)
+        print("drawing grid updated", grid.Tool, grid.Boxes)
+    end
+})
+
+Visuals:AddColorpicker({
+    Name = "Drawing Grid Color",
+    Default = Color3.fromRGB(255, 255, 255),
+    Callback = function(color)
+        DrawingGrid:SetColor(color)
+    end
+})
+
+Visuals:AddQuickToggleRow({
+    Name = "Visual Mode",
+    Options = {"Clean", "Glass", "Debug"},
+    Default = "Glass",
+    Callback = function(value)
+        print("visual mode", value)
+    end
+})
+
+Visuals:AddImage({
+    Name = "Logo Preview",
+    Image = "rbxassetid://8834748103",
+    Height = 120
+})
+
+Visuals:AddVideo({
+    Name = "Video Preview",
+    Video = "",
+    Height = 140,
+    Looped = true
+})
+
+local CustomFrame = Instance.new("Frame")
+CustomFrame.BackgroundColor3 = Color3.fromRGB(22, 24, 32)
+CustomFrame.BackgroundTransparency = 0.08
+CustomFrame.Size = UDim2.new(1, 0, 1, 0)
+Instance.new("UICorner", CustomFrame).CornerRadius = UDim.new(0, 12)
+local CustomText = Instance.new("TextLabel")
+CustomText.Size = UDim2.fromScale(1, 1)
+CustomText.BackgroundTransparency = 1
+CustomText.Font = Enum.Font.GothamBlack
+CustomText.TextSize = 13
+CustomText.TextColor3 = Color3.fromRGB(235, 235, 245)
+CustomText.Text = "Custom passthrough content"
+CustomText.Parent = CustomFrame
+Visuals:AddPassthrough({
+    Name = "Custom Frame",
+    Height = 44,
+    Instance = CustomFrame
+})
+
+Visuals:AddNotify({
+    Name = "Preview Notify",
+    Content = "Tests the notification progress line and icon.",
+    ButtonText = "Send",
+    Time = 4,
+    Pos = "BottomRight",
+    Buttons = {
+        {Name = "OK", Callback = function() print("preview notify") end}
+    }
+})
+
+Metrics:AddSection({Name = "Numbers"})
+
+local CurrencyStat = Metrics:CreateStat({
+    Name = "Currency",
+    Icon = "coins",
+    Value = "$21",
+    Delta = "+19%",
+    Duration = 0.55,
+    Callback = function(value, delta)
+        print("currency", value, delta)
+    end
+})
+
+Metrics:AddButton({
+    Name = "Update Currency",
+    Icon = "sparkles",
+    Callback = function()
+        CurrencyStat:Set({
+            Value = "$" .. tostring(math.random(10, 9999)),
+            Delta = (math.random(0, 1) == 1 and "+" or "-") .. tostring(math.random(1, 30)) .. "%",
+            Animate = true
+        })
+    end
+})
+
+Metrics:AddSection({Name = "Charts"})
+
+local RevenueCard = Metrics:AddRevenueCard({
+    Name = "Revenue",
+    Value = 30858,
+    Prefix = "$",
+    Change = "+10.4%",
+    Color = Color3.fromRGB(20, 210, 145),
+    Duration = 0.75,
+    MiniStats = {
+        {Name = "Health", Value = "100 HP", Change = "+∞", Status = "Good"},
+        {Name = "FPS", Value = 185, Change = "+29", Status = "Good"},
+        {Name = "Speed", Value = "83 WS", Change = "+1", Status = "Medium"},
+        {Name = "Players", Value = 14, Change = "0", Status = "Bad"}
+    }
+})
+
+local RevenueChart = Metrics:CreateChart({
+    Name = "Revenue",
+    Icon = "coins",
+    Prefix = "$",
+    Points = {7200, 8100, 7600, 9300, 8800, 10400, 30858},
+    Color = Color3.fromRGB(42, 220, 166),
+    Filled = true,
+    Smooth = true,
+    Dots = true,
+    MaxPoints = 12,
+    Height = 174,
+    Callback = function(point)
+        Library:MakeToast({Title = "Revenue point " .. tostring(point.Index), Content = tostring(point.Text), Variant = "Info", Icon = "coins", Time = 2})
+    end
+})
+
+RevenueCard:BindChart(RevenueChart, true)
+
+local PlayersChart = Metrics:CreateChart({
+    Name = "Players Online",
+    Icon = "users",
+    Suffix = " ccu",
+    Points = {210, 280, 250, 340, 390, 360, 440, 485, 450, 540},
+    Color = Color3.fromRGB(42, 220, 166),
+    Filled = false,
+    Smooth = false,
+    Dots = true,
+    MaxPoints = 14,
+    Height = 174,
+    Callback = function(point)
+        print("players chart point", point.Index, point.Value)
+    end
+})
+
+local SessionChart = Metrics:CreateChart({
+    Name = "Session Time",
+    Icon = "activity",
+    Suffix = " min",
+    Smooth = true,
+    Filled = true,
+    Points = {6, 12, 9, 21, 11, 22, 13, 15, 7, 19, 12, 24}
+})
+
+local KillsChart = Metrics:CreateBarChart({
+    Name = "Kills per Match",
+    Icon = "crosshair",
+    Points = {
+        {Label = "M1", Value = 2},
+        {Label = "M2", Value = 3},
+        {Label = "M3", Value = 5},
+        {Label = "M4", Value = 6},
+        {Label = "M5", Value = 4},
+        {Label = "M6", Value = 3},
+        {Label = "M7", Value = 2}
+    },
+    Callback = function(point)
+        Library:MakeToast({Title = point.Label, Content = tostring(point.Value) .. " kills", Variant = "Info", Icon = "crosshair", Time = 2})
+    end
+})
+
+local SpendingChart = Metrics:CreateStackedChart({
+    Name = "Spending",
+    Icon = "wallet",
+    Prefix = "$",
+    Series = {"Housing", "Food", "Transport"},
+    Rows = {
+        {Name = "Anna", Values = {8, 8, 4}},
+        {Name = "Ben", Values = {12, 10, 8}},
+        {Name = "Clara", Values = {16, 10, 10}},
+        {Name = "David", Values = {20, 24, 6}}
+    },
+    Callback = function(segment)
+        print(segment.RowName, segment.SeriesName, segment.Value)
+    end
+})
+
+Metrics:AddActionRow({
+    Name = "Chart Data",
+    Outline = true,
+    Buttons = {
+        {Name = "Push Data", Callback = function()
+            RevenueChart:Push(RevenueCard.Value + math.random(-1500, 2500))
+            PlayersChart:Push(540 + math.random(-120, 160))
+            SessionChart:Push(math.random(8, 30))
+            KillsChart:Push("M" .. tostring(#KillsChart.Points + 1), math.random(1, 9))
+			local fps = math.random(35, 200)
+			RevenueCard:SetMiniStat(2, {Value = fps, Change = (fps >= 100 and "+" or "-") .. tostring(math.random(1, 30)), Status = fps < 60 and "Bad" or fps < 100 and "Medium" or "Good"})
+			RevenueCard:SetMiniStat(4, {Value = math.random(1, 22), Change = tostring(math.random(-3, 4)), Status = "Good"})
+        end},
+        {Name = "Replay All", Callback = function()
+            RevenueChart:Replay()
+            PlayersChart:Replay()
+            SessionChart:Replay()
+            KillsChart:Replay()
+            SpendingChart:Replay()
+            CurrencyStat:Replay()
+        end}
+    }
+})
+
+Metrics:AddActionRow({
+    Name = "Revenue Actions",
+    Outline = true,
+    Buttons = {
+        {Name = "Simulate Sale", Callback = function()
+            local amount = math.random(250, 1800)
+            RevenueCard:Add(amount)
+            Library:MakeToast({Title = "Sale added", Content = "+$" .. tostring(amount), Variant = "Success", Icon = "success", Time = 2.5})
+        end},
+        {Name = "Reset Tracking", Callback = function()
+            RevenueCard:Reset(30858)
+            RevenueCard:SetChange("+0.0%")
+            RevenueChart:Set({Points = {7200, 8100, 7600, 9300, 8800, 10400, 30858}, Value = 30858, Animate = true})
+        end},
+        {Name = "Replay Charts", Callback = function()
+            RevenueChart:Replay()
+            PlayersChart:Replay()
+        end}
+    }
+})
+
+Metrics:AddActionRow({
+    Name = "Toast Notifications",
+    Outline = true,
+    Buttons = {
+        {Name = "Connected", Callback = function()
+            Library:MakeToast({Title = "Connected", Content = "ws://localhost:8080", Variant = "Success", Icon = "home", Time = 3})
+        end},
+        {Name = "Copied", Callback = function()
+            Library:MakeToast({Title = "Copied to clipboard", Variant = "Info", Icon = "copy", Time = 2.5})
+        end},
+        {Name = "Saved", Callback = function()
+            Library:MakeToast({Title = "Saved", Variant = "Success", Icon = "save", Time = 2.5})
+        end}
+    }
+})
+
+Metrics:AddStatCard({
+    Name = "Players",
+    Value = tostring(#game:GetService("Players"):GetPlayers()),
+    Description = "Players online"
+})
+Metrics:AddKeyValueList({
+    Name = "Session Info",
+    Items = {
+        {Key = "Players", Value = tostring(#game:GetService("Players"):GetPlayers())},
+        {Key = "PlaceId", Value = tostring(game.PlaceId)},
+        {Key = "JobId", Value = game.JobId}
+    }
+})
+
+Server:AddSection({Name = "Server Tools"})
+Server:AddActionRow({
+    Name = "Server Actions",
+    Buttons = {
+        {Name = "Smallest", Callback = function() print("smallest") end},
+        {Name = "Refresh", Callback = function() print("refresh") end}
+    }
+})
+Server:AddCopyBox({
+    Name = "PlaceId",
+    Content = tostring(game.PlaceId)
+})
+Server:AddProgressBar({
+    Name = "Server Load",
+    Value = 38,
+    Max = 100,
+    Description = "Live usage"
+})
+
+Logs:AddLog({
+	Text = '[<font color="rgb(73, 230, 133)">Net</font>]: Monitor ready',
+    DoesWrap = true,
+    Size = 14
+})
+Logs:AddLog({
+	Text = '[<font color="rgb(230, 190, 73)">Warn</font>]: Waiting for traffic',
+    DoesWrap = true,
+    Size = 14
+})
+
+local DebugConsole = Logs:AddDebugConsole({
+    Name = "Debug Console",
+    Height = 250,
+    MaxLines = 500,
+    AutoScroll = true,
+    CaptureOutput = true,
+    Default = {
+        {Level = "Log", Text = "Console initialized"},
+        {Level = "Info", Text = "Syntax-highlighted executor is ready"},
+        {Level = "Warning", Text = "Warnings appear in amber"},
+        {Level = "Error", Text = "Errors appear in red"}
+    }
+})
+
+Logs:AddActionRow({
+    Name = "Debug Console Actions",
+    Outline = true,
+    Buttons = {
+        {Name = "Log", Callback = function() DebugConsole:Log("Manual log message") end},
+        {Name = "Info", Callback = function() DebugConsole:Info("Interface state refreshed") end},
+        {Name = "Warn", Callback = function() DebugConsole:Warn("High ping detected") end},
+        {Name = "Error", Callback = function() DebugConsole:Error("Example error message") end},
+        {Name = "Clear", Callback = function() DebugConsole:Clear() end}
+    }
+})
+
+local Executor = ExecutorTab:AddExecutor({
+    Name = "Syntax Highlighted Executor",
+    Default = "local Players = game:GetService(\"Players\")\nlocal player = Players.LocalPlayer\n\nif player then\n    print(\"Hello\", player.Name)\nelse\n    warn(\"LocalPlayer is unavailable\")\nend",
+    Height = 260,
+    TextSize = 14,
+    MetaTextSize = 13,
+    TitleTextSize = 18
+})
+
+local XLQPAI = AITab:AddXLQPGen1AI({
+    Name = "XLQP Gen1 AI",
+    Default = "",
+    Height = 500,
+    Gui = true,
+    Moveable = true,
+    UltraAI = true,
+    CompanionEnabled = true,
+    FollowEnabled = true,
+    UsePlayerAnimations = true,
+    BubbleResponses = true,
+    ChatPromptsOnly = false,
+    WorldToolsEnabled = true,
+    ThemeToolsEnabled = true,
+    FollowDistance = 7,
+    WalkSpeed = 15,
+    CompanionName = "UltraAI Companion"
+})
+if XLQPAI and XLQPAI.Show then XLQPAI:Show() end
+
+AITab:AddParagraph({
+	Name = "XLQP AI UI Inspector",
+	Content = "Ask “what features does this script have?”, “search all UI elements”, or “list em all”. XLQP AI sends the live UI registry to the selected provider, verifies the exact count, and includes current element values."
+})
+
+AITab:AddButton({
+    Name = "AI API Settings",
+    Moveable = true,
+    Callback = function()
+        Library:OpenAISettings("XLQP Gen1 AI")
+    end
+})
+
+AITab:AddNotice({
+    Name = "AI Tools",
+    Content = "Ask XLQP Gen1 AI to open tabs, turn toggles on or off, move sliders, select dropdowns, press buttons, or execute Roblox Lua actions. The API settings accept direct URLs plus HTML, JavaScript, cURL, Python, and Puter.js examples. Use Manual for local parsing or Auto AI to have the selected AI provider implement the source and fill the request fields.",
+    Color = Color3.fromRGB(73, 130, 230)
+})
+
+AITab:AddCode({
+    Name = "Custom Live Color Script",
+    Language = "lua",
+    Content = [[XLQPLiveColor:Register({
+    Name = "Custom Particle Galaxy",
+    Colors = {"#120A46", "#412DD2", "#BE37FF", "#FF4BB4", "#120A46"},
+    Speed = 0.24,
+    Rotation = 8,
+    Transparency = 0.05,
+    BackgroundImage = "https://wallpapercave.com/wp/wp4575207.jpg",
+    ImageTransparency = 0.2,
+    OnEnable = function(Context)
+        for _, layer in ipairs(Context:GetLayers()) do
+            local dot = Context:Create("Frame", {
+                Position = UDim2.fromScale(0.5, 0.5),
+                Size = UDim2.fromOffset(8, 8),
+                BackgroundColor3 = Color3.fromRGB(160, 210, 255),
+                BorderSizePixel = 0
+            }, layer)
+            Context:Create("UICorner", {CornerRadius = UDim.new(1, 0)}, dot)
+            Context:OnFrame(function(_, elapsed)
+                dot.Position = UDim2.fromScale(0.5 + math.sin(elapsed) * 0.3, 0.5)
+            end)
+        end
+    end,
+    OnDisable = function(Context, reason)
+    end
+})]],
+    Description = "A custom XLQPLiveColor:Register script with particles, custom code, animation hooks, and automatic cleanup."
+})
+
+AITab:AddCode({
+    Name = "Puter Source Example",
+    Language = "html",
+    Content = [[<html>
+<body>
+<script src="https://js.puter.com/v2/"></script>
+<script>
+puter.ai.chat("What are the benefits of exercise?", { model: "openai/gpt-5.5" }).then(response => puter.print(response));
+</script>
+</body>
+</html>]]
+})
+
+SoccerTab:AddSoccer({
+    Name = "Live Soccer",
+    Height = 440,
+    League = "FIFA World Cup",
+    AutoRefresh = false,
+    RefreshTime = 60,
+    ShowLogos = true,
+    Moveable = true,
+    Callback = function(data)
+        if type(data) == "table" and data.id then
+            print("soccer match", data.id, data.shortName or data.name)
+        elseif type(data) == "table" then
+            print("soccer matches", #data)
+        end
+    end
+})
+
+SoccerTab:AddNotice({
+    Name = "Soccer API",
+    Content = "Switch between World Cup, Premier League, Champions League, La Liga, and MLS. The element retries multiple ESPN routes, supports team logos, live status, liquid glass, mobile scrolling, and the rebuilt editable drag-and-drop system.",
+    Color = Color3.fromRGB(73, 180, 120)
+})
+
+local KeyInformationTable = AITab:AddTableContents({
+	Name = "Key Information",
+	Description = "A table showing your key information.",
+	Height = 170,
+	ConfigCloud = true,
+	ConfigCloudKey = "KeyInformationTable",
+	Columns = {
+		{Name = "Discord ID", Key = "DiscordId", Width = 155},
+		{Name = "Executions", Key = "Executions", Width = 120},
+		{Name = "Seconds Left", Key = "SecondsLeft", Width = 135},
+		{Name = "User Note", Key = "UserNote", Width = 155},
+		{Name = "Script Version", Key = "Version", Width = 130}
+	},
+	Rows = {
+		{DiscordId = "98765432112...", Executions = 10234, SecondsLeft = "inf", UserNote = "Not specified", Version = "1.0.0"},
+		{DiscordId = "12345678901...", Executions = 428, SecondsLeft = 86400, UserNote = "Beta tester", Version = "1.0.0"}
+	}
+})
+
+AITab:AddGlobalChat({
+    Name = "Global Chat",
+    Height = 430,
+    RefreshTime = 2,
+    Limit = 50,
+    MaxMessageLength = 350,
+    BotId = "1351947660151750759",
+	Rules = "Follow the rules. Be respectful, no spam, no leaking personal info.",
+	DisclaimerFile = "VerbalHubExample/global_chat_disclaimer.json"
+})
+
+AITab:AddNotice({
+	Name = "AI Plugin Builder",
+	Content = "Ask XLQP AI to create a plugin. Generated code is checked against the real tab list, compiled, initialized in a hidden test tab, automatically repaired when needed, and saved only after it runs successfully.",
+	Color = Color3.fromRGB(151, 83, 255)
+})
+
+ExecutorTab:AddMiniButtons({
+    Name = "Executor Actions",
+    Buttons = {
+        {Name = "Example", Callback = function()
+            Executor:SetScript("print(game.PlaceId)")
+        end},
+        {Name = "Clear", Callback = function()
+            Executor:SetScript("")
+        end}
+    }
+})
+
+local MediaPlayer = Library:CreateMediaPlayer({
+    Name = "Music",
+    Default = "rbxassetid://1843529631",
+    AutoPlay = false,
+    Loop = false,
+    Volume = 0.5,
+    Pitch = 1,
+    Preset = "Normal",
+    Visualizer = true,
+    VisualizerHeight = 150,
+    NotifySupport = false,
+    Playlist = {
+        {Name = "Chill Track", Url = "rbxassetid://1843529631"},
+        {Name = "Action Track", Url = "rbxassetid://9048375035"},
+        {Name = "GitHub MP3", Url = "https://github.com/josediaz765/XLQP-dances/raw/refs/heads/main/Mattyeux%2C%20Princess%20Chelsea%2C%20Videoclub%20-%20Sometimes.mp3"}
+    },
+    Callback = function(url)
+        print("music", url)
+    end
+})
+
+local function OpenMusicCenter(mode)
+    local center = Library:OpenMediaCenter("Music")
+    if center and center.MusicControls and center.MusicControls.Mode then
+        center.MusicControls.Mode(mode or "Player")
+    end
+    return center
+end
+
+ExecutorTab:AddActionRow({
+    Name = "Music Center",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Buttons = {
+        {Name = "Music", Callback = function() OpenMusicCenter("Player") end},
+        {Name = "Spotify", Callback = function() OpenMusicCenter("Spotify") end},
+        {Name = "Favorites", Callback = function() OpenMusicCenter("Favorites") end},
+        {Name = "Toggle", Callback = function() Library:ToggleMediaCenter() end}
+    }
+})
+
+ExecutorTab:AddNotice({
+    Name = "Spotify setup",
+    Content = "Set Window Spotify.BridgeUrl and Spotify.ConnectUrl to your bridge/player endpoints. YouTube, GitHub/direct links, Roblox audio and local media continue to use the Music Player view.",
+    Color = Color3.fromRGB(30, 215, 96)
+})
+
+local DiscPlayer = Library:AddDiscPlayer({
+    Name = "Now Playing",
+	MediaPlayer = MediaPlayer,
+	SpinSpeed = 110,
+    Volume = 0.5,
+    Loop = true,
+    AutoPlay = false,
+    Position = UDim2.new(0, 20, 1, -116),
+    Playlist = {
+        {Name = "Chill Track", SoundId = "rbxassetid://1843529631", Image = "rbxassetid://8834748103"},
+        {Name = "Action Track", SoundId = "rbxassetid://9048375035", Image = "rbxassetid://8834748103"},
+        {Name = "Soft Loop", SoundId = "rbxassetid://1837467282", Image = "rbxassetid://8834748103"}
+    }
+})
+
+ExecutorTab:AddButton({
+    Name = "Toggle Now Playing",
+    Callback = function()
+        DiscPlayer:Toggle()
+    end
+})
+
+ExecutorTab:AddActionRow({
+    Name = "Dynamic Island",
+    Outline = true,
+    Buttons = {
+        {Name = "Show", Callback = function()
+            if Library.PreviewDynamicIsland then
+                Library:PreviewDynamicIsland(5)
+            else
+                Library:ShowDynamicIsland({TrackName = "Example Track", Subtitle = "Dynamic Island preview", Paused = true, URL = "preview://example"})
+            end
+        end},
+        {Name = "Hide", Callback = function()
+            if Library.HideDynamicIsland then Library:HideDynamicIsland() end
+        end},
+        {Name = "Open Music", Callback = function()
+            if Library.OpenMediaCenter then Library:OpenMediaCenter("Music") end
+        end}
+    }
+})
+
+local Bytebeat = Library:CreateBytebeat({
+    Name = "Bytebeat Lab",
+    Default = "t*(t>>5|t>>8)",
+    Mode = "Bytebeat",
+    Hz = 22050,
+    Seconds = 3,
+	MaxSeconds = 300,
+    Pitch = 1,
+    Speed = 1,
+    Visualizer = true,
+    VisualizerHeight = 150,
+    Playlist = {
+        {Name = "Classic Bytebeat", Mode = "Bytebeat", Code = "t*(t>>5|t>>8)", Hz = 22050, Duration = 30},
+        {Name = "Pulse Bytebeat", Mode = "Bytebeat", Code = "t*(t>>7&t>>12)", Hz = 22050, Duration = 60},
+        {Name = "Arp Bytebeat", Mode = "Bytebeat", Code = "t*(t>>6|t>>9|t>>13)", Hz = 32000, Duration = 90},
+        {Name = "Stereo Crunch", Mode = "Bytebeat", Code = [=[vl=t/6|0, vr=(t+240)/6|0,
+L=((vl*(vl>>12)&(201*vl/100)&(199*vl/100))&(vl*(vl>>14)&(vl*301/100)&(vl*399/100)))+((vl*(vl>>16)&(vl*202/100)&(vl*198/100))-(vl*(vl>>17)&(vl*302/100)&(vl*298/100))),
+R=((vr*(vr>>12)&(201*vr/100)&(199*vr/100))&(vr*(vr>>14)&(vr*301/100)&(vr*399/100)))+((vr*(vr>>16)&(vr*202/100)&(vr*198/100))-(vr*(vr>>17)&(vr*302/100)&(vr*298/100))),
+[(L&255)-128, (R&255)-128]]=]},
+        {Name = "JS Reverb Preset", Mode = "Bytebeat", Code = "T=t,t*=1.2,r=repeat=(x,y)=>Array(x).fill(y).flat(9),lim=limiter=input=>input,Master=pan=>0,[Master(0),Master(1)]"},
+        {Name = "XLQP Phonk Preset", Mode = "Bytebeat", Code = "[(this.a??=0,r=t/1.25,p=t*2**(parseInt('25259474'[7&r>>13],36)/12)/2.1,a=(a*24+((p%88+p%59*6/4)-64)/((r/'4142'[3&r>>13]%4096+128)**.7)*64)/32,a/12),(this.a??=0,r=t/1.25,p=t*2**(parseInt('25259474'[7&r>>13],36)/12)/2.1,a/12)]"},
+        {Name = "Float Melody", Mode = "Floatbeat", Code = [=[t==0?(a=b=d=e=0):0,
+A='1111100000011111111111111111111111111111111111111111111000001111111001111111110001000000000000001111110000000000000000000111111111111001111110000000000000000000000000000000000',
+n=1.23,
+m=[5,5,5,8,8,8,10,10,10,10,12,13,13,13,12,12,7,7,7,10,10,[9.8,9.5,9.3,9.1][t>>10&3],8,8,8,8,17,12,12,12,8,8,7,7,7,13,13,13,17,17,17,17,13,13,12,12,13,13,0,0,0,10,10,10,8,8,8,8,5,5,0,0,5,5,5,5,5,8,8,8,10,10,10,10,12,13,13,13,12,12,7,7,7,10,10,[9.8,9.5,9.3,9.1][t>>10&3],8,8,8,8,17,12,12,12,8,8,7,7,7,20,20,20,17,17,17,17,13,13,12,12,13,13,10,10,10,22,22,22,20,20,20,20,17,17,13,12,10,12],
+c=a+=b+=(n*2**(m[t>>12&127]/12)-b)/800,
+s=[3,3,3,[3,4][t>>13&1]][t>>14&3],
+p=[1,s,5,[0,0,0,[-2,0][t>>13&1]][t>>14&3],1,s,5,[8,8,8,[10,12][t>>13&1]][t>>14&3]],
+g=d+=e+=(n*2**(p[t>>16&7]/12)-e)/400,
+(A[(c*175>>8)%175]/1.3+(A[(g*175>>8)%175]/2+(A[(g/2*175>>8)%175]/3-1)))*((-(t+"00055522227744440005552222774422"[t>>12&31]*4096)>>7&255)/200)+sin(t*n*PI/512)*((-t>>13&1)*.25)]=]},
+        {Name = "Soft Floatbeat", Mode = "Floatbeat", Code = "sin(t/18)*0.7+sin(t/53)*0.25"},
+        {Name = "Lua Tone", Mode = "Lua", Code = "return math.sin(t / 22) * 0.8"}
+    },
+    Callback = function(player)
+        print("bytebeat generated", player.Asset)
+    end
+})
+ExecutorTab:AddActionRow({
+    Name = "Media Presets",
+    Outline = true,
+    OutlineColor = "Bloom",
+    Buttons = {
+        {Name = "Echo", Callback = function() Bytebeat:SetMediaPreset("Echo", true) end},
+        {Name = "Cinema", Callback = function() Bytebeat:SetMediaPreset("Cinema", true) end},
+        {Name = "Slowed", Callback = function() Bytebeat:SetMediaPreset("Slowed", true) end}
+    }
+})
+
+ScriptBloxTab:AddScriptHub({
+    Name = "ScriptBlox Hub",
+    Description = "Search, inspect, copy, and run ScriptBlox scripts.",
+	Icon = "rbxassetid://7733920644",
+    MaxResults = 8,
+	SortBy = "updatedAt",
+	Order = "desc",
+	Strict = true,
+	ImageCacheFolder = "VerbalHubExample/ScriptBloxImages",
+    Collapsed = false
+})
+
+Direct:AddSection({Name = "Direct Page"})
+Direct:AddLabel("This full-width direct page holds elements without reserving space for side tabs.")
+Direct:AddNotice({
+    Name = "Direct Notice",
+    Content = "Direct pages also support the new helper elements.",
+    Color = Color3.fromRGB(150, 80, 230)
+})
+Direct:AddButton({
+    Name = "Done",
+    Callback = function()
+        print("done")
+    end
+})
+
+local WidgetsLeft = Widgets:AddLeftGroupbox({
+    Name = "Selection Widgets",
+    Icon = "list-checks"
+})
+
+local WidgetsRight = Widgets:AddRightGroupbox({
+    Name = "Widget Actions",
+    Icon = "mouse-pointer-click"
+})
+
+local WidgetStatus = WidgetsLeft:AddParagraph({
+    Title = "Live widget state",
+    Content = "Use the controls below. This paragraph intentionally has NoCard = true.",
+    NoCard = true
+})
+
+local function SetWidgetStatus(text)
+    WidgetStatus:Set(tostring(text))
+end
+
+local ModeRadio = WidgetsLeft:AddRadioGroup({
+    Name = "Operation Mode",
+    Options = {
+        {Name = "Safe", Value = "safe"},
+        {Name = "Balanced", Value = "balanced"},
+        {Name = "Aggressive", Value = "aggressive"},
+        {Name = "Unavailable", Value = "disabled", Disabled = true}
+    },
+    Default = "balanced",
+    Flag = "ExampleOperationMode",
+    Save = true,
+    Callback = function(value, index)
+        SetWidgetStatus("Radio group: " .. tostring(value) .. " (option " .. tostring(index) .. ")")
+    end
+})
+
+local DeviceSegments = WidgetsLeft:AddSegmentedControl({
+    Name = "Layout Target",
+    Options = {
+        {Name = "Phone", Value = "mobile"},
+        {Name = "Desktop", Value = "desktop"},
+        {Name = "TV", Value = "console"}
+    },
+    Default = "desktop",
+    Flag = "ExampleLayoutTarget",
+    Callback = function(value)
+        SetWidgetStatus("Segmented control: " .. tostring(value))
+    end
+})
+
+local WidgetRating = WidgetsLeft:AddRating({
+    Name = "Rate These Widgets",
+    Max = 5,
+    Default = 4,
+    AllowClear = true,
+    Color = Color3.fromRGB(255, 184, 77),
+    Flag = "ExampleWidgetRating",
+    Callback = function(value)
+        SetWidgetStatus("Rating: " .. tostring(value) .. " / 5")
+    end
+})
+
+WidgetsLeft:AddParagraph({
+    Content = "No background, border, hover card, or liquid-glass panel should appear around this AddParagraph.",
+    NoCard = true
+})
+
+WidgetsRight:AddInfoCard({
+    Name = "New working elements",
+    Content = "RadioGroup, SegmentedControl, and Rating are stateful elements with Set, Get, callbacks, flags, and config support.",
+    Icon = "sparkles"
+})
+
+WidgetsRight:AddActionRow({
+    Name = "Programmatic Control",
+    Buttons = {
+        {
+            Name = "Reset",
+            Callback = function()
+                ModeRadio:Set("balanced")
+                DeviceSegments:Set("desktop")
+                WidgetRating:Set(4)
+                SetWidgetStatus("All new widgets reset")
+            end
+        },
+        {
+            Name = "Randomize",
+            Callback = function()
+                local modes = {"safe", "balanced", "aggressive"}
+                local targets = {"mobile", "desktop", "console"}
+                ModeRadio:Set(modes[math.random(1, #modes)])
+                DeviceSegments:Set(targets[math.random(1, #targets)])
+                WidgetRating:Set(math.random(1, 5))
+            end
+        }
+    }
+})
+
+WidgetsRight:AddButton({
+    Name = "Refresh Radio Options",
+    Callback = function()
+        ModeRadio:Refresh({
+            {Name = "Quiet", Value = "quiet"},
+            {Name = "Normal", Value = "normal"},
+            {Name = "Turbo", Value = "turbo"}
+        }, false)
+        ModeRadio:Set("normal")
+        SetWidgetStatus("Radio options refreshed at runtime")
+    end
+})
+
+WidgetsRight:AddButton({
+    Name = "Show Current Values",
+    Callback = function()
+        Library:MakeToast({
+            Title = "Widget values",
+            Content = tostring(ModeRadio:Get()) .. " · " .. tostring(DeviceSegments:Get()) .. " · " .. tostring(WidgetRating:Get()) .. "/5",
+            Variant = "Info",
+            Icon = "info",
+            Time = 3
+        })
+    end
+})
+
+WidgetsRight:AddNotice({
+    Name = "Empty tab demo",
+    Content = "Open Empty Fire in the Showcase group. It has no elements, so its animated empty-state text, fire, and visual particles stay visible.",
+    Variant = "Info"
+})
+
+
+local Interface = Controls:AddRightGroupbox("Interface", "panel-top")
+
+Interface:AddToggle({
+    Name = "Beta Buttons List",
+    Content = "Floating pill dock at the bottom of the screen. Stays visible whether the UI is open or closed.",
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetBetaButtonsList(value)
+    end
+})
+
+Interface:AddToggle({
+    Name = "Status Bar",
+    Content = "Bottom bar with error and warning indicators, memory, ping, FPS, and region.",
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetStatusBar(value)
+    end
+})
+
+Interface:AddToggle({
+    Name = "UI Shadow",
+    Content = "Soft drop shadow behind the main window, settings window, and tab list. Off by default.",
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetUIShadow(value, {
+            Spread = 18,
+            Transparency = 0.62
+        })
+    end
+})
+
+Interface:AddSlider({
+    Name = "Shadow Spread",
+    Min = 8,
+    Max = 48,
+    Default = 18,
+    input = true,
+    Callback = function(value)
+        Library:SetUIShadow(true, {
+            Spread = value,
+            Transparency = 0.62
+        })
+    end
+})
+
+Interface:AddButton({
+    Name = "Shadow On This Groupbox",
+    Callback = function()
+        Library:ApplyUIShadow(Interface.Wrapper or Interface.Frame, {Spread = 12, Transparency = 0.6})
+    end
+})
+
+Interface:AddSection({Name = "Window Designs"})
+
+Interface:AddDropdown({
+    Name = "Window Design Style",
+    Description = "Outward frame art drawn behind the window. Gothic Cathedral is the golden cross set.",
+    Options = Library:GetWindowDesignStyles(),
+    Default = "Gothic Cathedral",
+    Search = true,
+    Callback = function(value)
+        Library:SetWindowDesignStyle(value)
+        Library:SetWindowDesignsEnabled(true)
+    end
+})
+
+Interface:AddToggle({
+    Name = "Window Designs",
+    Content = "Layered outlines, corner brackets, rails, studs and crosses around the window.",
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetWindowDesignsEnabled(value)
+    end
+})
+
+Interface:AddSection({Name = "Sidebar Groups"})
+
+Interface:AddActionRow({
+    Name = "Group Animation",
+    Outline = true,
+    Buttons = {
+        {Name = "Collapse All", Callback = function() Window:CollapseAllGroups() end},
+        {Name = "Expand All", Callback = function() Window:ExpandAllGroups() end},
+        {Name = "Toggle Elements", Callback = function() Window:ToggleGroup("Elements") end},
+        {Name = "Toggle Scripts", Callback = function() Window:ToggleGroup("Scripts") end}
+    }
+})
+
+
+
+Window:newmaketabtop({
+    Name = "New API",
+    MultiTab = true,
+    Effects = true
+})
+
+local NewAPITab = Window:MakeTab({
+    Name = "New API",
+    Icon = "sparkles",
+    Group = "New API",
+    AutoSelect = false
+})
+
+local NewAPILeft = NewAPITab:AddLeftGroupbox({
+    Name = "Parameters",
+    Icon = "sliders-horizontal"
+})
+
+NewAPILeft:AddToggle({
+    Name = "Toggle image asset",
+    Icon = "rbxassetid://7733960981",
+    IconSize = 20,
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        print("Image icon toggle:", value)
+    end
+})
+
+NewAPILeft:AddToggle({
+    Name = "Toggle with icon",
+    Icon = "star",
+    IconSize = 18,
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        print("Icon toggle:", value)
+    end
+})
+
+local ExampleKeyPicker = NewAPILeft:AddKeyPicker({
+    Name = "Example KeyPicker",
+    Default = Enum.KeyCode.K,
+    Hold = false,
+    MenuVisible = true,
+    Save = false,
+    Flag = "ExampleKeyPicker",
+    Callback = function(key)
+        print("KeyPicker:", key)
+    end
+})
+
+ExampleKeyPicker:SetMenuVisibility(true)
+
+NewAPILeft:AddButton({
+    Name = "Hide KeyPicker From Menu",
+    Icon = "eye-off",
+    Callback = function()
+        ExampleKeyPicker:SetMenuVisibility(false)
+    end
+})
+
+NewAPILeft:AddButton({
+    Name = "Show KeyPicker In Menu",
+    Icon = "eye",
+    Callback = function()
+        ExampleKeyPicker:SetMenuVisibility(true)
+    end
+})
+
+local NewAPIRight = NewAPITab:AddRightGroupbox({
+    Name = "Tab Button Style",
+    Icon = "layout-list"
+})
+
+NewAPIRight:AddSlider({
+    Name = "Tab Gap",
+    Min = 0,
+    Max = 20,
+    Increment = 1,
+    Default = 4,
+    input = true,
+    Callback = function(value)
+        local current = Window:GetTabButtonsStyle()
+        current.Gap = value
+        Window:SetTabButtonsStyle(current)
+    end
+})
+
+NewAPIRight:AddSlider({
+    Name = "Tab Corner Radius",
+    Min = 0,
+    Max = 24,
+    Increment = 1,
+    Default = 6,
+    input = true,
+    Callback = function(value)
+        local current = Window:GetTabButtonsStyle()
+        current.CornerRadius = value
+        Window:SetTabButtonsStyle(current)
+    end
+})
+
+NewAPIRight:AddToggle({
+    Name = "Selected Indicator",
+    Icon = "panel-left",
+    Default = true,
+    Checkbox = true,
+    Callback = function(value)
+        local current = Window:GetTabButtonsStyle()
+        current.Indicator = value
+        Window:SetTabButtonsStyle(current)
+    end
+})
+
+NewAPIRight:AddParagraph({
+    Name = "Parameters",
+    Content = "Window: SaveUIPosition, SaveUISize, TabButtonsStyle. Toggle: Icon, IconSize. KeyPicker: MenuVisible. Setup.Welcome: Width, Height, Greeting, ShowAvatar, ShowDisplayName, AvatarSize, GreetingWidth, NameSuffix, PageNames, NextSuffix, BackPrefix."
+})
+
+local EveryElementNames = Library:GetElementParameterNames()
+local EveryElementParameterViewer
+
+NewAPIRight:AddDropdown({
+    Name = "Every Element Parameters",
+    Options = EveryElementNames,
+    Default = EveryElementNames[1],
+    Search = true,
+    Callback = function(value)
+        if EveryElementParameterViewer then
+            EveryElementParameterViewer:SetContent(Library:FormatElementParameters(value))
+            EveryElementParameterViewer:SetTitle(tostring(value) .. " Parameters")
+        end
+    end
+})
+
+EveryElementParameterViewer = NewAPIRight:AddCode({
+    Name = tostring(EveryElementNames[1] or "Element") .. " Parameters",
+    Language = "text",
+    Height = 250,
+    Content = Library:FormatElementParameters(EveryElementNames[1])
+})
+
+local ExampleToggleParameterObject = NewAPILeft:AddToggle({
+    Name = "Element object parameter API",
+    Icon = "list-tree",
+    IconSize = 18,
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        print("Parameter object example:", value)
+    end
+})
+
+local ExampleToggleParameters = ExampleToggleParameterObject:GetParameters()
+
+
+NewAPILeft:AddParagraph({
+    Name = "Every element",
+    Content = "Every Add* element now has Library:GetElementParameters(name), Library:GetAllElementParameters(), Library:GetElementParameterNames(), Library:FormatElementParameters(name), and each returned element object exposes :GetParameters() plus .Parameters."
+})
+
+NewAPILeft:AddButton({
+    Name = "Open Custom Live Theme",
+    Icon = "palette",
+    Callback = function()
+        if Library.OpenCustomLiveColorMediaMenu then
+            Library:OpenCustomLiveColorMediaMenu()
+        end
+    end
+})
+
+NewAPILeft:AddParagraph({
+    Name = "Custom Live Theme",
+    Content = "Choose Custom from any Live Color Theme dropdown to open the media editor. Paste an image, GIF/Tenor, MP4/WebM/MOV, or Roblox image. Saved themes persist when file APIs are available. Sync is on by default and enables Transparent UI when applied."
+})
+
+Window:newmaketabtop({
+    Name = "Config Reference",
+    MultiTab = true,
+    Effects = true,
+    flames = false
+})
+
+local ElementConfigReference = {
+    ["newmaketabtop"] = {Category = "Navigation & Layout", PropertyCount = 5, Code = [==[Window:newmaketabtop({
+    Name = "Reference", MultiTab = true, OnSelect = function() print("selected") end, AutoSelect = false, SelectOnCreate = false
+})]==]},
+    ["MakeTab"] = {Category = "Navigation & Layout", PropertyCount = 28, Code = [==[local Example = Window:MakeTab({
+    Admin = false,
+    AdminOnly = false,
+    Name = "MakeTab Example",
+    Title = "MakeTab Example",
+    Icon = "star",
+    Group = nil,
+    SideGroup = nil,
+    GroupIcon = nil,
+    GroupImage = nil,
+    PremiumOnly = false,
+    FeedbackWebhook = nil,
+    DiscordInvite = "QEW8ap3MuV",
+    Changelog = {{Version="6.0.1", Changes={{Type="Added", Text="Example"}}}},
+    Cooldown = 1,
+    KeepHomeName = false,
+    ParentTopTab = nil,
+    TopTab = nil,
+    GroupLayoutOrder = 1,
+    GroupOrder = 1,
+    LayoutOrder = 1,
+    Color = Color3.fromRGB(90, 140, 255),
+    TabColor = nil,
+    AutoHome = false,
+    OnSelect = function() print("tab selected") end,
+    AutoSelect = false,
+    SelectOnCreate = false,
+    ChangelogTabName = nil,
+    ChangelogIcon = nil
+})]==]},
+    ["MakeAdminTab"] = {Category = "Navigation & Layout", PropertyCount = 39, Code = [==[local Example = Window:MakeAdminTab({
+    Password = "change-this-password",
+    AdminPassword = "change-this-password",
+    Admin = false,
+    AdminOnly = false,
+    Name = "MakeAdminTab Example",
+    Title = "MakeAdminTab Example",
+    Icon = "star",
+    AutoSelect = false,
+    SelectOnCreate = false,
+    OnSelect = function(...) print(...) end,
+    RememberKey = nil,
+    Remember = true,
+    PromptTitle = "PromptTitle example",
+    PromptDescription = "PromptDescription example",
+    ValidatePassword = function(password) return password == "change-this-password" end,
+    IncorrectText = "IncorrectText example",
+    PromptWidth = nil,
+    RememberText = "RememberText example",
+    LockColor = Color3.fromRGB(90, 140, 255),
+    Group = nil,
+    SideGroup = nil,
+    GroupIcon = nil,
+    GroupImage = nil,
+    PremiumOnly = false,
+    FeedbackWebhook = nil,
+    DiscordInvite = "QEW8ap3MuV",
+    Changelog = nil,
+    Cooldown = 1,
+    KeepHomeName = false,
+    ParentTopTab = nil,
+    TopTab = nil,
+    GroupLayoutOrder = 1,
+    GroupOrder = 1,
+    LayoutOrder = 1,
+    Color = Color3.fromRGB(90, 140, 255),
+    TabColor = nil,
+    AutoHome = false,
+    ChangelogTabName = nil,
+    ChangelogIcon = nil
+})]==]},
+    ["AddLeftGroupbox"] = {Category = "Navigation & Layout", PropertyCount = 22, Code = [==[local Group = Target:AddLeftGroupbox({
+    Name = "Left Group",
+    Title = "Left Group",
+    Icon = "box",
+    Image = "box",
+    Pin = true,
+    Pinnable = true,
+    Popout = true,
+    PopOut = true,
+    Detachable = true,
+    Dockable = true,
+    DockSnapDistance = 110,
+    DockHoldTime = 0.08,
+    DockDragThreshold = 8,
+    DockClampToScreen = true,
+    Pinned = false,
+    PopoutHeight = 480,
+    Height = 480,
+    PopoutWidth = 360,
+    Width = 360,
+    PopoutPosition = UDim2.new(1,-380,0,82),
+    Detached = false,
+    StartDetached = false
+})]==]},
+    ["AddRightGroupbox"] = {Category = "Navigation & Layout", PropertyCount = 22, Code = [==[local Group = Target:AddRightGroupbox({
+    Name = "Right Group",
+    Title = "Right Group",
+    Icon = "box",
+    Pin = true, Pinnable = true, Popout = true, PopOut = true, Detachable = true,
+    Dockable = true, DockResizable = true, DockSnapDistance = 110, DockHoldTime = 0.08, DockDragThreshold = 8, DockClampToScreen = true, DockWidth = 360, DockHeight = 420, DockMinWidth = 220, DockMinHeight = 220, DockMaxWidth = 760, DockMaxHeight = 720,
+    Pinned = false, PopoutHeight = 480, Height = 480, PopoutWidth = 360, Width = 360,
+    PopoutPosition = UDim2.new(1,-380,0,82), Detached = false, StartDetached = false
+})]==]},
+    ["AddLeftTabbox"] = {Category = "Navigation & Layout", PropertyCount = 7, Code = [==[local Tabbox = Target:AddLeftTabbox({
+    Name = "Left Tabbox", Title = "Left Tabbox", TabSize = 42, ButtonHeight = 42, Height = 260, Icon = "layout-grid", IconOnly = false
+})
+local Page = Tabbox:AddTab({Name="Main", Icon="home"})]==]},
+    ["AddRightTabbox"] = {Category = "Navigation & Layout", PropertyCount = 7, Code = [==[local Tabbox = Target:AddRightTabbox({
+    Name = "Right Tabbox", Title = "Right Tabbox", TabSize = 42, ButtonHeight = 42, Height = 260, Icon = "layout-grid", IconOnly = false
+})
+local Page = Tabbox:AddTab({Name="Main", Icon="home"})]==]},
+    ["AddMiniTab"] = {Category = "Navigation & Layout", PropertyCount = 16, Code = [==[local Example = Target:AddMiniTab({
+    Name = "AddMiniTab Example",
+    Title = "AddMiniTab Example",
+    Tabs = nil,
+    Items = {},
+    Position = UDim2.new(1, -380, 0, 82),
+    Side = nil,
+    Color = Color3.fromRGB(90, 140, 255),
+    IconSize = 18,
+    CellSize = nil,
+    Gap = 1,
+    Height = 240,
+    ShowText = nil,
+    Width = 320,
+    Fill = false,
+    LayoutOrder = 1,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddSection"] = {Category = "Navigation & Layout", PropertyCount = 10, Code = [==[local Example = Target:AddSection({
+    Name = "AddSection Example",
+    Title = "AddSection Example",
+    Subtitle = "Subtitle example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Collapsible = false,
+    Open = false,
+    DefaultOpen = false,
+    Color = Color3.fromRGB(90, 140, 255),
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddBoxSection"] = {Category = "Navigation & Layout", PropertyCount = 5, Code = [==[local Example = Target:AddBoxSection({
+    Name = "AddBoxSection Example",
+    Title = "AddBoxSection Example",
+    Content = "Content example",
+    Description = "Description example",
+    DefaultOpen = false
+})]==]},
+    ["AddDependencyBox"] = {Category = "Navigation & Layout", PropertyCount = 12, Code = [==[local Example = Target:AddDependencyBox({
+    BackgroundTransparency = 0.15,
+    Name = "AddDependencyBox Example",
+    Dependencies = nil,
+    Dependency = nil,
+    Element = nil,
+    Value = 1,
+    Equals = nil,
+    Operator = nil,
+    Predicate = function(...) print(...) end,
+    Invert = nil,
+    Mode = "Bytebeat",
+    DefaultVisible = nil
+})]==]},
+    ["AddDropdownPanel"] = {Category = "Navigation & Layout", PropertyCount = 153, Code = [==[local Example = Target:AddDropdownPanel({
+    Name = "AddDropdownPanel Example",
+    Title = "AddDropdownPanel Example",
+    Open = false,
+    Id = nil,
+    Size = 1,
+    Width = 320,
+    Height = 240,
+    Position = UDim2.new(1, -380, 0, 82),
+    Pin = false,
+    Pinnable = false,
+    Icon = "star",
+    Pinned = false,
+    Detached = false,
+    DockHeight = 236,
+    Popout = false,
+    PopOut = false,
+    Detachable = false,
+    PopoutPosition = UDim2.new(1, -380, 0, 82),
+    LayoutOrder = 1,
+    StartDetached = false,
+    Volume = 0.5,
+    Pitch = 1,
+    Loop = false,
+    AutoPlay = false,
+    AutoPlayNext = nil,
+    Preset = nil,
+    Default = 1,
+    Playlist = {},
+    Mode = "Bytebeat",
+    Hz = 22050,
+    Seconds = 30,
+    Duration = 5,
+    Speed = 1,
+    messages = nil,
+    Discord = nil,
+    DiscordLink = nil,
+    Min = 0,
+    Max = 100,
+    Color = Color3.fromRGB(90, 140, 255),
+    Callback = function(...) print(...) end,
+    Format = "{value}/{max}",
+    Unit = nil,
+    NoInitCallback = nil,
+    OffImage = nil,
+    IsOn = nil,
+    OnImage = nil,
+    IsToggle = nil,
+    Admin = false,
+    AdminOnly = false,
+    AutoSelect = false,
+    SelectOnCreate = false,
+    OnSelect = function(...) print(...) end,
+    RememberKey = nil,
+    Remember = true,
+    PromptTitle = "PromptTitle example",
+    PromptDescription = "PromptDescription example",
+    ValidatePassword = function(...) print(...) end,
+    IncorrectText = "IncorrectText example",
+    PromptWidth = nil,
+    RememberText = "RememberText example",
+    LockColor = Color3.fromRGB(90, 140, 255),
+    OverlayColor = nil,
+    Description = "Description example",
+    OnClose = nil,
+    OnDismiss = nil,
+    AutoDismiss = nil,
+    FooterButtons = nil,
+    OutsideClickDismiss = nil,
+    Save = false,
+    Validate = nil,
+    Validator = nil,
+    Check = nil,
+    Api = nil,
+    Keys = nil,
+    Tier = nil,
+    Subtitle = "Subtitle example",
+    FieldLabel = nil,
+    Placeholder = "Type here...",
+    ButtonText = "ButtonText example",
+    GetKeyText = nil,
+    BenefitsText = nil,
+    Note = "Note example",
+    CloseOnOutside = false,
+    OnGetKey = nil,
+    GetKeyUrl = nil,
+    KeyUrl = nil,
+    OnBenefits = nil,
+    Benefits = nil,
+    BenefitsTitle = nil,
+    Text = "Text example",
+    Close = nil,
+    Content = "Content example",
+    Image = "rbxassetid://8834748103",
+    Time = 4,
+    URLBackgroundEnabled = nil,
+    LiveColorTheme = nil,
+    LiveColorBackground = nil,
+    LiveColorThemeImages = nil,
+    LiveColorElementBackground = nil,
+    LiveColorSpeed = nil,
+    LiveColorFPS = nil,
+    discordauthautostart = nil,
+    BuiltInTabs = nil,
+    NativeTabs = nil,
+    UtilityTabs = nil,
+    Security = nil,
+    FastLoad = nil,
+    AutoInit = nil,
+    PerformanceMode = nil,
+    ReduceLag = nil,
+    LoadQuietTime = nil,
+    MinIntroTime = nil,
+    FastLoadDelay = nil,
+    IntroEnabled = nil,
+    IntroIcon = nil,
+    IntroText = nil,
+    IntroSubtitle = nil,
+    SubName = nil,
+    IntroAccentColor = nil,
+    IntroDuration = nil,
+    LoadingProgress = nil,
+    LoadingTitle = nil,
+    LoadingTasks = nil,
+    Modules = nil,
+    KeybindPanel = nil,
+    KeybindList = nil,
+    ControlPanel = nil,
+    QuickMenuGap = nil,
+    PrivateTabs = nil,
+    privateTabs = nil,
+    SidebarTab = nil,
+    SidebarTabMenu = nil,
+    SideTabsSeparated = nil,
+    SeparatedSidebar = nil,
+    SidebarWidth = nil,
+    SidebarCornerRadius = nil,
+    TabListGap = nil,
+    TabListLogo = nil,
+    SidebarLogo = nil,
+    SidebarBranding = nil,
+    LogoAboveTabs = nil,
+    ConfigFolder = nil,
+    NewUICornerRadius = nil,
+    CornerRadius = 1,
+    SidebarCollapsedWidth = nil,
+    ShowTabInfo = nil,
+    Desc = "Desc example",
+    Appearance = nil,
+    DecorationsEnabled = nil,
+    DecorationStyle = nil,
+    WindowDesignsEnabled = nil,
+    WindowDesignStyle = nil,
+    DecorationLink = nil
+})]==]},
+    ["AddLeftSidebarMenu"] = {Category = "Navigation & Layout", PropertyCount = 19, Code = [==[local Example = Target:AddLeftSidebarMenu({
+    MinWidth = 1,
+    MinHeight = 1,
+    MaxWidth = 1,
+    MaxHeight = 1,
+    Width = 320,
+    Height = 240,
+    Resizable = true,
+    Name = "AddLeftSidebarMenu Example",
+    Title = "AddLeftSidebarMenu Example",
+    Side = nil,
+    Gap = 1,
+    DimBackground = false,
+    CloseOnOutside = false,
+    Transparency = 0.15,
+    CornerRadius = 1,
+    Icon = "star",
+    MatchWindowHeight = false,
+    Open = false,
+    DefaultOpen = false
+})]==]},
+    ["AddRightSidebarMenu"] = {Category = "Navigation & Layout", PropertyCount = 19, Code = [==[local Example = Target:AddRightSidebarMenu({
+    MinWidth = 1,
+    MinHeight = 1,
+    MaxWidth = 1,
+    MaxHeight = 1,
+    Width = 320,
+    Height = 240,
+    Resizable = true,
+    Name = "AddRightSidebarMenu Example",
+    Title = "AddRightSidebarMenu Example",
+    Side = nil,
+    Gap = 1,
+    DimBackground = false,
+    CloseOnOutside = false,
+    Transparency = 0.15,
+    CornerRadius = 1,
+    Icon = "star",
+    MatchWindowHeight = false,
+    Open = false,
+    DefaultOpen = false
+})]==]},
+    ["AddDivider"] = {Category = "Navigation & Layout", PropertyCount = 1, Code = [==[local Example = Target:AddDivider({
+    Name = "AddDivider Example"
+})]==]},
+    ["AddSpacer"] = {Category = "Navigation & Layout", PropertyCount = 2, Code = [==[Target:AddSpacer({Size = 12, Height = 12})]==]},
+    ["AddSpace"] = {Category = "Navigation & Layout", PropertyCount = 0, Code = [==[Target:AddSpace(12)]==]},
+    ["SetTabButtonsStyle"] = {Category = "Navigation & Layout", PropertyCount = 6, Code = [==[Window:SetTabButtonsStyle({
+    Gap = 4,
+    Padding = 8,
+    CornerRadius = 6,
+    Indicator = true,
+    IndicatorWidth = 2,
+    IndicatorHeight = 20
+})
+local Parameters = Window:GetTabButtonsStyleParameters()]==]},
+    ["AddButton"] = {Category = "Controls & Inputs", PropertyCount = 6, Code = [==[local Example = Target:AddButton({
+    Name = "AddButton Example",
+    Title = "AddButton Example",
+    Callback = function(...) print(...) end,
+    Icon = "star",
+    Locked = false,
+    Image = "rbxassetid://8834748103"
+})]==]},
+    ["CreateCheckbox"] = {Category = "Controls & Inputs", PropertyCount = 14, Code = [==[local Example = Target:CreateCheckbox({
+    Name = "CreateCheckbox Example",
+    Text = "Text example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Content = "Content example",
+    Default = 1,
+    CurrentValue = 1,
+    Value = 1,
+    Color = Color3.fromRGB(90, 140, 255),
+    Callback = function(...) print(...) end,
+    Locked = false,
+    Disabled = false,
+    Save = false,
+    Flag = "ExampleFlag"
+})]==]},
+    ["AddToggle"] = {Category = "Controls & Inputs", PropertyCount = 17, Code = [==[local Example = Target:AddToggle({
+    Name = "AddToggle Example",
+    Title = "AddToggle Example",
+    Icon = "star",
+    IconSize = 18,
+    Default = true,
+    Callback = function(...) print(...) end,
+    Color = Color3.fromRGB(90, 140, 255),
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    Image = "rbxassetid://8834748103",
+    Checkbox = false,
+    ImageIcon = nil,
+    ImageId = "rbxassetid://8834748103",
+    Binded = false,
+    DefaultBind = "Q",
+    Settings = false
+})]==]},
+    ["AddSmoothToggle"] = {Category = "Controls & Inputs", PropertyCount = 15, Code = [==[local Example = Target:AddSmoothToggle({
+    Name = "AddSmoothToggle Example",
+    Title = "AddSmoothToggle Example",
+    Description = "Description example",
+    Content = "Content example",
+    Default = 1,
+    Callback = function(...) print(...) end,
+    Color = Color3.fromRGB(90, 140, 255),
+    LiveColor = nil,
+    livecolor = nil,
+    Save = false,
+    LiveColorTheme = nil,
+    LiveColors = nil,
+    LiveColorSpeed = nil,
+    Locked = false,
+    Flag = "ExampleFlag"
+})]==]},
+    ["AddSlider"] = {Category = "Controls & Inputs", PropertyCount = 22, Code = [==[local Example = Target:AddSlider({
+    Name = "AddSlider Example",
+    Title = "AddSlider Example",
+    Min = 0,
+    Max = 100,
+    Increment = 1,
+    Default = 1,
+    Callback = function(...) print(...) end,
+    ValueName = "%",
+    Color = Color3.fromRGB(90, 140, 255),
+    Color2 = Color3.fromRGB(90, 140, 255),
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    input = false,
+    Input = false,
+    TextBox = false,
+    Smooth = false,
+    Description = "Description example",
+    Content = "Content example",
+    ParseValue = nil,
+    DisplayFormattedInput = false,
+    FormatValue = "{value}/{max}"
+})]==]},
+    ["AddDropdown"] = {Category = "Controls & Inputs", PropertyCount = 30, Code = [==[local Example = Target:AddDropdown({
+    Name = "AddDropdown Example",
+    Title = "AddDropdown Example",
+    Options = {"Alpha", "Beta", "Gamma"},
+    Default = "Alpha",
+    Callback = function(...) print(...) end,
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    Image = "rbxassetid://8834748103",
+    Search = true,
+    Players = false,
+    players = false,
+    player = false,
+    Whitelist = false,
+    whitelist = false,
+    PVP = false,
+    pvp = false,
+    AdvancedDrop = false,
+    advanceddrop = false,
+    Advanced = false,
+    FontPreview = false,
+    PreviewFonts = false,
+    MultiSelect = false,
+    Fill = false,
+    FillColor = Color3.fromRGB(90, 140, 255),
+    FillTransparency = 0.15,
+    Outline = true,
+    OutlineColor = Color3.fromRGB(90, 140, 255),
+    MaxElements = 6,
+    MaxVisible = 6
+})]==]},
+    ["AddBind"] = {Category = "Controls & Inputs", PropertyCount = 10, Code = [==[local Example = Target:AddBind({
+    Name = "AddBind Example",
+    Default = Enum.KeyCode.K,
+    Hold = false,
+    MenuVisible = true,
+    Callback = function(...) print(...) end,
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    Image = "rbxassetid://8834748103",
+    UIBind = false
+})
+Example:SetMenuVisibility(false)]==]},
+    ["AddKeyPicker"] = {Category = "Controls & Inputs", PropertyCount = 10, Code = [==[local KeyPicker = Target:AddKeyPicker({
+    Name = "KeyPicker Example",
+    Default = Enum.KeyCode.K,
+    Hold = false,
+    MenuVisible = true,
+    Callback = function(key) print(key) end,
+    Flag = "ExampleKeyPicker",
+    Save = false,
+    Locked = false,
+    Image = "rbxassetid://8834748103",
+    UIBind = false
+})
+KeyPicker:SetMenuVisibility(true)]==]},
+    ["AddTextbox"] = {Category = "Controls & Inputs", PropertyCount = 16, Code = [==[local Example = Target:AddTextbox({
+    Name = "AddTextbox Example",
+    Title = "AddTextbox Example",
+    Default = 1,
+    Ai = false,
+    Gui = false,
+    Placeholder = "Type here...",
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    Callback = function(...) print(...) end,
+    Height = 240,
+    OnResponse = function(...) print(...) end,
+    PromptTransform = function(...) print(...) end,
+    Bars = nil,
+    LayoutOrder = 1,
+    Enabled = nil
+})]==]},
+    ["AddTextArea"] = {Category = "Controls & Inputs", PropertyCount = 8, Code = [==[local Example = Target:AddTextArea({
+    Name = "AddTextArea Example",
+    Title = "AddTextArea Example",
+    Content = "Content example",
+    Description = "Description example",
+    Default = 1,
+    Placeholder = "Type here...",
+    Height = 240,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddColorpicker"] = {Category = "Controls & Inputs", PropertyCount = 14, Code = [==[local Example = Target:AddColorpicker({
+    Name = "AddColorpicker Example",
+    Default = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255,80,120)), ColorSequenceKeypoint.new(1, Color3.fromRGB(80,170,255))}),
+    Callback = function(...) print(...) end,
+    Flag = "ExampleFlag",
+    Save = false,
+    Locked = false,
+    Image = "rbxassetid://8834748103",
+    Gradient = true,
+    Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0), NumberSequenceKeypoint.new(1,0.35)}),
+    Alpha = 0.15,
+    LiveDelay = nil,
+    ThemePicker = false,
+    Rotation = nil,
+    Live = false
+})]==]},
+    ["AddRadioGroup"] = {Category = "Controls & Inputs", PropertyCount = 8, Code = [==[local Example = Target:AddRadioGroup({
+    Name = "AddRadioGroup Example",
+    Title = "AddRadioGroup Example",
+    Options = {"One", "Two", "Three"},
+    Values = {"One", "Two", "Three"},
+    Callback = function(...) print(...) end,
+    Save = false,
+    Default = 1,
+    Flag = "ExampleFlag"
+})]==]},
+    ["AddSegmentedControl"] = {Category = "Controls & Inputs", PropertyCount = 8, Code = [==[local Example = Target:AddSegmentedControl({
+    Name = "AddSegmentedControl Example",
+    Title = "AddSegmentedControl Example",
+    Options = {"Clean", "Glass", "Debug"},
+    Values = {"One", "Two", "Three"},
+    Callback = function(...) print(...) end,
+    Save = false,
+    Default = 1,
+    Flag = "ExampleFlag"
+})]==]},
+    ["AddRating"] = {Category = "Controls & Inputs", PropertyCount = 10, Code = [==[local Example = Target:AddRating({
+    Name = "AddRating Example",
+    Title = "AddRating Example",
+    Max = 100,
+    Callback = function(...) print(...) end,
+    Color = Color3.fromRGB(90, 140, 255),
+    Save = false,
+    AllowClear = false,
+    Default = 1,
+    Value = 1,
+    Flag = "ExampleFlag"
+})]==]},
+    ["AddActionRow"] = {Category = "Controls & Inputs", PropertyCount = 4, Code = [==[local Example = Target:AddActionRow({
+    Name = "AddActionRow Example",
+    Buttons = {{Name="Run", Callback=function() print("run") end}, {Name="Reset", Callback=function() print("reset") end}},
+    Outline = true,
+    OutlineColor = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddMiniButtons"] = {Category = "Controls & Inputs", PropertyCount = 2, Code = [==[local Example = Target:AddMiniButtons({
+    Name = "AddMiniButtons Example",
+    Buttons = {{Name="Start", Callback=function() end}, {Name="Stop", Callback=function() end}}
+})]==]},
+    ["AddCommandBar"] = {Category = "Controls & Inputs", PropertyCount = 5, Code = [==[local Example = Target:AddCommandBar({
+    Name = "AddCommandBar Example",
+    Placeholder = "Type here...",
+    ButtonText = "ButtonText example",
+    Default = 1,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddStepper"] = {Category = "Controls & Inputs", PropertyCount = 6, Code = [==[local Example = Target:AddStepper({
+    Name = "AddStepper Example",
+    Min = 0,
+    Max = 100,
+    Increment = 1,
+    Default = 1,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddCooldownButton"] = {Category = "Controls & Inputs", PropertyCount = 13, Code = [==[local Example = Target:AddCooldownButton({
+    Name = "AddCooldownButton Example",
+    Description = "Description example",
+    Desc = "Desc example",
+    ButtonText = "ButtonText example",
+    ActionText = "ActionText example",
+    Duration = 5,
+    Cooldown = 1,
+    Callback = function(...) print(...) end,
+    Color = Color3.fromRGB(90, 140, 255),
+    CooldownText = "CooldownText example",
+    Completed = function(...) print(...) end,
+    StartOnClick = nil,
+    AutoStart = false
+})]==]},
+    ["AddQuickToggleRow"] = {Category = "Controls & Inputs", PropertyCount = 5, Code = [==[local Example = Target:AddQuickToggleRow({
+    Name = "AddQuickToggleRow Example",
+    Options = {"Clean", "Glass", "Debug"},
+    Items = {},
+    Callback = function(...) print(...) end,
+    Default = 1
+})]==]},
+    ["CreateCopyButton"] = {Category = "Controls & Inputs", PropertyCount = 13, Code = [==[local Example = Target:CreateCopyButton({
+    Name = "CreateCopyButton Example",
+    Title = "CreateCopyButton Example",
+    Description = "Description example",
+    Desc = "Desc example",
+    ContentDescription = nil,
+    Value = 1,
+    TextToCopy = nil,
+    Content = "Content example",
+    Text = "Text example",
+    Icon = "star",
+    Callback = function(...) print(...) end,
+    Locked = false,
+    Disabled = false
+})]==]},
+    ["CreateFlipButton"] = {Category = "Controls & Inputs", PropertyCount = 9, Code = [==[local Example = Target:CreateFlipButton({
+    Front = nil,
+    Name = "CreateFlipButton Example",
+    Text = "Text example",
+    Back = nil,
+    SecondText = nil,
+    BackText = nil,
+    Callback = function(...) print(...) end,
+    Locked = false,
+    Disabled = false
+})]==]},
+    ["CreateRippleButton"] = {Category = "Controls & Inputs", PropertyCount = 8, Code = [==[local Example = Target:CreateRippleButton({
+    Name = "CreateRippleButton Example",
+    Text = "Text example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Callback = function(...) print(...) end,
+    RippleColor = Color3.fromRGB(90, 140, 255),
+    Locked = false,
+    Disabled = false
+})]==]},
+    ["AddLabel"] = {Category = "Text, Status & Lists", PropertyCount = 16, Code = [==[local Example = Target:AddLabel({
+    RichText = true,
+    IsRich = false,
+    Size = 1,
+    TextSize = 15,
+    DoesWrap = nil,
+    Wrap = nil,
+    Content = "Content example",
+    Text = "Text example",
+    Name = "AddLabel Example",
+    Visible = false,
+    Icon = "star",
+    Image = "rbxassetid://8834748103",
+    Font = "Gotham",
+    BackgroundTransparency = 0.15,
+    TextXAlignment = nil,
+    TextYAlignment = nil
+})]==]},
+    ["AddParagraph"] = {Category = "Text, Status & Lists", PropertyCount = 43, Code = [==[local Example = Target:AddParagraph({
+    Name = "AddParagraph Example",
+    Title = "AddParagraph Example",
+    Content = "Content example",
+    Desc = "Desc example",
+    RichText = true,
+    IsRich = false,
+    NoCard = false,
+    nocard = nil,
+    Card = nil,
+    card = nil,
+    Style = nil,
+    image = false,
+    Image = "rbxassetid://8834748103",
+    ImageId = "rbxassetid://8834748103",
+    UserProfile = game.Players.LocalPlayer.UserId,
+    ImageSize = 64,
+    custom = false,
+    texticon = false,
+    name = nil,
+    color = nil,
+    Thumbnail = "rbxassetid://8834748103",
+    ThumbnailSize = 120,
+    discordpar = "QEW8ap3MuV",
+    DiscordPar = "QEW8ap3MuV",
+    DiscordInvite = "QEW8ap3MuV",
+    OpenMode = "Browser",
+    DiscordOpenMode = "Browser",
+    RememberOpenMode = true,
+    DontAskAgain = false,
+    Color = Color3.fromRGB(90, 140, 255),
+    opena = false,
+    OpenA = false,
+    Openable = false,
+    Collapsible = false,
+    MaxHeight = 1,
+    ImagePosition = nil,
+    ImageCorner = nil,
+    ImageTransparency = 0.15,
+    ThumbnailPosition = nil,
+    TextOffset = nil,
+    IsButtons = nil,
+    Hover = nil,
+    Locked = false
+})]==]},
+    ["AddCode"] = {Category = "Text, Status & Lists", PropertyCount = 8, Code = [==[local Example = Target:AddCode({
+    Name = "AddCode Example",
+    Title = "AddCode Example",
+    Content = "Content example",
+    Desc = "Desc example",
+    Code = nil,
+    Language = nil,
+    Height = 240,
+    CodeHeight = nil
+})]==]},
+    ["AddLog"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddLog({
+    DoesWrap = nil,
+    RichText = true,
+    IsRich = false,
+    Size = 1
+})]==]},
+    ["AddCopyBox"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddCopyBox({
+    Name = "AddCopyBox Example",
+    Content = "Content example",
+    Text = "Text example",
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddBanner"] = {Category = "Text, Status & Lists", PropertyCount = 13, Code = [==[local Example = Target:AddBanner({
+    Name = "AddBanner Example",
+    Title = "AddBanner Example",
+    Content = "Content example",
+    Description = "Description example",
+    Height = 240,
+    ImageTransparency = 0.15,
+    Image = "rbxassetid://8834748103",
+    BackgroundImage = "rbxassetid://8834748103",
+    ShadeTransparency = 0.15,
+    Icon = "star",
+    ActionCallback = function(...) print(...) end,
+    Callback = function(...) print(...) end,
+    Actions = {}
+})]==]},
+    ["AddNotice"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddNotice({
+    Name = "AddNotice Example",
+    Content = "Content example",
+    Text = "Text example",
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddInfoCard"] = {Category = "Text, Status & Lists", PropertyCount = 6, Code = [==[local Example = Target:AddInfoCard({
+    Name = "AddInfoCard Example",
+    Content = "Content example",
+    Description = "Description example",
+    Icon = "star",
+    Image = "rbxassetid://8834748103",
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddShortcutHint"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:AddShortcutHint({
+    Name = "AddShortcutHint Example",
+    Key = false,
+    Bind = nil,
+    Content = "Content example",
+    Description = "Description example"
+})]==]},
+    ["AddTagCloud"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:AddTagCloud({
+    Name = "AddTagCloud Example",
+    Tags = {{Text="UI", Color=Color3.fromRGB(90,140,255)}, {Text="Example"}},
+    Items = {},
+    Height = 240,
+    TagWidth = 96
+})]==]},
+    ["AddPillList"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:AddPillList({
+    Name = "AddPillList Example",
+    Items = {{Text="Ready", Color="Green"}, {Text="Beta", Color="Purple"}},
+    Tags = {},
+    Height = 240,
+    Width = 320
+})]==]},
+    ["AddBadge"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddBadge({
+    Name = "AddBadge Example",
+    Text = "Text example",
+    Content = "Content example",
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddStatusDot"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddStatusDot({
+    Name = "AddStatusDot Example",
+    Content = "Content example",
+    Description = "Description example",
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddStatusBox"] = {Category = "Text, Status & Lists", PropertyCount = 12, Code = [==[local Example = Target:AddStatusBox({
+    Status = nil,
+    Variant = nil,
+    Kind = nil,
+    Type = nil,
+    Icon = "star",
+    Title = "AddStatusBox Example",
+    Name = "AddStatusBox Example",
+    Text = "Text example",
+    Content = "Content example",
+    Description = "Description example",
+    Message = nil,
+    Height = 240
+})]==]},
+    ["AddKeyValueList"] = {Category = "Text, Status & Lists", PropertyCount = 2, Code = [==[local Example = Target:AddKeyValueList({
+    Name = "AddKeyValueList Example",
+    Items = {{Key="Status", Value="Ready"}, {Key="Version", Value="6.0.1"}}
+})]==]},
+    ["CreateFAQ"] = {Category = "Text, Status & Lists", PropertyCount = 13, Code = [==[local Example = Target:CreateFAQ({
+    Name = "CreateFAQ Example",
+    Items = {{Question="Does it work?", Answer="Yes."}, {Question="Mobile?", Answer="Supported."}},
+    Exclusive = false,
+    AllowMultiple = false,
+    AnimationTime = 1,
+    QuestionSize = nil,
+    AnswerSize = nil,
+    Gap = 1,
+    Callback = function(...) print(...) end,
+    RichText = true,
+    DefaultOpen = false,
+    OpenItem = nil,
+    OpenFirst = nil
+})]==]},
+    ["AddChecklist"] = {Category = "Text, Status & Lists", PropertyCount = 3, Code = [==[local Example = Target:AddChecklist({
+    Name = "AddChecklist Example",
+    Items = {{Text="Loaded", Checked=true}, {Text="Ready", Checked=false}},
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddTimeline"] = {Category = "Text, Status & Lists", PropertyCount = 4, Code = [==[local Example = Target:AddTimeline({
+    Name = "AddTimeline Example",
+    Items = {{Title="Boot", Description="Started", Time="Now", Color=Color3.fromRGB(73,230,133)}},
+    Logs = nil,
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddFilterList"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:AddFilterList({
+    Name = "AddFilterList Example",
+    Items = {{Name="Refresh", Description="Refresh data", Callback=function() end}, {Name="Copy", Callback=function() end}},
+    Placeholder = "Type here...",
+    Callback = function(...) print(...) end,
+    Height = 240
+})]==]},
+    ["AddToastAction"] = {Category = "Text, Status & Lists", PropertyCount = 9, Code = [==[local Example = Target:AddToastAction({
+    Name = "AddToastAction Example",
+    Content = "Content example",
+    Description = "Description example",
+    ButtonText = "ButtonText example",
+    Notification = nil,
+    Callback = function(...) print(...) end,
+    NotifyText = nil,
+    Image = "rbxassetid://8834748103",
+    Time = 4
+})]==]},
+    ["AddNotify"] = {Category = "Text, Status & Lists", PropertyCount = 13, Code = [==[local Example = Target:AddNotify({
+    Name = "AddNotify Example",
+    Content = "Content example",
+    Description = "Description example",
+    ButtonText = "ButtonText example",
+    Time = 4,
+    Seconds = 30,
+    NotifyName = "NotifyName example",
+    NotifyContent = "NotifyContent example",
+    Image = "rbxassetid://8834748103",
+    Icon = "star",
+    Pos = nil,
+    Buttons = {{Name="OK", Callback=function() end}},
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddChangelog"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:AddChangelog({
+    Name = "AddChangelog Example",
+    Content = "Content example",
+    Logs = {"Added full configuration reference", "Improved examples"},
+    Items = {},
+    Height = 240
+})]==]},
+    ["AddChangelogParagraph"] = {Category = "Text, Status & Lists", PropertyCount = 12, Code = [==[local Example = Target:AddChangelogParagraph({
+    Name = "AddChangelogParagraph Example",
+    Title = "AddChangelogParagraph Example",
+    Content = "Content example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Entries = {{Text="Added feature", Description="Example entry", Tag={Text="NEW", Color="Green"}}},
+    Logs = nil,
+    Items = {},
+    RichText = true,
+    Color = Color3.fromRGB(90, 140, 255),
+    Accent = nil,
+    Callback = function(...) print(...) end
+})]==]},
+    ["CreatePinnedList"] = {Category = "Text, Status & Lists", PropertyCount = 5, Code = [==[local Example = Target:CreatePinnedList({
+    Title = "CreatePinnedList Example",
+    Name = "CreatePinnedList Example",
+    Callback = function(...) print(...) end,
+    PinnedTitle = nil,
+    Items = {{Name="Auto Farm", Description="Example", Icon="sparkles", Pinned=true}, {Name="ESP", Icon="eye"}}
+})]==]},
+    ["CreateScrollHint"] = {Category = "Text, Status & Lists", PropertyCount = 7, Code = [==[local Example = Target:CreateScrollHint({
+    Text = "Text example",
+    Name = "CreateScrollHint Example",
+    Icon = "star",
+    Callback = function(...) print(...) end,
+    ScrollAmount = 220,
+    AutoScroll = false,
+    AutoStart = false
+})]==]},
+    ["CreateCursorTag"] = {Category = "Text, Status & Lists", PropertyCount = 11, Code = [==[local Example = Target:CreateCursorTag({
+    Text = "Text example",
+    Name = "CreateCursorTag Example",
+    Hint = "Hint example",
+    Callback = function(...) print(...) end,
+    Height = 240,
+    Color = Color3.fromRGB(90, 140, 255),
+    TextColor = Color3.fromRGB(90, 140, 255),
+    OffsetX = 16,
+    OffsetY = 16,
+    Icon = "star",
+    IconSize = 18
+})]==]},
+    ["CreateProgress"] = {Category = "Data & Charts", PropertyCount = 25, Code = [==[local Example = Target:CreateProgress({
+    Name = "CreateProgress Example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Min = 0,
+    Max = 100,
+    Value = 1,
+    CurrentValue = 1,
+    Progress = 1,
+    Default = 1,
+    Prefix = "$",
+    Suffix = "%",
+    ValueName = "%",
+    Decimals = 0,
+    Color = Color3.fromRGB(90, 140, 255),
+    Color2 = Color3.fromRGB(90, 140, 255),
+    TweenTime = 1,
+    AnimationTime = 1,
+    Callback = function(...) print(...) end,
+    Save = false,
+    Icon = "star",
+    Image = "rbxassetid://8834748103",
+    DownloadTime = 1,
+    Completed = function(...) print(...) end,
+    Flag = "ExampleFlag",
+    AutoStart = false
+})]==]},
+    ["CreateDownloadProgress"] = {Category = "Data & Charts", PropertyCount = 12, Code = [==[local Example = Target:CreateDownloadProgress({
+    Name = "CreateDownloadProgress Example",
+    Icon = "star",
+    Min = 0,
+    Max = 100,
+    Suffix = "%",
+    Description = "Description example",
+    Desc = "Desc example",
+    AutoStart = false,
+    Duration = 5,
+    DownloadTime = 1,
+    Completed = function(...) print(...) end,
+    Cancelled = function(...) print(...) end
+})]==]},
+    ["CreateProgressBar"] = {Category = "Data & Charts", PropertyCount = 17, Code = [==[local Example = Target:CreateProgressBar({
+    Name = "CreateProgressBar Example",
+    Text = "Text example",
+    Description = "Description example",
+    Desc = "Desc example",
+    Min = 0,
+    Max = 100,
+    Value = 1,
+    CurrentValue = 1,
+    Default = 1,
+    Prefix = "$",
+    Suffix = "%",
+    Color = Color3.fromRGB(90, 140, 255),
+    Color2 = Color3.fromRGB(90, 140, 255),
+    Callback = function(...) print(...) end,
+    Format = "{value}/{max}",
+    ValueText = "{value}/{max}",
+    TweenTime = 1
+})]==]},
+    ["AddProgressBar"] = {Category = "Data & Charts", PropertyCount = 8, Code = [==[local Example = Target:AddProgressBar({
+    Name = "AddProgressBar Example",
+    Value = 1,
+    Default = 1,
+    Min = 0,
+    Max = 100,
+    Color = Color3.fromRGB(90, 140, 255),
+    Description = "Description example",
+    Desc = "Desc example"
+})]==]},
+    ["AddStatCard"] = {Category = "Data & Charts", PropertyCount = 4, Code = [==[local Example = Target:AddStatCard({
+    Name = "AddStatCard Example",
+    Value = 1,
+    Description = "Description example",
+    Desc = "Desc example"
+})]==]},
+    ["AddRevenueCard"] = {Category = "Data & Charts", PropertyCount = 18, Code = [==[local Example = Target:AddRevenueCard({
+    Name = "AddRevenueCard Example",
+    Value = 1,
+    StartValue = nil,
+    Prefix = "$",
+    Suffix = "%",
+    Decimals = 0,
+    Change = "+12%",
+    Trend = "+12%",
+    Color = Color3.fromRGB(90, 140, 255),
+    Duration = 5,
+    Callback = function(...) print(...) end,
+    MiniStats = {{Name="Health", Value="100 HP", Change="+∞", Color=Color3.fromRGB(40,220,150)}},
+    Stats = {{Name="FPS", Value=144, Change="+12"}},
+    Items = {},
+    Image = "rbxassetid://8834748103",
+    Icon = "star",
+    Actions = {{Name="Copy Value", Icon="copy", Callback=function() end}},
+    Chart = {Points={10,18,14,24,30}}
+})]==]},
+    ["CreateChart"] = {Category = "Data & Charts", PropertyCount = 22, Code = [==[local Example = Target:CreateChart({
+    Name = "CreateChart Example",
+    Prefix = "$",
+    PointPrefix = 1,
+    Suffix = "%",
+    PointSuffix = 1,
+    Decimals = 0,
+    Color = Color3.fromRGB(90, 140, 255),
+    Filled = nil,
+    Smooth = false,
+    Dots = nil,
+    MaxPoints = 24,
+    Height = 240,
+    Duration = 5,
+    Callback = function(...) print(...) end,
+    PointCallback = function(...) print(...) end,
+    Points = {12, 18, 15, 27, 32},
+    Data = {12, 18, 15, 27, 32},
+    Image = "rbxassetid://8834748103",
+    Icon = "star",
+    LabelPrefix = nil,
+    Value = 1,
+    Animate = nil
+})]==]},
+    ["CreateStat"] = {Category = "Data & Charts", PropertyCount = 11, Code = [==[local Example = Target:CreateStat({
+    Name = "CreateStat Example",
+    Value = 1,
+    Delta = "+12%",
+    Change = "+12%",
+    Duration = 5,
+    Callback = function(...) print(...) end,
+    Prefix = "$",
+    Suffix = "%",
+    Decimals = 0,
+    Image = "rbxassetid://8834748103",
+    Icon = "star"
+})]==]},
+    ["CreateBarChart"] = {Category = "Data & Charts", PropertyCount = 15, Code = [==[local Example = Target:CreateBarChart({
+    Name = "CreateBarChart Example",
+    Prefix = "$",
+    Suffix = "%",
+    Decimals = 0,
+    Color = Color3.fromRGB(90, 140, 255),
+    Height = 240,
+    Duration = 5,
+    MaxBars = 12,
+    Callback = function(...) print(...) end,
+    PointCallback = function(...) print(...) end,
+    Points = {{Label="A", Value=20}, {Label="B", Value=45}, {Label="C", Value=30}},
+    Data = {{Label="A", Value=20}, {Label="B", Value=45}},
+    Image = "rbxassetid://8834748103",
+    Icon = "star",
+    Animate = nil
+})]==]},
+    ["CreateStackedChart"] = {Category = "Data & Charts", PropertyCount = 14, Code = [==[local Example = Target:CreateStackedChart({
+    Name = "CreateStackedChart Example",
+    Prefix = "$",
+    Suffix = "%",
+    Decimals = 0,
+    Duration = 5,
+    Callback = function(...) print(...) end,
+    Series = {{Name="A", Color=Color3.fromRGB(90,140,255)}, {Name="B", Color=Color3.fromRGB(73,230,133)}},
+    Rows = {{Label="One", Values={25,40}}, {Label="Two", Values={40,20}}},
+    Data = {{Label="One", Values={25,40}}},
+    Colors = {Color3.fromRGB(90,140,255), Color3.fromRGB(73,230,133)},
+    Height = 240,
+    Image = "rbxassetid://8834748103",
+    Icon = "star",
+    Animate = nil
+})]==]},
+    ["AddPlayerCount"] = {Category = "Data & Charts", PropertyCount = 2, Code = [==[local Example = Target:AddPlayerCount({
+    Name = "AddPlayerCount Example",
+    Description = "Description example"
+})]==]},
+    ["AddClock"] = {Category = "Data & Charts", PropertyCount = 3, Code = [==[local Example = Target:AddClock({
+    Name = "AddClock Example",
+    Format = "{value}/{max}",
+    Description = "Description example"
+})]==]},
+    ["AddFriends"] = {Category = "Data & Charts", PropertyCount = 9, Code = [==[local Example = Target:AddFriends({
+    Name = "AddFriends Example",
+    Color = Color3.fromRGB(90, 140, 255),
+    Height = 240,
+    ExpandedHeight = nil,
+    Columns = 8,
+    ViewAll = nil,
+    Callback = function(player) print(player.Name) end,
+    AutoRefresh = false,
+    RefreshRate = 2
+})]==]},
+    ["AddDataTable"] = {Category = "Data & Charts", PropertyCount = 9, Code = [==[local Example = Target:AddDataTable({
+    Name = "AddDataTable Example",
+    Columns = {{Name="Player", Key="Player", Width=1.7}, {Name="User ID", Key="UserId", Width=1}},
+    Rows = {{Player="Example", UserId=12345}},
+    Searchable = true,
+    Height = 240,
+    RowHeight = 34,
+    Callback = function(...) print(...) end,
+    SearchPlaceholder = "Type here...",
+    EmptyText = "EmptyText example"
+})]==]},
+    ["AddRuntimeMonitor"] = {Category = "Data & Charts", PropertyCount = 5, Code = [==[local Example = Target:AddRuntimeMonitor({
+    Name = "AddRuntimeMonitor Example",
+    Interval = 1,
+    AutoStart = false,
+    Metrics = {},
+    Provider = function(...) print(...) end
+})]==]},
+    ["AddMeterGroup"] = {Category = "Data & Charts", PropertyCount = 3, Code = [==[local Example = Target:AddMeterGroup({
+    Name = "AddMeterGroup Example",
+    Items = {{Name="CPU", Value=42, Max=100}, {Name="Memory", Value=68, Max=100}},
+    Color = Color3.fromRGB(90, 140, 255)
+})]==]},
+    ["AddCountdown"] = {Category = "Data & Charts", PropertyCount = 13, Code = [==[local Example = Target:AddCountdown({
+    Name = "AddCountdown Example",
+    Title = "AddCountdown Example",
+    Content = "Content example",
+    Description = "Description example",
+    Color = Color3.fromRGB(90, 140, 255),
+    ShowDays = false,
+    OnTick = function(...) print(...) end,
+    Callback = function(...) print(...) end,
+    OnFinished = function(...) print(...) end,
+    Duration = 5,
+    Seconds = 30,
+    Time = 4,
+    AutoStart = false
+})]==]},
+    ["AddCards"] = {Category = "Data & Charts", PropertyCount = 8, Code = [==[local Example = Target:AddCards({
+    Name = "AddCards Example",
+    Title = "AddCards Example",
+    Items = {{Title="Card A", Content="First card", Icon="star"}, {Title="Card B", Content="Second card", Icon="shield"}},
+    Cards = nil,
+    Columns = 8,
+    CardHeight = nil,
+    ShowTitle = false,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddProfileCards"] = {Category = "Data & Charts", PropertyCount = 10, Code = [==[local Example = Target:AddProfileCards({
+    Name = "AddProfileCards Example",
+    Title = "AddProfileCards Example",
+    Items = {{Name="Player", UserId=game.Players.LocalPlayer.UserId, Description="Local player"}},
+    Players = false,
+    Profiles = nil,
+    Columns = 8,
+    ShowTitle = false,
+    Callback = function(...) print(...) end,
+    LoadServer = false,
+    AutoRefresh = false
+})]==]},
+    ["AddLoadoutGroup"] = {Category = "Data & Charts", PropertyCount = 11, Code = [==[local Example = Target:AddLoadoutGroup({
+    Name = "AddLoadoutGroup Example",
+    Title = "AddLoadoutGroup Example",
+    Color = Color3.fromRGB(90, 140, 255),
+    Font = "Gotham",
+    ButtonText = "ButtonText example",
+    OnSelect = function(...) print(...) end,
+    Callback = function(...) print(...) end,
+    OnEquip = nil,
+    EquipCallback = nil,
+    Items = {{Name="Health", Icon="shield"}, {Name="Guard", Icon="activity"}, {Name="Charge", Icon="star"}},
+    Icons = nil
+})]==]},
+    ["AddTableContents"] = {Category = "Data & Charts", PropertyCount = 9, Code = [==[local Example = Target:AddTableContents({
+    Name = "AddTableContents Example",
+    Title = "AddTableContents Example",
+    Description = "Description example",
+    Content = "Content example",
+    Height = 240,
+    RowHeight = 34,
+    Columns = {{Name="Key", Key="Key", Width=140}, {Name="Value", Key="Value", Width=180}},
+    Rows = {{Key="Status", Value="Ready"}},
+    Values = {"One", "Two", "Three"}
+})]==]},
+    ["AddImage"] = {Category = "Visual & Media", PropertyCount = 8, Code = [==[local Example = Target:AddImage({
+    Name = "AddImage Example",
+    Image = "rbxassetid://8834748103",
+    Asset = "",
+    Height = 240,
+    Transparency = 0.15,
+    BackgroundTransparency = 0.15,
+    Color = Color3.fromRGB(90, 140, 255),
+    ScaleType = Enum.ScaleType.Crop
+})]==]},
+    ["AddVideo"] = {Category = "Visual & Media", PropertyCount = 6, Code = [==[local Example = Target:AddVideo({
+    Name = "AddVideo Example",
+    Video = "",
+    Asset = "",
+    Height = 240,
+    Looped = false,
+    Volume = 0.5
+})]==]},
+    ["AddViewport"] = {Category = "Visual & Media", PropertyCount = 11, Code = [==[local Example = Target:AddViewport({
+    Name = "AddViewport Example",
+    Object = game.Players.LocalPlayer.Character,
+    Model = game.Players.LocalPlayer.Character,
+    Instance = game.Players.LocalPlayer.Character,
+    Height = 240,
+    Interactive = true,
+    AutoFocus = true,
+    Visible = false,
+    Clone = true,
+    BackgroundTransparency = 0.15,
+    Camera = nil
+})]==]},
+    ["AddPlayerVisualizer"] = {Category = "Visual & Media", PropertyCount = 12, Code = [==[local Example = Target:AddPlayerVisualizer({
+    Name = "AddPlayerVisualizer Example",
+    Height = 240,
+    BoxCallback = function(enabled, player, box) print(enabled, player.Name, box.Name) end,
+    Boxes = false,
+    Callback = function(...) print(...) end,
+    Player = game.Players.LocalPlayer,
+    UserId = game.Players.LocalPlayer.UserId,
+    Username = "Example",
+    LiveColor = nil,
+    LiveColorTheme = nil,
+    LiveColors = nil,
+    LiveColorSpeed = nil
+})]==]},
+    ["AddDrawingGrid"] = {Category = "Visual & Media", PropertyCount = 12, Code = [==[local Example = Target:AddDrawingGrid({
+    Name = "AddDrawingGrid Example",
+    Height = 240,
+    Columns = 8,
+    Rows = 8,
+    CellWidth = 16,
+    BoxWidth = 16,
+    CellHeight = 16,
+    BoxHeight = 16,
+    Boxes = false,
+    BrushSize = 2,
+    Color = Color3.fromRGB(90, 140, 255),
+    Callback = function(grid) print(grid.Tool, grid.Boxes) end
+})]==]},
+    ["AddPassthrough"] = {Category = "Visual & Media", PropertyCount = 3, Code = [==[local Frame = Instance.new("Frame")
+Frame.Size = UDim2.fromScale(1,1)
+Target:AddPassthrough({Name="Passthrough", Height=80, Instance=Frame})]==]},
+    ["AddUIPassthrough"] = {Category = "Visual & Media", PropertyCount = 0, Code = [==[local Frame = Instance.new("Frame")
+Frame.Size = UDim2.fromScale(1,1)
+Target:AddUIPassthrough({Name="UI Passthrough", Height=80, Instance=Frame})]==]},
+    ["AddNametags"] = {Category = "Visual & Media", PropertyCount = 23, Code = [==[local Example = Target:AddNametags({
+    Name = "AddNametags Example",
+    Content = "Content example",
+    Description = "Description example",
+    Default = 1,
+    ShowHealth = true,
+    ShowDistance = true,
+    ShowDecimal = false,
+    ShowTeam = false,
+    Open = false,
+    Callback = function(...) print(...) end,
+    Color = Color3.fromRGB(90, 140, 255),
+    CustomName = "Example",
+    PreviewName = "Example",
+    Health = 100,
+    PreviewMaxHealth = 100,
+    Format = "{value}/{max}",
+    NameFunction = nil,
+    UseDisplayName = false,
+    MaxDistance = 1000,
+    Height = 240,
+    IncludeLocalPlayer = false,
+    TeamCheck = false,
+    FadeWithDistance = nil
+})]==]},
+    ["AddMediaPlayer"] = {Category = "Visual & Media", PropertyCount = 11, Code = [==[local Example = Target:AddMediaPlayer({
+    Name = "AddMediaPlayer Example",
+    Default = 1,
+    Callback = function(...) print(...) end,
+    Pitch = 1,
+    AutoPlay = false,
+    Loop = false,
+    Playlist = {{Name="Roblox", Url="rbxassetid://1843529631"}, {Name="GitHub", Url="https://raw.githubusercontent.com/user/repo/main/song.mp3"}},
+    VisualizerHeight = 150,
+    VisualizerBars = 64,
+    Visualizer = true,
+    NotifySupport = false
+})]==]},
+    ["AddBytebeat"] = {Category = "Visual & Media", PropertyCount = 19, Code = [==[local Example = Target:AddBytebeat({
+    Name = "AddBytebeat Example",
+    Default = 1,
+    Mode = "Bytebeat",
+    Playlist = {{Name="Classic", Mode="Bytebeat", Code="t*(t>>5|t>>8)", Hz=22050, Duration=30}, {Name="Soft", Mode="Floatbeat", Code="sin(t/18)*0.7", Hz=22050, Duration=30}},
+    VisualizerHeight = 150,
+    Visualizer = true,
+    VisualizerBars = 64,
+    DefaultPreset = "Classic",
+    MaxSeconds = 300,
+    MaxDuration = 300,
+    MaxHz = 96000,
+    Hz = 22050,
+    HzIncrement = 50,
+    Seconds = 30,
+    Duration = 5,
+    Pitch = 1,
+    Speed = 1,
+    Volume = 0.5,
+    Callback = function(...) print(...) end
+})]==]},
+    ["AddSoccer"] = {Category = "Visual & Media", PropertyCount = 10, Code = [==[local Example = Target:AddSoccer({
+    Name = "AddSoccer Example",
+    Height = 240,
+    RefreshTime = 2,
+    League = nil,
+    AutoRefresh = false,
+    ShowLogos = nil,
+    Callback = function(...) print(...) end,
+    Leagues = {"eng.1", "esp.1", "usa.1"},
+    LeagueOrder = {"eng.1", "esp.1", "usa.1"},
+    AutoLoad = nil
+})]==]},
+    ["AddDiscordImg"] = {Category = "Visual & Media", PropertyCount = 8, Code = [==[local Example = Target:AddDiscordImg({
+    Name = "AddDiscordImg Example",
+    Invite = "QEW8ap3MuV",
+    InviteCode = "QEW8ap3MuV",
+    discordpar = "QEW8ap3MuV",
+    Content = "Content example",
+    OpenMode = "Browser",
+    RememberOpenMode = true,
+    DontAskAgain = false
+})]==]},
+    ["AddExecutor"] = {Category = "Advanced & Network", PropertyCount = 7, Code = [==[local Example = Target:AddExecutor({
+    Name = "AddExecutor Example",
+    Default = "print(game.PlaceId)",
+    Height = 240,
+    TextSize = 15,
+    MetaTextSize = 13,
+    TitleTextSize = 18,
+    Callback = function(code) local fn=loadstring(code); if fn then fn() end end
+})]==]},
+    ["AddDebugConsole"] = {Category = "Advanced & Network", PropertyCount = 13, Code = [==[local Example = Target:AddDebugConsole({
+    Name = "AddDebugConsole Example",
+    Title = "AddDebugConsole Example",
+    Height = 240,
+    MaxLines = nil,
+    TextSize = 15,
+    AutoScroll = false,
+    Callback = function(...) print(...) end,
+    OnLog = nil,
+    CaptureOutput = false,
+    CaptureRoblox = false,
+    Default = {{Level="Log", Text="Console initialized"}},
+    Lines = nil,
+    Messages = nil
+})]==]},
+    ["AddGlobalChat"] = {Category = "Advanced & Network", PropertyCount = 28, Code = [==[local Example = Target:AddGlobalChat({
+    Name = "AddGlobalChat Example",
+    API_URL = "https://example.com",
+    ApiUrl = "https://example.com",
+    AuthUrl = "https://example.com",
+    Height = 240,
+    RefreshTime = 2,
+    BotId = "1351947660151750759",
+    BotID = nil,
+    AppId = "Example",
+    Rules = "Be respectful. No spam or personal information.",
+    SendCooldown = 1,
+    ReportCooldown = 5,
+    NotifyPos = nil,
+    Pos = nil,
+    MaxMessageLength = 350,
+    MessageLength = 350,
+    PVP = false,
+    pvp = false,
+    ShowTimestamps = false,
+    SoundOnMessage = false,
+    FastUpdates = false,
+    SystemId = "Example",
+    ConversationFile = "VerbalHubExample/example",
+    DisclaimerFile = "VerbalHubExample/example",
+    DisclaimerText = "DisclaimerText example",
+    Limit = 50,
+    MessageSoundId = 0,
+    MessageSoundVolume = 0.5
+})]==]},
+    ["AddXLQPGen1AI"] = {Category = "Advanced & Network", PropertyCount = 7, Code = [==[local Example = Target:AddXLQPGen1AI({
+    Name = "AddXLQPGen1AI Example",
+    Height = 240,
+    Ai = false,
+    Gui = false,
+    UltraAI = false,
+    ultraai = false,
+    LayoutOrder = 1
+})]==]},
+    ["AddGameSession"] = {Category = "Advanced & Network", PropertyCount = 25, Code = [==[local Example = Target:AddGameSession({
+    Name = "AddGameSession Example",
+    Height = 240,
+    HistoryLimit = nil,
+    HistoryFile = "VerbalHubExample/example",
+    AutoExecute = false,
+    AutoReExecute = false,
+    AutoExecuteSource = false,
+    ReExecuteSource = false,
+    QueueSource = "https://example.com",
+    AutoExecuteUrl = "https://example.com",
+    ReExecuteUrl = "https://example.com",
+    SourceUrl = "https://example.com",
+    AutoExecFile = false,
+    AutoExecuteFile = false,
+    AutoExecFolder = "VerbalHubExample/example",
+    AutoExecName = "VerbalHubExample/example",
+    OnJoin = function() print("joined") end,
+    OnRejoin = function() print("rejoined") end,
+    OnServerHop = function() print("server hop") end,
+    OnLeave = function() print("leaving") end,
+    SupportedGameIds = {game.PlaceId},
+    GameIds = {game.GameId},
+    Games = {game.PlaceId},
+    IdType = "Place",
+    MaxPlayers = nil
+})]==]},
+    ["AddScriptHub"] = {Category = "Advanced & Network", PropertyCount = 17, Code = [==[local Example = Target:AddScriptHub({
+    Name = "AddScriptHub Example",
+    Height = 240,
+    Icon = "star",
+    Description = "Description example",
+    Collapsed = nil,
+    MaxResults = 10,
+    Mode = "free",
+    Patched = false,
+    Key = false,
+    Universal = false,
+    Verified = false,
+    SortBy = "updatedAt",
+    Order = "desc",
+    Strict = false,
+    Owner = "Example",
+    PlaceId = nil,
+    ImageCacheFolder = "VerbalHubExample/ScriptBloxImages"
+})]==]},
+    ["AddPlugins"] = {Category = "Advanced & Network", PropertyCount = 11, Code = [==[local Example = Target:AddPlugins({
+    Name = "AddPlugins Example",
+    Folder = "VerbalHubExample/example",
+    AutoLoad = nil,
+    AllowRemote = false,
+    AllowInline = false,
+    SaveInline = false,
+    RemotePlugins = {{Name="Example", Url="https://example.com/plugin.lua"}},
+    URLs = {"https://example.com/plugin.lua"},
+    Callback = function(...) print(...) end,
+    NameTextbox = nil,
+    CodeTextbox = nil
+})]==]},
+    ["AddStudioTool"] = {Category = "Advanced & Network", PropertyCount = 20, Code = [==[local Example = Target:AddStudioTool({
+    Default = 1,
+    PartType = "Block",
+    MeshId = "",
+    TextureId = "",
+    Grid = 1,
+    PartSize = 4,
+    Anchored = false,
+    CanCollide = false,
+    Color = Color3.fromRGB(90, 140, 255),
+    Path = "VerbalHubExample/example",
+    ParentPath = "VerbalHubExample/example",
+    TargetPath = "VerbalHubExample/example",
+    Name = "AddStudioTool Example",
+    Content = "Content example",
+    Description = "Description example",
+    ButtonColor = Color3.fromRGB(90, 140, 255),
+    Callback = function(part) print(part and part.Name) end,
+    PartName = "ExamplePart",
+    ToggleCallback = function(enabled) print("studio", enabled) end,
+    OnToggle = function(enabled) print("studio", enabled) end
+})]==]},
+    ["AddKeybindList"] = {Category = "Advanced & Network", PropertyCount = 16, Code = [==[local Example = Target:AddKeybindList({
+    Title = "AddKeybindList Example",
+    Icon = "star",
+    Width = 320,
+    Height = 240,
+    Position = UDim2.new(1, -380, 0, 82),
+    Detached = false,
+    DockHeight = 236,
+    Name = "AddKeybindList Example",
+    Pin = false,
+    Pinnable = false,
+    Popout = false,
+    PopOut = false,
+    Detachable = false,
+    PopoutPosition = UDim2.new(1, -380, 0, 82),
+    LayoutOrder = 1,
+    StartDetached = false
+})]==]},
+}
+
+do
+    local CommonConfig = Window:MakeTab({
+        Name = "Common Properties",
+        Icon = "settings-2",
+        Group = "Configuration",
+        GroupIcon = "book-open"
+    })
+    CommonConfig:AddParagraph({
+        Name = "Complete configuration reference",
+        Content = "This top tab documents constructor-specific properties for every canonical element in the current library. Common SetupElement styling, locking, tags, Live Color, Config Cloud, cursor glow and movement properties are listed here once because they are shared by standard elements. " .. [==[Aliases also supported by the library include CreateExecutor/AddExecuter, CreateScriptHub/CreateScriptBlox/AddScriptBlox, CreateGameSession/AddSupportedGames/CreateSupportedGames, AddKeybindPanel/AddControlPanel, AddUIPassthrough, CreateLeftSidebarMenu/CreateRightSidebarMenu and several Create* aliases. The reference shows the canonical call once so it stays readable.]==],
+        NoCard = true
+    })
+    CommonConfig:AddCode({Name = "Common SetupElement properties", Language = "lua", Height = 500, Content = [==[
+local Common = {
+    TextColor = "White",
+    Locked = false,
+    LockReason = "This element is locked.",
+    LockText = "This element is locked.",
+    Premium = false,
+    PremiumOnly = false,
+    Unlocked = false,
+    Image = "rbxassetid://7733960981",
+    Moveable = false,
+    Hover = true,
+    HoverEnabled = true,
+    HoverColor = Color3.fromRGB(60, 64, 76),
+    HoverCornerRadius = 10,
+    HoverScale = 1.01,
+    PressScale = 0.99,
+    HoverTransparency = 0.08,
+    PressTransparency = 0.18,
+    HoverStrokeColor = Color3.fromRGB(150, 160, 190),
+    LiveColorElementBackground = true,
+    LiveColor = false,
+    LiveColorTheme = "Cold Heat",
+    LiveColors = {Color3.fromRGB(0, 220, 255), Color3.fromRGB(180, 80, 255)},
+    LiveColorSpeed = 0.24,
+    LiveColorRotation = 0,
+    LiveColorTransparency = 0.15,
+    Tag = {Text = "NEW", Color = "Sky", Icon = "star"},
+    Tags = {{Text = "EXAMPLE", Color = "Teal"}},
+    TagPosition = "Right",
+    TagOffset = 0,
+    TagGap = 4,
+    TagAnchorY = 0.5,
+    TagZIndex = 25,
+    TagHeight = 22,
+    CursorGlow = true,
+    MouseGlow = true,
+    CursorGlowSize = 180,
+    CursorGlowColor = Color3.fromRGB(100, 160, 255),
+    CursorGlowStrength = 0.35,
+    LockedTo = {game.Players.LocalPlayer.UserId},
+    ConfigCloud = false,
+    ConfigCloudKey = "ExampleElement",
+    ConfigCloudProfile = "Default",
+    ConfigCloudAutoSend = false,
+    ConfigCloudInterval = 30,
+    ConfigCloudTitle = "Example stats",
+    BackgroundColor = Color3.fromRGB(30, 34, 44),
+    BackgroundTransparency = 0.08,
+    CornerRadius = 10,
+    StrokeColor = Color3.fromRGB(110, 120, 150),
+    StrokeTransparency = 0.35,
+    StrokeThickness = 1,
+    TitleColor = Color3.fromRGB(245, 247, 252),
+    DescriptionColor = Color3.fromRGB(180, 188, 205),
+    TitleSize = 14,
+    Font = "Gotham",
+    WrapperHeight = nil,
+    ElementHeight = nil,
+    Style = {
+        BackgroundColor = Color3.fromRGB(30, 34, 44),
+        BackgroundTransparency = 0.08,
+        CornerRadius = 10,
+        StrokeColor = Color3.fromRGB(110, 120, 150),
+        StrokeTransparency = 0.35,
+        StrokeThickness = 1,
+        TitleColor = Color3.fromRGB(245, 247, 252),
+        DescriptionColor = Color3.fromRGB(180, 188, 205),
+        TitleSize = 14,
+        Font = "Gotham"
+    }
+}
+
+]==]})
+    CommonConfig:AddKeyValueList({
+        Name = "Reference Summary",
+        Items = {
+            {Key = "Canonical constructors", Value = "107"},
+            {Key = "Reference groups", Value = "6"},
+            {Key = "Library build", Value = "6.0.1 / latest example"},
+            {Key = "Viewer", Value = "Searchable + copyable + nested scrolling"}
+        }
+    })
+end
+
+do
+    local methods = {"newmaketabtop", "MakeTab", "MakeAdminTab", "SetTabButtonsStyle", "AddLeftGroupbox", "AddRightGroupbox", "AddLeftTabbox", "AddRightTabbox", "AddMiniTab", "AddSection", "AddBoxSection", "AddDependencyBox", "AddDropdownPanel", "AddLeftSidebarMenu", "AddRightSidebarMenu", "AddDivider", "AddSpacer", "AddSpace"}
+    local page = Window:MakeTab({Name = "Navigation & Layout", Icon = "layout-template", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Navigation & Layout", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+do
+    local methods = {"AddButton", "CreateCheckbox", "AddToggle", "AddSmoothToggle", "AddSlider", "AddDropdown", "AddBind", "AddKeyPicker", "AddTextbox", "AddTextArea", "AddColorpicker", "AddRadioGroup", "AddSegmentedControl", "AddRating", "AddActionRow", "AddMiniButtons", "AddCommandBar", "AddStepper", "AddCooldownButton", "AddQuickToggleRow", "CreateCopyButton", "CreateFlipButton", "CreateRippleButton"}
+    local page = Window:MakeTab({Name = "Controls & Inputs", Icon = "sliders-horizontal", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Controls & Inputs", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+do
+    local methods = {"AddLabel", "AddParagraph", "AddCode", "AddLog", "AddCopyBox", "AddBanner", "AddNotice", "AddInfoCard", "AddShortcutHint", "AddTagCloud", "AddPillList", "AddBadge", "AddStatusDot", "AddStatusBox", "AddKeyValueList", "CreateFAQ", "AddChecklist", "AddTimeline", "AddFilterList", "AddToastAction", "AddNotify", "AddChangelog", "AddChangelogParagraph", "CreatePinnedList", "CreateScrollHint", "CreateCursorTag"}
+    local page = Window:MakeTab({Name = "Text, Status & Lists", Icon = "list-tree", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Text, Status & Lists", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+do
+    local methods = {"CreateProgress", "CreateDownloadProgress", "CreateProgressBar", "AddProgressBar", "AddStatCard", "AddRevenueCard", "CreateChart", "CreateStat", "CreateBarChart", "CreateStackedChart", "AddPlayerCount", "AddClock", "AddFriends", "AddDataTable", "AddRuntimeMonitor", "AddMeterGroup", "AddCountdown", "AddCards", "AddProfileCards", "AddLoadoutGroup", "AddTableContents"}
+    local page = Window:MakeTab({Name = "Data & Charts", Icon = "chart-no-axes-combined", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Data & Charts", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+do
+    local methods = {"AddImage", "AddVideo", "AddViewport", "AddPlayerVisualizer", "AddDrawingGrid", "AddPassthrough", "AddUIPassthrough", "AddNametags", "AddMediaPlayer", "AddBytebeat", "AddSoccer", "AddDiscordImg"}
+    local page = Window:MakeTab({Name = "Visual & Media", Icon = "palette", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Visual & Media", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+do
+    local methods = {"AddExecutor", "AddDebugConsole", "AddGlobalChat", "AddXLQPGen1AI", "AddGameSession", "AddScriptHub", "AddPlugins", "AddStudioTool", "AddKeybindList"}
+    local page = Window:MakeTab({Name = "Advanced & Network", Icon = "cpu", Group = "Configuration", GroupIcon = "book-open"})
+    page:AddParagraph({Name = "Advanced & Network", Content = "Select an element to see every constructor-specific property currently supported by the library. The code viewer has its own scroll capture and copy button.", NoCard = true})
+    local viewer
+    local selector = page:AddDropdown({
+        Name = "Element",
+        Options = methods,
+        Default = methods[1],
+        Search = true,
+        MaxElements = 8,
+        Outline = true,
+        Callback = function(value)
+            local entry = ElementConfigReference[tostring(value)]
+            if viewer and entry then
+                viewer:SetTitle(tostring(value) .. " · " .. tostring(entry.PropertyCount) .. " specific properties")
+                viewer:SetCode(entry.Code)
+            end
+        end
+    })
+    local first = ElementConfigReference[methods[1]]
+    viewer = page:AddCode({Name = methods[1] .. " · " .. tostring(first.PropertyCount) .. " specific properties", Language = "lua", Height = 420, Content = first.Code})
+    local currentIndex = 1
+    page:AddActionRow({
+        Name = "Reference Navigation",
+        Outline = true,
+        Buttons = {
+            {Name = "Previous", Callback = function() currentIndex = currentIndex <= 1 and #methods or currentIndex - 1 selector:Set(methods[currentIndex]) end},
+            {Name = "Next", Callback = function() currentIndex = currentIndex >= #methods and 1 or currentIndex + 1 selector:Set(methods[currentIndex]) end},
+            {Name = "First", Callback = function() currentIndex = 1 selector:Set(methods[1]) end}
+        }
+    })
+end
+
+
+Window:newmaketabtop({
+    Name = "Tags",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+local TagsTab = Window:MakeTab({
+    Name = "Tags & Nav",
+    Icon = "tag",
+    Group = "New",
+    GroupIcon = "sparkles"
+})
+
+local NewFeatureToggle
+local SecondFeatureToggle
+local LiveTagDemo
+
+TagsTab:AddChangelogParagraph({
+    Name = "Changelog",
+    Content = "Every line below jumps straight to the element it talks about. Click one and the library selects the tab, opens any collapsed section, scrolls the element into view, and flashes it.",
+    Tag = {Text = "v6.1", Color = "Blue"},
+    Entries = {
+        {
+            Text = "Added Enable Feature",
+            Description = "New toggle with a BANNABLE tag. Click to jump to it.",
+            Goto = function() return NewFeatureToggle end,
+            Tag = {Text = "NEW", Variant = "New"}
+        },
+        {
+            Text = "Added Second Feature",
+            Description = "Lives inside a collapsed section. The jump opens the section for you.",
+            Goto = function() return SecondFeatureToggle end,
+            Tag = {Text = "SECTION", Color = "Teal"}
+        },
+        {
+            Text = "Added WindUI:SetZIndex",
+            Description = "Set the DisplayOrder of the whole interface at runtime.",
+            Goto = "ZIndexSlider",
+            Tag = {Text = "API", Color = "Purple", Icon = "code-2"}
+        },
+        {
+            Text = "Added Tag:SetIcon",
+            Description = "Tags can carry an icon and change it at runtime.",
+            Goto = function() return LiveTagDemo end,
+            Tag = {Text = "TAGS", Color = "Orange", Icon = "star"}
+        }
+    },
+    Callback = function(entry)
+        print("changelog entry clicked", entry.Text)
+    end
+})
+
+local TagSection = TagsTab:AddBoxSection({
+    Name = "Section",
+    Content = "Desc for Section",
+    DefaultOpen = false,
+    Tag = {Text = "BETA TEST", Color = Color3.fromRGB(150, 30, 40)}
+})
+
+TagSection:AddLabel("Anything can live inside a tagged section.")
+
+local MultiSection = TagsTab:AddBoxSection({
+    Name = "Multi Section",
+    Content = "Desc for Multi Section",
+    DefaultOpen = false,
+    Tag = {Text = "GOON", Color = "Purple"}
+})
+
+SecondFeatureToggle = MultiSection:AddToggle({
+    Name = "Second Feature",
+    Content = "Collapsed by default so the changelog jump has to open the section.",
+    Default = false,
+    Tag = {Text = "HIDDEN", Color = "Slate"},
+    Callback = function(value)
+        print("second feature", value)
+    end
+})
+
+NewFeatureToggle = TagsTab:AddToggle({
+    Name = "Enable Feature",
+    Content = "Toggle description",
+    Default = false,
+    Flag = "EnableFeatureTag",
+    Save = true,
+    Tag = {Text = "BANNABLE", Variant = "Bannable"},
+    Callback = function(value)
+        print("enable feature", value)
+    end
+})
+
+TagsTab:AddButton({
+    Name = "Button",
+    Tag = {Text = "CLICK", Color = "Mauve"},
+    Callback = function()
+        Library:MakeToast({Title = "Clicked", Content = "Tagged button pressed.", Variant = "Success", Time = 2})
+    end
+})
+
+local TaggedParagraph = TagsTab:AddParagraph({
+    Name = "Paragraph",
+    Content = "With Tag btw. Paragraph tags drop to their own row underneath the text instead of sitting on the right edge, and the card grows to fit them.",
+    Tags = {
+        {Text = "Coolest fucking tag", Color = "Sky", Uppercase = false},
+        {Text = "AND ANOTHER", Color = "Teal"}
+    }
+})
+
+TagsTab:AddSection({Name = "Tag runtime API"})
+
+LiveTagDemo = TagsTab:AddToggle({
+    Name = "Live Tag Demo",
+    Content = "The buttons below rewrite this element's tag while the UI is running.",
+    Default = true,
+    Tag = {Text = "READY", Color = "Green", Icon = "star"},
+    Callback = function(value)
+        print("live tag demo", value)
+    end
+})
+
+TagsTab:AddActionRow({
+    Name = "Tag Actions",
+    Outline = true,
+    Buttons = {
+        {Name = "SetIcon", Callback = function()
+            local tag = LiveTagDemo:GetTag(1)
+            if tag then tag:SetIcon("shield"):SetText("PROTECTED"):SetColor("Blue") end
+        end},
+        {Name = "Clear Icon", Callback = function()
+            local tag = LiveTagDemo:GetTag(1)
+            if tag then tag:SetIcon(nil):SetText("READY"):SetColor("Green") end
+        end},
+        {Name = "Add Tag", Callback = function()
+            LiveTagDemo:AddTag({Text = "EXTRA", Color = "Amber", Icon = "info"})
+        end},
+        {Name = "Clear Tags", Callback = function()
+            LiveTagDemo:ClearTags()
+        end}
+    }
+})
+
+TagsTab:AddButton({
+    Name = "Give the paragraph a live tag",
+    Callback = function()
+        TaggedParagraph:AddTag({
+            Text = "added at " .. os.date("%H:%M:%S"),
+            Color = "Rose",
+            Uppercase = false,
+            Icon = "clock"
+        })
+    end
+})
+
+TagsTab:AddButton({
+    Name = "Jump to Enable Feature",
+    Callback = function()
+        Window:FocusElement(NewFeatureToggle, {Notify = "Enable Feature"})
+    end
+})
+
+TagsTab:AddSection({Name = "Window Z-Index"})
+
+TagsTab:AddSlider({
+    Name = "Interface Z-Index",
+    Description = "DisplayOrder of every XLQP Gen1 ScreenGui. Popups stay one above it.",
+    Min = 100,
+    Max = 200000,
+    Default = Library:GetZIndex(),
+    Increment = 100,
+    input = true,
+    Flag = "ZIndexSlider",
+    Callback = function(value)
+        Library:SetZIndex(value)
+    end
+})
+
+TagsTab:AddActionRow({
+    Name = "Z-Index Presets",
+    Outline = true,
+    Buttons = {
+        {Name = "Behind (500)", Callback = function() Window:SetZIndex(500) end},
+        {Name = "Normal", Callback = function() Library:ResetZIndex() end},
+        {Name = "Top", Callback = function() Library:SetZIndex(2147483000) end},
+        {Name = "Read", Callback = function()
+            Library:MakeToast({Title = "Z-Index", Content = tostring(Library:GetZIndex()), Variant = "Info", Time = 3})
+        end}
+    }
+})
+
+Window:newmaketabtop({
+    Name = "Showcase",
+    MultiTab = true,
+    Effects = true,
+    flames = true
+})
+
+local NewStuff = Window:MakeTab({
+    Name = "New Elements",
+    Icon = "sparkles",
+    Color = "#a855f7",
+    Group = "Showcase 2",
+    GroupIcon = "boxes"
+})
+
+NewStuff:AddLoadoutGroup({
+    Name = "Defender",
+    Color = Color3.fromRGB(96, 170, 255),
+    ButtonText = "Equip Defense Build",
+    Items = {
+        {Name = "Health", Icon = "shield"},
+        {Name = "Guard", Icon = "activity"},
+        {Name = "Charge", Icon = "star"}
+    },
+    Callback = function(item, index)
+        Library:MakeNotification({Name = "Loadout", Content = "Equipped Defender slot " .. tostring(index) .. " (" .. tostring(item and item.Name or "None") .. ")", Image = "shield", Time = 3})
+    end
+})
+
+local AdminDemo = Window:MakeAdminTab({
+    Name = "Admin",
+    Icon = "shield",
+    Group = "Showcase 2",
+    GroupIcon = "boxes",
+    Password = "change-this-password",
+    PromptTitle = "Admin access",
+    PromptDescription = "Enter the demo password to open Admin. Enable Remember this admin tab to keep it unlocked after re-execution.",
+    Remember = true,
+    RememberText = "Remember this admin tab",
+    RememberKey = "VerbalHubExampleAdmin"
+})
+AdminDemo:AddParagraph({
+    Name = "Admin controls",
+    Content = "The remember toggle can persist a successful admin unlock across re-execution. Lock only affects the current run; Forget saved login also removes the remembered unlock."
+})
+AdminDemo:AddActionRow({
+    Name = "Admin Session",
+    Outline = true,
+    Buttons = {
+        {Name = "Lock now", Callback = function() AdminDemo:Lock(false) end},
+        {Name = "Forget saved login", Callback = function() AdminDemo:Lock(true) end}
+    }
+})
+
+local OwnerOnly = Window:MakeTab({
+    Name = "Owner Only",
+    Icon = "shield",
+    Color = "Rose",
+    Group = "Showcase 2",
+    GroupIcon = "boxes",
+    LockedTo = {12376412, 86123782, "Roblox"}
+})
+
+OwnerOnly:AddParagraph({
+    Name = "Hidden tab",
+    Content = "If you can read this you are on the LockedTo list. Everyone else never sees this tab in the sidebar."
+})
+
+local Weather = NewStuff:AddSection({
+    Name = "Weather",
+    Subtitle = "Collapsible section with a subtitle",
+    Open = true,
+    Color = "#a855f7"
+})
+
+local StormTimer = Weather:AddCountdown({
+    Name = "Next storm",
+    Content = "Counts down and fires a callback at zero.",
+    Duration = 3725,
+    ShowDays = false,
+    Color = "Sky",
+    AutoStart = true,
+    OnFinished = function()
+        Library:MakeToast({Title = "Storm", Content = "The storm has arrived.", Variant = "Warning", Time = 4})
+    end
+})
+
+Weather:AddActionRow({
+    Name = "Countdown Controls",
+    Outline = true,
+    Buttons = {
+        {Name = "Pause", Callback = function() StormTimer:Pause() end},
+        {Name = "Resume", Callback = function() StormTimer:Resume() end},
+        {Name = "+1 min", Callback = function() StormTimer:Add(60) end},
+        {Name = "Reset", Callback = function() StormTimer:Set(3725) end}
+    }
+})
+
+local Megalodon = NewStuff:AddSection({
+    Name = "Megalodon",
+    Subtitle = "Starts closed, click the header to open",
+    Open = false,
+    Color = "#8b5cf6"
+})
+
+Megalodon:AddCards({
+    Name = "Hunt Targets",
+    Columns = 2,
+    CardHeight = 124,
+    Items = {
+        {Title = "Megalodon", Description = "Rare spawn near the trench.", Color = "Indigo", ButtonText = "Track", Tag = {Text = "RARE", Variant = "New"}, Callback = function() print("track megalodon") end},
+        {Title = "Great White", Description = "Common in open water.", Color = "Sky", ButtonText = "Track", Callback = function() print("track great white") end},
+        {Title = "Hammerhead", Description = "Shallow reefs at night.", Color = "Teal", ButtonText = "Track", Callback = function() print("track hammerhead") end},
+        {Title = "Owner Card", Description = "Only visible to the LockedTo list.", Color = "Rose", LockedTo = {12376412}, ButtonText = "Secret"}
+    },
+    Callback = function(card)
+        Library:MakeToast({Title = "Card", Content = card.Title, Variant = "Info", Time = 2})
+    end
+})
+
+NewStuff:AddSection({Name = "Profiles", Subtitle = "Live server roster"})
+
+local ServerProfiles = NewStuff:AddProfileCards({
+    Name = "Players In Server",
+    Columns = 2,
+    LoadServer = true,
+    AutoRefresh = true,
+    Callback = function(profile)
+        Library:MakeToast({Title = profile.Name, Content = "UserId " .. tostring(profile.UserId), Variant = "Info", Time = 3})
+    end
+})
+
+NewStuff:AddButton({
+    Name = "Refresh Profiles",
+    Callback = function()
+        ServerProfiles:LoadServer()
+    end
+})
+
+NewStuff:AddSection({Name = "Custom Interfaces", Subtitle = "Every element accepts a Style table"})
+
+NewStuff:AddToggle({
+    Name = "Styled Toggle",
+    Content = "Custom background, stroke, corner radius, colors and height.",
+    Default = true,
+    Checkbox = true,
+    Style = {
+        BackgroundColor = "#1b1030",
+        BackgroundTransparency = 0,
+        StrokeColor = "#a855f7",
+        StrokeTransparency = 0.15,
+        StrokeThickness = 1.5,
+        CornerRadius = 14,
+        Height = 56,
+        TitleColor = "#e9d5ff",
+        DescriptionColor = "#9f7aea",
+        TitleSize = 15
+    },
+    Callback = function(value)
+        print("styled toggle", value)
+    end
+})
+
+local StyledButton = NewStuff:AddButton({
+    Name = "Cursor Glow Button",
+    CursorGlow = true,
+    CursorGlowColor = "#a855f7",
+    CursorGlowSize = 150,
+    CursorGlowStrength = 0.6,
+    Style = {
+        BackgroundColor = "#150d26",
+        StrokeColor = "#7c3aed",
+        CornerRadius = 12,
+        Height = 44,
+        TitleColor = "#ddd6fe"
+    },
+    Callback = function()
+        print("cursor glow button")
+    end
+})
+
+NewStuff:AddButton({
+    Name = "Restyle That Button",
+    Callback = function()
+        StyledButton:SetStyle({
+            BackgroundColor = "#062a26",
+            StrokeColor = "#14b8a6",
+            TitleColor = "#99f6e4"
+        })
+    end
+})
+
+NewStuff:AddSlider({
+    Name = "Locked Slider",
+    Description = "Only the LockedTo list can see this element.",
+    Min = 0,
+    Max = 100,
+    Default = 40,
+    input = true,
+    LockedTo = {12376412, 86123782},
+    Callback = function(value)
+        print("locked slider", value)
+    end
+})
+
+NewStuff:AddSection({Name = "Dialogs", Subtitle = "Modal cards with paired buttons"})
+
+NewStuff:AddButton({
+    Name = "Open Dialog",
+    Callback = function()
+        local nameInput
+        local dialog = Window:AddDialog("ExampleDialog", {
+            Title = "Working Dialog",
+            Description = "Inputs and every footer button stay interactive when this dialog is reopened.",
+            OutsideClickDismiss = false,
+            AutoDismiss = false,
+            FooterButtons = {
+                Cancel = {
+                    Title = "Cancel",
+                    Variant = "Ghost",
+                    Order = 1,
+                    Callback = function(currentDialog)
+                        DebugConsole:Info("Dialog cancelled")
+                        currentDialog:Dismiss()
+                    end
+                },
+                Apply = {
+                    Title = "Apply",
+                    Variant = "Primary",
+                    Order = 2,
+                    Callback = function(currentDialog)
+                        local value = nameInput and nameInput.Text or ""
+                        DebugConsole:Success("Dialog applied: " .. value)
+                        Library:MakeToast({Title = "Applied", Content = value, Variant = "Success", Time = 3})
+                        currentDialog:Dismiss()
+                    end
+                }
+            }
+        })
+        nameInput = dialog:AddInput("Name", {
+            Text = "Display name",
+            Default = "Private User",
+            Placeholder = "Type a name"
+        })
+        dialog:AddToggle("Remember", {Text = "Remember this value", Default = true})
+    end
+})
+
+NewStuff:AddButton({
+    Name = "Confirm Dialog",
+    Callback = function()
+        Window:AddDialog("ConfirmExample", {
+            Title = "Delete config?",
+            Description = "This removes the saved config from disk. It cannot be undone.",
+            OutsideClickDismiss = false,
+            FooterButtons = {
+                Cancel = {Title = "Cancel", Variant = "Ghost", Order = 1, Callback = function(dialog) dialog:Dismiss() end},
+                Delete = {Title = "Delete", Variant = "Danger", Order = 2, Callback = function(dialog)
+                    DebugConsole:Warn("Delete example confirmed")
+                    Library:MakeToast({Title = "Deleted", Variant = "Success", Time = 3})
+                    dialog:Dismiss()
+                end}
+            }
+        })
+    end
+})
+
+NewStuff:AddSection({Name = "Dynamic Island", Subtitle = "Music controls and optional notification alerts"})
+
+NewStuff:AddToggle({
+    Name = "Dynamic Island",
+    Content = "Show the top-screen island for media playback and previews.",
+    Default = Library:GetDynamicIslandEnabled(),
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetDynamicIslandEnabled(value)
+    end
+})
+
+NewStuff:AddToggle({
+    Name = "Island Notifications",
+    Content = "Mirror normal notifications into the Dynamic Island unless a notification opts out.",
+    Default = Library:GetDynamicIslandNotificationsEnabled(),
+    Checkbox = true,
+    Flag = "ExampleIslandNotifications",
+    Save = true,
+    Callback = function(value)
+        Library:SetDynamicIslandNotificationsEnabled(value)
+    end
+})
+
+NewStuff:AddActionRow({
+    Name = "Island Preview",
+    Outline = true,
+    Buttons = {
+        {Name = "Music", Callback = function()
+            Library:ShowDynamicIsland({TrackName = "Preview Track", Subtitle = "Music controls ready", Playing = false, Paused = true, URL = "preview://example"})
+        end},
+        {Name = "Notify", Callback = function()
+            Library:ShowDynamicIslandNotification({Title = "Dynamic Island", Content = "Island-only notification preview", Time = 4})
+        end},
+        {Name = "Hide", Callback = function() Library:HideDynamicIsland() end}
+    }
+})
+
+NewStuff:AddSection({Name = "Notifications", Subtitle = "Normal, mirrored, island-only and paired examples"})
+
+NewStuff:AddToggle({
+    Name = "Paired Notifications",
+    Content = "Place standard notification cards two per row instead of stacking them.",
+    Default = false,
+    Checkbox = true,
+    Callback = function(value)
+        Library:SetNotificationsPaired(value)
+    end
+})
+
+NewStuff:AddActionRow({
+    Name = "Notification Modes",
+    Outline = true,
+    Buttons = {
+        {Name = "Mirrored", Callback = function()
+            Library:MakeNotification({Name = "Mirrored alert", Content = "This appears as a card and in the Dynamic Island.", Image = "bell", DynamicIsland = true, Time = 4})
+        end},
+        {Name = "Card only", Callback = function()
+            Library:MakeNotification({Name = "Card only", Content = "Dynamic Island is disabled for this notification.", Image = "info", DynamicIsland = false, Time = 4})
+        end},
+        {Name = "Island only", Callback = function()
+            Library:ShowDynamicIslandNotification({Title = "Island only", Content = "No standard notification card was created.", Time = 4})
+        end}
+    }
+})
+
+NewStuff:AddButton({
+    Name = "Send Paired Demo",
+    Callback = function()
+        Library:MakeNotification({Name = "Build complete", Content = "First paired notification.", Image = "check", DynamicIsland = false, Time = 5})
+        task.wait(0.05)
+        Library:MakeNotification({Name = "Cloud synced", Content = "Second paired notification.", Image = "cloud", DynamicIsland = false, Time = 5})
+    end
+})
+
+local LatestUX = Window:MakeTab({
+    Name = "Latest UX",
+    Icon = "sparkles",
+    Color = "#22c55e",
+    Group = "Showcase 2",
+    GroupIcon = "boxes"
+})
+
+LatestUX:AddBanner({
+    Name = "6.0.1 Interaction Lab",
+    Content = "A compact showcase for the newest Dynamic Island, foreground scrolling, media and AI workflows.",
+    Icon = "sparkles",
+    Height = 104,
+    Actions = {
+        {Name = "Music", Icon = "music", IconOnly = true, Callback = function() OpenMusicCenter("Player") end},
+        {Name = "Spotify", Icon = "music-2", IconOnly = true, Callback = function() OpenMusicCenter("Spotify") end},
+        {Name = "Bytebeat", Icon = "audio-waveform", IconOnly = true, Callback = function() Library:OpenMediaCenter("Bytebeat") end},
+        {Name = "AI", Icon = "bot", IconOnly = true, Callback = function() if XLQPAI and XLQPAI.Show then XLQPAI:Show() end end}
+    }
+})
+
+LatestUX:AddSection({Name = "Dynamic Island Notifications", Subtitle = "Use the island by itself or mirror a normal notification"})
+
+local IslandEnabled = LatestUX:AddToggle({
+    Name = "Island Enabled",
+    Description = "Master switch for music and notification island previews.",
+    Default = Library:GetDynamicIslandEnabled(),
+    Checkbox = true,
+    Flag = "LatestUXIslandEnabled",
+    Save = true,
+    Callback = function(value)
+        Library:SetDynamicIslandEnabled(value)
+    end
+})
+
+local IslandNotifyEnabled = LatestUX:AddToggle({
+    Name = "Mirror Notifications",
+    Description = "When enabled, regular notifications also appear in the Dynamic Island unless DynamicIsland = false.",
+    Default = Library:GetDynamicIslandNotificationsEnabled(),
+    Checkbox = true,
+    Flag = "LatestUXIslandNotify",
+    Save = true,
+    Callback = function(value)
+        Library:SetDynamicIslandNotificationsEnabled(value)
+    end
+})
+
+LatestUX:AddActionRow({
+    Name = "Island Alerts",
+    Outline = true,
+    Buttons = {
+        {Name = "Success", Callback = function()
+            Library:ShowDynamicIslandNotification({Title = "Success", Content = "The newest feature loaded correctly.", Time = 4})
+        end},
+        {Name = "Warning", Callback = function()
+            Library:ShowDynamicIslandNotification({Title = "Warning", Content = "This is an island-only warning example.", Time = 4})
+        end},
+        {Name = "Message", Callback = function()
+            Library:ShowDynamicIslandNotification({Title = "New message", Content = "Dynamic Island can surface compact chat-style alerts too.", Time = 5})
+        end},
+        {Name = "Hide", Callback = function() Library:HideDynamicIsland() end}
+    }
+})
+
+LatestUX:AddButton({
+    Name = "Mirrored Notification With Buttons",
+    Description = "Creates the normal notification card and mirrors its title/content to the island.",
+    Callback = function()
+        Library:MakeNotification({
+            Name = "Update ready",
+            Content = "The example can mirror this notification into Dynamic Island.",
+            Image = "download",
+            DynamicIsland = true,
+            Time = 6,
+            Buttons = {
+                {Name = "Open Music", Callback = function() OpenMusicCenter("Player") end},
+                {Name = "Dismiss", Callback = function() print("notification dismissed") end}
+            }
+        })
+    end
+})
+
+LatestUX:AddSection({Name = "Media Shortcuts", Subtitle = "Jump directly into the rebuilt player views"})
+
+LatestUX:AddActionRow({
+    Name = "Media Center",
+    Outline = true,
+    Buttons = {
+        {Name = "Music", Callback = function() OpenMusicCenter("Player") end},
+        {Name = "Spotify", Callback = function() OpenMusicCenter("Spotify") end},
+        {Name = "Favorites", Callback = function() OpenMusicCenter("Favorites") end},
+        {Name = "Bytebeat", Callback = function() Library:OpenMediaCenter("Bytebeat") end}
+    }
+})
+
+LatestUX:AddNotice({
+    Name = "Nested scrolling",
+    Content = "The code sample below has its own scrolling viewport. Mouse-wheel or touch scrolling inside it should not move the main tab.",
+    Color = Color3.fromRGB(34, 197, 94)
+})
+
+LatestUX:AddCode({
+    Name = "Scrollable Code Preview",
+    Language = "lua",
+    Content = [[local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+
+local function describeCharacter(character)
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    print("character", character and character.Name or "nil")
+    print("humanoid", humanoid and humanoid.Health or "missing")
+    print("root", root and root.Position or "missing")
+end
+
+if player.Character then
+    describeCharacter(player.Character)
+end
+
+player.CharacterAdded:Connect(function(character)
+    character:WaitForChild("HumanoidRootPart", 5)
+    describeCharacter(character)
+end)
+
+for index = 1, 12 do
+    print("scroll test line", index)
+end
+
+RunService.Heartbeat:Connect(function()
+end)]],
+    Height = 230
+})
+
+LatestUX:AddTextArea({
+    Name = "Foreground Text Area",
+    Content = "This input has a bounded editor area and stays inside its own card.",
+    Placeholder = "Type notes here...",
+    Height = 110,
+    Callback = function(value)
+        print("latest ux notes", value)
+    end
+})
+
+LatestUX:AddSection({Name = "AI & Editor", Subtitle = "Shortcuts for the real XLQP Gen1 AI and executor workspace"})
+
+LatestUX:AddActionRow({
+    Name = "AI Workspace",
+    Outline = true,
+    Buttons = {
+        {Name = "Show AI", Callback = function() if XLQPAI and XLQPAI.Show then XLQPAI:Show() end end},
+        {Name = "AI Settings", Callback = function() Library:OpenAISettings("XLQP Gen1 AI") end},
+        {Name = "Executor", Callback = function() if Executor and Executor.SetScript then Executor:SetScript("print('Latest UX example')") end end}
+    }
+})
+
+LatestUX:AddColorpicker({
+    Name = "Accurate Color Picker",
+    Default = Color3.fromRGB(34, 197, 94),
+    Transparency = 0,
+    Callback = function(color, transparency)
+        print("latest ux color", color, transparency)
+    end
+})
+
+LatestUX:AddParagraph({
+    Name = "What this tab tests",
+    Content = "Dynamic Island notifications, notification mirroring, music/Spotify/Bytebeat shortcuts, foreground nested scrolling, resizable AI access, text-area sizing and the corrected color-picker drag tracking."
+})
+
+local UniversalTab = Window:MakeTab({
+    Name = "Universal",
+    Icon = "sliders-horizontal",
+    Color = "#8b5cf6",
+    Group = "Showcase 2",
+    GroupIcon = "boxes"
+})
+
+local Rail = UniversalTab:AddMiniTab({
+    Name = "Universal",
+    Position = "Left",
+    Width = 132,
+    Color = "#8b5cf6",
+    Tabs = {
+        {Title = "All", Icon = "layers", Badge = 1},
+        {Title = "Movement", Icon = "footprints"},
+        {Title = "Character", Icon = "user"},
+        {Title = "Troll", Icon = "ghost"},
+        {Title = "Visuals", Icon = "eye"},
+        {Title = "ESP", Icon = "crosshair"},
+        {Title = "Camera", Icon = "video"},
+        {Title = "Teleport", Icon = "map-pin"},
+        {Title = "Automation", Icon = "zap", Badge = 1}
+    },
+    Callback = function(_, title)
+        print("mini tab", title)
+    end
+})
+
+local AllPage = Rail.Tabs[1].Elements
+AllPage:AddParagraph({
+    Name = "All",
+    Content = "The rail is pinned beside the tab list. Each button swaps the page next to it, and every page scrolls on its own."
+})
+for index = 1, 10 do
+    AllPage:AddToggle({Name = "Feature " .. index, Default = false, Callback = function(v) print("all", index, v) end})
+end
+
+local MovementPage = Rail.Tabs[2].Elements
+MovementPage:AddSlider({Name = "Walk Speed", Min = 16, Max = 250, Default = 32, input = true, Callback = function(v) print("walkspeed", v) end})
+MovementPage:AddSlider({Name = "Jump Power", Min = 50, Max = 400, Default = 50, input = true, Callback = function(v) print("jump", v) end})
+MovementPage:AddToggle({Name = "Infinite Jump", Default = false, Callback = function(v) print("infjump", v) end})
+MovementPage:AddToggle({Name = "Fly", Default = false, Callback = function(v) print("fly", v) end})
+MovementPage:AddToggle({Name = "Noclip", Default = false, Callback = function(v) print("noclip", v) end})
+
+local CharacterPage = Rail.Tabs[3].Elements
+CharacterPage:AddToggle({Name = "God Mode", Default = false, Callback = function(v) print("god", v) end})
+CharacterPage:AddSlider({Name = "Hitbox Size", Min = 1, Max = 30, Default = 5, input = true, Callback = function(v) print("hitbox", v) end})
+CharacterPage:AddButton({Name = "Reset Character", Callback = function() print("reset") end})
+
+local TrollPage = Rail.Tabs[4].Elements
+TrollPage:AddToggle({Name = "Spin", Default = false, Callback = function(v) print("spin", v) end})
+TrollPage:AddButton({Name = "Fling Nearest", Callback = function() print("fling") end})
+
+local VisualsPage = Rail.Tabs[5].Elements
+VisualsPage:AddToggle({Name = "Fullbright", Default = false, Callback = function(v) print("fullbright", v) end})
+VisualsPage:AddColorpicker({Name = "Ambient", Default = Color3.fromRGB(180, 180, 200), Callback = function(c) print("ambient", c) end})
+
+Rail.Tabs[6].Elements:AddToggle({Name = "Box ESP", Default = false, Callback = function(v) print("esp", v) end})
+Rail.Tabs[6].Elements:AddToggle({Name = "Name ESP", Default = false, Callback = function(v) print("nameesp", v) end})
+Rail.Tabs[7].Elements:AddSlider({Name = "Field Of View", Min = 40, Max = 120, Default = 70, input = true, Callback = function(v) print("fov", v) end})
+Rail.Tabs[8].Elements:AddButton({Name = "Teleport To Spawn", Callback = function() print("tp") end})
+Rail.Tabs[9].Elements:AddToggle({Name = "Auto Farm", Default = false, Callback = function(v) print("autofarm", v) end})
+
+local IconTab = Window:MakeTab({
+    Name = "Icon Rail",
+    Icon = "grid-2x2",
+    Color = "Sky",
+    Group = "Showcase 2",
+    GroupIcon = "boxes"
+})
+
+local IconRail = IconTab:AddMiniTab({
+    Position = "Left",
+    Color = "Sky",
+    Tabs = {
+        {Icon = "layers"},
+        {Icon = "footprints"},
+        {Icon = "user"},
+        {Icon = "ghost"},
+        {Icon = "eye"},
+        {Icon = "crosshair"},
+        {Icon = "video"},
+        {Icon = "map-pin"}
+    }
+})
+
+IconRail.Tabs[1].Elements:AddParagraph({
+    Name = "Icons only",
+    Content = "Leave every Title empty and the rail collapses to an icon strip."
+})
+for index = 2, 8 do
+    IconRail.Tabs[index].Elements:AddToggle({Name = "Page " .. index .. " Toggle", Default = false, Callback = function(v) print("icon page", index, v) end})
+end
+
+local PrivateControls = Window:CreatePrivateTab({
+    Name = "Private Controls",
+    Kind = "Side Tab",
+    Icon = "lock-keyhole",
+    Group = "Private"
+})
+
+if PrivateControls then
+    PrivateControls.Elements:SetColumnRatio(0.56)
+
+    local PrivateLeft = Window:AddPrivateGroupbox({
+        Tab = PrivateControls,
+        Name = "Private Features",
+        Side = "Left",
+        Ratio = 56,
+        Icon = "shield-check"
+    })
+    PrivateLeft:AddToggle({Name = "Private Toggle", Default = true, Callback = function(value) DebugConsole:Info("Private Toggle: " .. tostring(value)) end})
+    PrivateLeft:AddDropdown({Name = "Private Mode", Options = {"Normal", "Advanced", "Developer"}, Default = "Normal"})
+    PrivateLeft:AddSlider({Name = "Private Power", Min = 0, Max = 100, Default = 65, input = true})
+
+    local PrivateRight = Window:AddPrivateGroupbox({
+        Tab = PrivateControls,
+        Name = "Private Actions",
+        Side = "Right",
+        Ratio = 56,
+        Icon = "mouse-pointer-click"
+    })
+    PrivateRight:AddButton({Name = "Open Private Editor GUI", Callback = function() Window:OpenPrivateTabEditor("Side Tab") end})
+    PrivateRight:AddButton({Name = "Open Working Dialog", Callback = function()
+        Window:AddDialog("PrivateButtonDialog", {
+            Title = "Private Button",
+            Description = "This dialog was opened from a user-created private groupbox.",
+            FooterButtons = {
+                Close = {Title = "Close", Variant = "Primary", Order = 1, Callback = function(dialog) dialog:Dismiss() end}
+            }
+        })
+    end})
+
+    Window:SelectPrivateTab("Private Controls")
+    local PrivateMini = Window:CreatePrivateMiniTab({
+        Tab = PrivateControls,
+        Name = "Private Mini Tabs",
+        Page = "Main",
+        Icon = "layout-grid",
+        Height = 250,
+        Expanded = true
+    })
+    if PrivateMini and PrivateMini.Tabs[1] then
+        PrivateMini.Tabs[1].Elements:AddParagraph({Name = "Editable Mini Page", Content = "Use the + button in this mini-tab rail to add more pages.", NoCard = true})
+        PrivateMini.Tabs[1].Elements:AddToggle({Name = "Mini Tab Toggle", Default = false})
+    end
+end
+
+local PrivateTopTools = Window:CreatePrivateTab({
+    Name = "Private Tools",
+    Kind = "Top Tab",
+    Icon = "code-2"
+})
+
+if PrivateTopTools then
+    PrivateTopTools.Elements:AddParagraph({
+        Name = "Private Top Tab",
+        Content = "The + and Edit buttons open the editor GUI without switching away. Create tabs, resize groupboxes, add mini tabs, or paste a function for any supported element.",
+        NoCard = true
+    })
+    PrivateTopTools.Elements:AddButton({Name = "Open Private Editor GUI", Callback = function() Window:OpenPrivateTabEditor("Top Tab") end})
+end
+
+Loading:SetTask(4, "Finalizing interface...", 0.92)
+Library:Init()
+
+task.spawn(function()
+    Library:WaitForSetup(600)
+    Library:WaitForUpdateLogs(600)
+    task.wait(0.35)
+    Library:MakeToast({Title = "Connected", Content = "Verbal Hub ready", Variant = "Success", Icon = "home", Time = 3})
+    task.wait(0.45)
+    if Library:GetDynamicIslandEnabled() then
+        Library:ShowDynamicIslandNotification({Title = "Verbal Hub", Content = "Latest UX showcase ready", Time = 4})
+    end
+end)
