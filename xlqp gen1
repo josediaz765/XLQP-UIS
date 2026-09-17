@@ -27469,8 +27469,6 @@ end
 			ZIndex = 100001,
 			Parent = WarningFrame
 		})
-		MakeDraggable(WarningHeader, WarningFrame)
-	
 		 TopStrip = Create("Frame", {
 			Name = "TopStrip",
 			Size = UDim2.new(1, 0, 0, 54),
@@ -27480,6 +27478,7 @@ end
 			ZIndex = 100001,
 			Parent = WarningHeader
 		})
+		MakeDraggable(TopStrip, WarningFrame)
 
 		 WarningImage = Create("ImageLabel", {
 			Name = "WarningImage",
@@ -27559,8 +27558,10 @@ end
 			Position = UDim2.new(0.5, 0, 1, -24),
 			AnchorPoint = Vector2.new(0.5, 1),
 			AutoButtonColor = false,
+			Active = true,
+			Selectable = true,
 			BackgroundColor3 = Color3.fromRGB(94, 82, 255),
-			ZIndex = 100002,
+			ZIndex = 100004,
 			Parent = WarningHeader
 		})
 	
@@ -27572,7 +27573,8 @@ end
 			TextSize = 16,
 			BackgroundTransparency = 1,
 			Size = UDim2.new(1, 0, 1, 0),
-			ZIndex = 100003,
+			ZIndex = 100005,
+			Active = false,
 			Parent = OkayButton
 		})
 		Create("UIStroke", { Thickness = 2, Color = Color3.fromRGB(255,255,255), Transparency = 0.6, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = OkayLabel })
@@ -27602,18 +27604,25 @@ end
 			TweenService:Create(OkayButton, TweenInfo.new(0.2), { BackgroundColor3 = okayBaseColor }):Play()
 		end)
 	
+		local warningAccepted = false
 		local clickConn
-		clickConn = OkayButton.MouseButton1Click:Connect(function()
-			clickConn:Disconnect()
+		local activatedConn
+		local touchEndConn
+		local function acceptInitialWarning()
+			if warningAccepted then return end
+			warningAccepted = true
+			if clickConn then clickConn:Disconnect() clickConn=nil end
+			if activatedConn then activatedConn:Disconnect() activatedConn=nil end
+			if touchEndConn then touchEndConn:Disconnect() touchEndConn=nil end
 			saveInitialWarningAccepted()
-			renderSteppedConn:Disconnect()
+			if renderSteppedConn then renderSteppedConn:Disconnect() renderSteppedConn=nil end
+			OkayButton.Active = false
 			local tweenInfoOut = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In)
 			TweenService:Create(blur, tweenInfoOut, { Size = 0 }):Play()
 			if warningScale.Parent then
 				TweenService:Create(warningScale, tweenInfoOut, { Scale = 0.7 }):Play()
 			end
 			TweenService:Create(WarningFrame, tweenInfoOut, { BackgroundTransparency = 1 }):Play()
-			
 			task.delay(tweenInfoOut.Time, function()
 				if blur and blur.Parent then blur:Destroy() end
 				if WarningContainer and WarningContainer.Parent then WarningContainer:Destroy() end
@@ -27626,6 +27635,13 @@ end
 					end)
 				end
 			end)
+		end
+		activatedConn = OkayButton.Activated:Connect(acceptInitialWarning)
+		clickConn = OkayButton.MouseButton1Click:Connect(acceptInitialWarning)
+		touchEndConn = OkayButton.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.Touch then
+				acceptInitialWarning()
+			end
 		end)
 	end
 XLQPGen1KeyCrypt=XLQPGen1KeyCrypt or {}
