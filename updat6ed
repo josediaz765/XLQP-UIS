@@ -1878,16 +1878,21 @@ function Library:SafeCallback(Func: (...any) -> ...any, ...: any)
         return
     end
 
+    local Traceback
     local Result = table.pack(xpcall(Func, function(Error)
-        task.defer(error, debug.traceback(Error, 2))
+        Traceback = debug.traceback(Error, 2)
         if Library.NotifyOnError and Library.Notify then
-            Library:Notify(Error)
+            pcall(Library.Notify, Library, Error)
         end
-
         return Error
     end, ...))
 
     if not Result[1] then
+        if Library.IsMobile or Library.SuppressCallbackErrors then
+            warn("[Obsidian] " .. tostring(Traceback or Result[2]))
+        else
+            task.defer(error, Traceback or tostring(Result[2]))
+        end
         return nil
     end
 
@@ -2028,6 +2033,64 @@ local function GetSnapGuideOffset(Name: string, SnappedValue: number, ElemDimens
     return SnappedValue
 end
 
+local ObsidianDragController = {
+    Active = nil,
+    InputChanged = nil,
+    InputEnded = nil,
+}
+
+local function EnsureObsidianDragController()
+    if ObsidianDragController.InputChanged and ObsidianDragController.InputChanged.Connected then
+        return ObsidianDragController
+    end
+
+    ObsidianDragController.InputChanged = UserInputService.InputChanged:Connect(function(Input)
+        local Active = ObsidianDragController.Active
+        if not Active or not Active.Update then
+            return
+        end
+
+        local Success = pcall(Active.Update, Input)
+        if not Success and ObsidianDragController.Active == Active then
+            if Active.Stop then
+                pcall(Active.Stop, true)
+            else
+                ObsidianDragController.Active = nil
+            end
+        end
+    end)
+
+    ObsidianDragController.InputEnded = UserInputService.InputEnded:Connect(function(Input)
+        local Active = ObsidianDragController.Active
+        if not Active then
+            return
+        end
+
+        local ActiveInput = Active.Input
+        if not ActiveInput or Input == ActiveInput or Input.UserInputType == ActiveInput.UserInputType then
+            if Active.Stop then
+                pcall(Active.Stop, false)
+            else
+                ObsidianDragController.Active = nil
+            end
+        end
+    end)
+
+    Library:GiveSignal(ObsidianDragController.InputChanged)
+    Library:GiveSignal(ObsidianDragController.InputEnded)
+    return ObsidianDragController
+end
+
+local function StopObsidianActiveDrag(Cancelled)
+    local Controller = EnsureObsidianDragController()
+    local Active = Controller.Active
+    if Active and Active.Stop then
+        pcall(Active.Stop, Cancelled == true)
+    else
+        Controller.Active = nil
+    end
+end
+
 function Library:MakeDraggable(
     UI: GuiObject,
     DragFrame: GuiObject,
@@ -2035,16 +2098,21 @@ function Library:MakeDraggable(
     IsMainWindow: boolean?,
     SnapConfig: { Enabled: boolean, Distance: number?, Margin: number?, AvoidCoreGui: boolean? }?
 )
-    local StartPos
-    local FramePos
-    local Dragging = false
-    local Changed
-    local InputBegan
-    local InputChanged
+    if not UI or not DragFrame then
+        return
+    end
 
-    local SnapGuideX, SnapGuideY
+    local Controller = EnsureObsidianDragController()
+    local InputBegan
+    local SnapGuideX
+    local SnapGuideY
+    local Destroyed = false
 
     local function GetSnapGuides()
+        if Library.IsMobile or Library.PerformanceMode then
+            return nil, nil
+        end
+
         if not SnapGuideX then
             SnapGuideX = New("Frame", {
                 BackgroundColor3 = "AccentColor",
@@ -2083,49 +2151,73 @@ function Library:MakeDraggable(
         end
     end
 
+    local function ClampMobilePosition(FramePos, NewX, NewY)
+        if not Library.IsMobile and not IsMainWindow then
+            return NewX, NewY
+        end
+
+        local Camera = workspace.CurrentCamera
+        local Viewport = Camera and Camera.ViewportSize or Vector2.new(1920, 1080)
+        local Size = UI.AbsoluteSize
+        local KeepX = math.min(math.max(Size.X * 0.2, 44), 72)
+        local KeepY = math.min(math.max(Size.Y * 0.12, 36), 64)
+        local AbsX = FramePos.X.Scale * Viewport.X + NewX
+        local AbsY = FramePos.Y.Scale * Viewport.Y + NewY
+        local TopLeftInset, BottomRightInset = GetCoreGuiInset()
+        local MinX = TopLeftInset.X - math.max(0, Size.X - KeepX)
+        local MaxX = Viewport.X - BottomRightInset.X - KeepX
+        local MinY = TopLeftInset.Y
+        local MaxY = Viewport.Y - BottomRightInset.Y - KeepY
+        AbsX = math.clamp(AbsX, MinX, math.max(MinX, MaxX))
+        AbsY = math.clamp(AbsY, MinY, math.max(MinY, MaxY))
+        return AbsX - FramePos.X.Scale * Viewport.X, AbsY - FramePos.Y.Scale * Viewport.Y
+    end
+
     InputBegan = DragFrame.InputBegan:Connect(function(Input: InputObject)
-        if not IsClickInput(Input) or IsMainWindow and Library.CantDragForced then
+        if Destroyed or not IsClickInput(Input) or IsMainWindow and Library.CantDragForced then
             return
         end
 
-        StartPos = Input.Position
-        FramePos = UI.Position
-        Dragging = true
+        if Controller.Active and Controller.Active.Stop then
+            pcall(Controller.Active.Stop, true)
+        end
 
-        Changed = Input.Changed:Connect(function()
-            if Input.UserInputState ~= Enum.UserInputState.End then
+        local StartPos = Input.Position
+        local FramePos = UI.Position
+        local Stopped = false
+        local Active
+
+        local function Stop()
+            if Stopped then
+                return
+            end
+            Stopped = true
+            HideSnapGuides()
+            if Controller.Active == Active then
+                Controller.Active = nil
+            end
+        end
+
+        local function Update(ChangedInput)
+            if Stopped or Destroyed or not UI.Parent or not DragFrame.Parent then
+                Stop()
                 return
             end
 
-            Dragging = false
-            HideSnapGuides()
-
-            if Changed and Changed.Connected then
-                Changed:Disconnect()
-                Changed = nil
-            end
-        end)
-    end)
-
-    InputChanged = UserInputService.InputChanged:Connect(function(Input: InputObject)
-        if
-            (not IgnoreToggled and not Library.Toggled)
-            or (IsMainWindow and Library.CantDragForced)
-            or not (ScreenGui and ScreenGui.Parent)
-        then
-            Dragging = false
-            HideSnapGuides()
-
-            if Changed and Changed.Connected then
-                Changed:Disconnect()
-                Changed = nil
+            if (not IgnoreToggled and not Library.Toggled) or (IsMainWindow and Library.CantDragForced) or not (ScreenGui and ScreenGui.Parent) then
+                Stop()
+                return
             end
 
-            return
-        end
+            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput ~= Input then
+                return
+            end
 
-        if Dragging and IsHoverInput(Input) then
-            local Delta = Input.Position - StartPos
+            if not IsHoverInput(ChangedInput) then
+                return
+            end
+
+            local Delta = ChangedInput.Position - StartPos
             local NewX = FramePos.X.Offset + Delta.X
             local NewY = FramePos.Y.Offset + Delta.Y
 
@@ -2133,10 +2225,8 @@ function Library:MakeDraggable(
                 local ViewportSize = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
                 local Distance = SnapConfig.Distance or 28
                 local Margin = SnapConfig.Margin or 8
-
                 local AbsX = FramePos.X.Scale * ViewportSize.X + NewX
                 local AbsY = FramePos.Y.Scale * ViewportSize.Y + NewY
-
                 local ElemSize = UI.AbsoluteSize
                 local TargetsX, TargetsY = GetSnapEdges(ElemSize, ViewportSize, Margin, SnapConfig.AvoidCoreGui ~= false)
                 local SnappedX, SnappedXName = GetClosestSnapTarget(AbsX, TargetsX, Distance)
@@ -2150,49 +2240,47 @@ function Library:MakeDraggable(
                 end
 
                 local GuideX, GuideY = GetSnapGuides()
-                GuideX.Visible = SnappedX ~= nil
-                if SnappedX then
-                    GuideX.Position = UDim2.fromOffset(GetSnapGuideOffset(SnappedXName, SnappedX, ElemSize.X), 0)
-                end
-
-                GuideY.Visible = SnappedY ~= nil
-                if SnappedY then
-                    GuideY.Position = UDim2.fromOffset(0, GetSnapGuideOffset(SnappedYName, SnappedY, ElemSize.Y))
+                if GuideX and GuideY then
+                    GuideX.Visible = SnappedX ~= nil
+                    if SnappedX then
+                        GuideX.Position = UDim2.fromOffset(GetSnapGuideOffset(SnappedXName, SnappedX, ElemSize.X), 0)
+                    end
+                    GuideY.Visible = SnappedY ~= nil
+                    if SnappedY then
+                        GuideY.Position = UDim2.fromOffset(0, GetSnapGuideOffset(SnappedYName, SnappedY, ElemSize.Y))
+                    end
                 end
             end
 
+            NewX, NewY = ClampMobilePosition(FramePos, NewX, NewY)
             UI.Position = UDim2.new(FramePos.X.Scale, NewX, FramePos.Y.Scale, NewY)
         end
+
+        Active = {
+            Input = Input,
+            UI = UI,
+            Update = Update,
+            Stop = Stop,
+        }
+        Controller.Active = Active
     end)
 
-    Library:GiveSignal(InputChanged)
     Library:GiveSignal(InputBegan)
 
     UI.Destroying:Once(function()
-        if InputChanged and InputChanged.Connected then
-            InputChanged:Disconnect()
+        Destroyed = true
+        if Controller.Active and Controller.Active.UI == UI and Controller.Active.Stop then
+            pcall(Controller.Active.Stop, true)
         end
-
         if InputBegan and InputBegan.Connected then
             InputBegan:Disconnect()
         end
-
-        if Changed and Changed.Connected then
-            Changed:Disconnect()
-        end
-
         if SnapGuideX then
             SnapGuideX:Destroy()
         end
         if SnapGuideY then
             SnapGuideY:Destroy()
         end
-
-        local IdxChanged = table.find(Library.Signals, InputChanged)
-        if IdxChanged then
-            table.remove(Library.Signals, IdxChanged)
-        end
-
         local IdxBegan = table.find(Library.Signals, InputBegan)
         if IdxBegan then
             table.remove(Library.Signals, IdxBegan)
@@ -18144,239 +18232,298 @@ function Library:MakeBoxPopOut(Box, Options)
     Box.PopOutPlaceholder = nil
     Box.PopOutPinned = false
     Box.PopOutLocked = false
+
     local Holder = Box.Holder
     local BoxHolder = Box.BoxHolder
     local Header = Options.Header or Box.CollapseButton or Box.Header or Holder
+    local Controller = EnsureObsidianDragController()
+
     if not Box.PopOutEnabled or not Holder or not BoxHolder or not Header then
-        function Box:SetPoppedOut() end
-        function Box:TogglePoppedOut() end
-        function Box:SetPopOutPinned() end
-        function Box:SetPopOutLocked() end
-        function Box:BringPopOutToFront() end
-        function Box:SetPopOutPosition() end
+        function Box:SetPoppedOut() return Box end
+        function Box:TogglePoppedOut() return Box end
+        function Box:SetPopOutPinned() return false end
+        function Box:SetPopOutLocked() return false end
+        function Box:BringPopOutToFront() return Box end
+        function Box:SetPopOutPosition() return Box end
         function Box:GetPopOutPosition() return nil end
-        function Box:ResetPopOutPosition() end
-        function Box:CenterPopOut() end
+        function Box:ResetPopOutPosition() return Box end
+        function Box:CenterPopOut() return Box end
         return Box
     end
+
     local Placeholder
     local Float
     local FloatScale
     local SizeConnection
     local VisibilityConnection
-    local FloatInputConnection
     local OriginalParent
     local OriginalSize
     local OriginalPosition
     local OriginalAnchorPoint
     local OriginalLayoutOrder
     local LastDockPosition
-    local DragState = "Idle"
-    local DragInput
-    local PressMouse
-    local DragStartPosition
-    local DragChanged
-    local DragMoved = false
+    local SyncingSize = false
+    local HeaderConnection
+
     local function ScaleValue()
         return math.max(tonumber(Library.DPIScale) or 1, 0.01)
     end
+
     local function ViewportSize()
         local Camera = workspace.CurrentCamera
         return Camera and Camera.ViewportSize or Vector2.new(1920, 1080)
     end
+
     local function ClampPosition(Position, LogicalSize)
-        if Options.ClampToScreen == false then return Position end
+        if Options.ClampToScreen == false then
+            return Position
+        end
+
         local Scale = ScaleValue()
         local Viewport = ViewportSize()
-        local Padding = tonumber(Options.ScreenPadding) or (Library.IsMobile and 12 or 8)
+        local Padding = tonumber(Options.ScreenPadding) or (Library.IsMobile and 10 or 8)
         local Width = LogicalSize.X * Scale
         local Height = LogicalSize.Y * Scale
-        local X = math.clamp(Position.X.Offset, Padding, math.max(Padding, Viewport.X - Width - Padding))
-        local Y = math.clamp(Position.Y.Offset, Padding, math.max(Padding, Viewport.Y - Height - Padding))
+        local TopLeftInset, BottomRightInset = GetCoreGuiInset()
+        local MinX = TopLeftInset.X + Padding
+        local MinY = TopLeftInset.Y + Padding
+        local MaxX = Viewport.X - BottomRightInset.X - math.min(Width, Viewport.X - Padding * 2) - Padding
+        local MaxY = Viewport.Y - BottomRightInset.Y - math.min(Height, Viewport.Y - Padding * 2) - Padding
+        local X = math.clamp(Position.X.Offset, MinX, math.max(MinX, MaxX))
+        local Y = math.clamp(Position.Y.Offset, MinY, math.max(MinY, MaxY))
         return UDim2.fromOffset(X, Y)
     end
+
     local function LogicalHolderSize()
         local Scale = ScaleValue()
         local Size = Holder.AbsoluteSize
-        local Width = math.max(80, Size.X / Scale)
+        local Width = math.max(Library.IsMobile and 180 or 80, Size.X / Scale)
         local Height = math.max(34, Size.Y / Scale)
+        local Viewport = ViewportSize()
+        if Library.IsMobile then
+            Width = math.min(Width, math.max(180, Viewport.X / Scale - 20))
+            Height = math.min(Height, math.max(120, Viewport.Y / Scale - 28))
+        end
         return Vector2.new(Width, Height)
     end
+
     local function RaiseFloat()
-        if not Float or not Float.Parent then return end
-        local Max = 1
-        for _, Child in Library.Floats:GetChildren() do
-            if Child:IsA("GuiObject") and Child ~= Float then
-                Max = math.max(Max, Child.ZIndex)
-            end
+        if not Float or not Float.Parent then
+            return
         end
-        Float.ZIndex = Max + 1
-        Float.Parent = Library.Overlay
-        Float.Parent = Library.Floats
+        Library._FloatZCounter = (Library._FloatZCounter or 20) + 1
+        if Library._FloatZCounter > 9000 then
+            Library._FloatZCounter = 20
+        end
+        Float.ZIndex = Library._FloatZCounter
     end
+
     local function SyncSize()
-        if not Box.PoppedOut or not Float or not Holder.Parent then return end
-        local Size = LogicalHolderSize()
-        Float.Size = UDim2.fromOffset(Size.X, Size.Y)
-        Holder.Size = UDim2.new(1, 0, 0, Size.Y)
-        if Placeholder and Placeholder.Parent then
-            Placeholder.Size = UDim2.new(1, 0, 0, Size.Y)
+        if SyncingSize or not Box.PoppedOut or not Float or not Holder.Parent then
+            return
         end
-        Float.Position = ClampPosition(Float.Position, Size)
+        SyncingSize = true
+        local Success = pcall(function()
+            local Size = LogicalHolderSize()
+            Float.Size = UDim2.fromOffset(Size.X, Size.Y)
+            Holder.Size = UDim2.new(1, 0, 0, Size.Y)
+            if Placeholder and Placeholder.Parent then
+                Placeholder.Size = UDim2.new(1, 0, 0, Size.Y)
+            end
+            Float.Position = ClampPosition(Float.Position, Size)
+        end)
+        SyncingSize = false
+        if not Success and Box.PoppedOut then
+            task.defer(function()
+                if Box.PoppedOut then
+                    pcall(Box.SetPoppedOut, Box, false)
+                end
+            end)
+        end
     end
+
     local function SyncVisible()
         if Float then
             Float.Visible = BoxHolder.Visible ~= false and Box.Visible ~= false
         end
     end
+
     local function MakePlaceholder(Height)
-        local Frame = New("Frame", {
+        return New("Frame", {
             Name = "PopOutPlaceholder",
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, Height),
             LayoutOrder = OriginalLayoutOrder or 0,
-            Parent = BoxHolder,
+            Active = false,
+            Parent = OriginalParent or BoxHolder,
         })
-        return Frame
     end
-    local function StopDrag()
-        if DragState == "Idle" then return end
-        local WasDragging = DragState == "Dragging"
-        DragState = "Idle"
-        DragInput = nil
-        PressMouse = nil
-        DragStartPosition = nil
-        if DragChanged and DragChanged.Connected then
-            DragChanged:Disconnect()
-        end
-        DragChanged = nil
-        if WasDragging and Box.PoppedOut and Float and not Box.PopOutPinned and not Box.PopOutLocked then
-            local Center = Float.AbsolutePosition + Float.AbsoluteSize * 0.5
-            if Placeholder and Placeholder.Parent and Library.Toggled then
-                local PlaceholderCenter = Placeholder.AbsolutePosition + Placeholder.AbsoluteSize * 0.5
-                if (Center - PlaceholderCenter).Magnitude <= (tonumber(Library.PopOutSnapDistance) or 80) then
-                    Box:SetPoppedOut(false)
-                    return
-                end
-            end
-        end
-        DragMoved = false
-    end
+
     function Box:BringPopOutToFront()
         RaiseFloat()
         return Box
     end
+
     function Box:SetPopOutPinned(Value)
         Box.PopOutPinned = Value == true
         return Box.PopOutPinned
     end
+
     function Box:SetPopOutLocked(Value)
         Box.PopOutLocked = Value == true
         return Box.PopOutLocked
     end
+
     function Box:GetPopOutPosition()
         return Float and Float.Position or LastDockPosition
     end
+
     function Box:SetPopOutPosition(Position)
-        if typeof(Position) ~= "UDim2" then return Box end
+        if typeof(Position) ~= "UDim2" then
+            return Box
+        end
         LastDockPosition = Position
         if Float then
             Float.Position = ClampPosition(Position, LogicalHolderSize())
         end
         return Box
     end
+
     function Box:ResetPopOutPosition()
-        if not Box.PoppedOut then return Box end
+        if not Box.PoppedOut then
+            return Box
+        end
         local Position = Placeholder and Placeholder.AbsolutePosition or Holder.AbsolutePosition
-        Box:SetPopOutPosition(UDim2.fromOffset(Position.X, Position.Y))
-        return Box
+        return Box:SetPopOutPosition(UDim2.fromOffset(Position.X, Position.Y))
     end
+
     function Box:CenterPopOut()
-        if not Box.PoppedOut or not Float then return Box end
+        if not Box.PoppedOut or not Float then
+            return Box
+        end
         local Size = LogicalHolderSize()
         local Scale = ScaleValue()
         local Viewport = ViewportSize()
-        Box:SetPopOutPosition(UDim2.fromOffset((Viewport.X - Size.X * Scale) * 0.5, (Viewport.Y - Size.Y * Scale) * 0.5))
-        return Box
+        return Box:SetPopOutPosition(UDim2.fromOffset((Viewport.X - Size.X * Scale) * 0.5, (Viewport.Y - Size.Y * Scale) * 0.5))
     end
+
     function Box:SetPoppedOut(Value, FloatPosition)
-        if Box.Destroyed or not Box.PopOutEnabled then return Box end
-        Value = Value == true
-        if Box.PoppedOut == Value then
-            if Value and typeof(FloatPosition) == "UDim2" then Box:SetPopOutPosition(FloatPosition) end
+        if Box.Destroyed or not Box.PopOutEnabled then
             return Box
         end
+
+        Value = Value == true
+        if Box.PoppedOut == Value then
+            if Value and typeof(FloatPosition) == "UDim2" then
+                Box:SetPopOutPosition(FloatPosition)
+            end
+            return Box
+        end
+
         if Value then
             ObsidianEnsureFloatLayers()
-            if not Library.Floats or not Library.Floats.Parent then return Box end
-            if Box.Resize then pcall(Box.Resize, Box) end
-            if Options.Before then Library:SafeCallback(Options.Before) end
+            if not Library.Floats or not Library.Floats.Parent then
+                return Box
+            end
+
+            if Box.Resize then
+                pcall(Box.Resize, Box)
+            end
+            if Options.Before then
+                Library:SafeCallback(Options.Before)
+            end
+
             OriginalParent = Holder.Parent
             OriginalSize = Holder.Size
             OriginalPosition = Holder.Position
             OriginalAnchorPoint = Holder.AnchorPoint
             OriginalLayoutOrder = Holder.LayoutOrder
+
             local AbsolutePosition = Holder.AbsolutePosition
             local Size = LogicalHolderSize()
             Placeholder = MakePlaceholder(Size.Y)
             Float = New("Frame", {
                 Name = "ObsidianPopOut",
-                Active = true,
+                Active = false,
                 BackgroundTransparency = 1,
                 ClipsDescendants = false,
                 Position = UDim2.fromOffset(AbsolutePosition.X, AbsolutePosition.Y),
                 Size = UDim2.fromOffset(Size.X, Size.Y),
-                ZIndex = 2,
+                ZIndex = 20,
                 Parent = Library.Floats,
             })
             FloatScale = New("UIScale", {Parent = Float})
             table.insert(Library.Scales, FloatScale)
             FloatScale.Scale = ScaleValue() - (tonumber(Library.ScalesOffset[FloatScale]) or 0)
+
             Holder.Parent = Float
             Holder.AnchorPoint = Vector2.zero
             Holder.Position = UDim2.fromOffset(0, 0)
             Holder.LayoutOrder = 0
             Holder.Size = UDim2.new(1, 0, 0, Size.Y)
+
             Box.PopOutFloat = Float
             Box.PopOutPlaceholder = Placeholder
             Box.PoppedOut = true
+
             if typeof(FloatPosition) == "UDim2" then
                 Float.Position = FloatPosition
             elseif LastDockPosition then
                 Float.Position = LastDockPosition
             end
+
             Float.Position = ClampPosition(Float.Position, Size)
             LastDockPosition = Float.Position
+
             if not table.find(Library.DraggableElements, Float) then
                 table.insert(Library.DraggableElements, Float)
             end
+
             SizeConnection = Holder:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
                 task.defer(SyncSize)
             end)
             VisibilityConnection = BoxHolder:GetPropertyChangedSignal("Visible"):Connect(SyncVisible)
-            FloatInputConnection = Float.InputBegan:Connect(function(Input)
-                if IsClickInput(Input) then RaiseFloat() end
-            end)
+
             SyncVisible()
             RaiseFloat()
-            if Options.After then Library:SafeCallback(Options.After) end
+            if Options.After then
+                Library:SafeCallback(Options.After)
+            end
             task.defer(SyncSize)
             return Box
         end
+
+        if Controller.Active and Controller.Active.Owner == Box and Controller.Active.Stop then
+            pcall(Controller.Active.Stop, true)
+        end
+
         LastDockPosition = Float and Float.Position or LastDockPosition
-        if SizeConnection then SizeConnection:Disconnect() SizeConnection = nil end
-        if VisibilityConnection then VisibilityConnection:Disconnect() VisibilityConnection = nil end
-        if FloatInputConnection then FloatInputConnection:Disconnect() FloatInputConnection = nil end
+
+        if SizeConnection then
+            SizeConnection:Disconnect()
+            SizeConnection = nil
+        end
+        if VisibilityConnection then
+            VisibilityConnection:Disconnect()
+            VisibilityConnection = nil
+        end
+
         if Float then
             local Index = table.find(Library.DraggableElements, Float)
-            if Index then table.remove(Library.DraggableElements, Index) end
+            if Index then
+                table.remove(Library.DraggableElements, Index)
+            end
         end
+
         if FloatScale then
             local Index = table.find(Library.Scales, FloatScale)
-            if Index then table.remove(Library.Scales, Index) end
+            if Index then
+                table.remove(Library.Scales, Index)
+            end
             Library.ScalesOffset[FloatScale] = nil
         end
         FloatScale = nil
+
         if Holder and Holder.Parent then
             Holder.Parent = OriginalParent or BoxHolder
             Holder.Size = OriginalSize or Holder.Size
@@ -18384,75 +18531,145 @@ function Library:MakeBoxPopOut(Box, Options)
             Holder.AnchorPoint = OriginalAnchorPoint or Vector2.zero
             Holder.LayoutOrder = OriginalLayoutOrder or 0
         end
-        if Placeholder then Placeholder:Destroy() end
+
+        if Placeholder then
+            Placeholder:Destroy()
+        end
         Placeholder = nil
-        if Float then Float:Destroy() end
+
+        if Float then
+            Float:Destroy()
+        end
         Float = nil
+
         Box.PopOutFloat = nil
         Box.PopOutPlaceholder = nil
         Box.PoppedOut = false
-        if Box.Resize then Library:SafeCallback(Box.Resize, Box) end
-        if Options.After then Library:SafeCallback(Options.After) end
+
+        if Box.Resize then
+            pcall(Box.Resize, Box)
+        end
+        if Options.After then
+            Library:SafeCallback(Options.After)
+        end
         return Box
     end
+
     function Box:TogglePoppedOut()
         return Box:SetPoppedOut(not Box.PoppedOut)
     end
+
     local function BeginDrag(Input)
-        if DragState ~= "Idle" or Box.Destroyed or Box.PopOutLocked then return end
-        DragState = "Holding"
-        DragInput = Input
-        PressMouse = Vector2.new(Input.Position.X, Input.Position.Y)
-        DragStartPosition = Float and Float.Position or nil
-        DragMoved = false
-        if Box.PoppedOut then RaiseFloat() end
-        DragChanged = Input.Changed:Connect(function()
-            if Input.UserInputState == Enum.UserInputState.End then StopDrag() end
-        end)
-        task.delay(tonumber(Library.PopOutHoldTime) or 0.15, function()
-            if DragState ~= "Holding" or DragInput ~= Input then return end
-            DragState = "Dragging"
-            if Box.PoppedOut and Float then
-                RaiseFloat()
+        if Box.Destroyed or Box.PopOutLocked or not IsClickInput(Input) then
+            return
+        end
+
+        if Controller.Active and Controller.Active.Stop then
+            pcall(Controller.Active.Stop, true)
+        end
+
+        local PressMouse = Vector2.new(Input.Position.X, Input.Position.Y)
+        local DragStartPosition = Float and Float.Position or nil
+        local Dragging = false
+        local Stopped = false
+        local Active
+
+        if Box.PoppedOut then
+            RaiseFloat()
+        end
+
+        local function Stop(Cancelled)
+            if Stopped then
+                return
+            end
+            Stopped = true
+
+            if Controller.Active == Active then
+                Controller.Active = nil
+            end
+
+            if not Cancelled and Dragging and Box.PoppedOut and Float and not Box.PopOutPinned and not Box.PopOutLocked then
+                local Center = Float.AbsolutePosition + Float.AbsoluteSize * 0.5
+                if Placeholder and Placeholder.Parent and Library.Toggled then
+                    local PlaceholderCenter = Placeholder.AbsolutePosition + Placeholder.AbsoluteSize * 0.5
+                    if (Center - PlaceholderCenter).Magnitude <= (tonumber(Library.PopOutSnapDistance) or 80) then
+                        Box:SetPoppedOut(false)
+                    end
+                end
+            end
+        end
+
+        local function Update(ChangedInput)
+            if Stopped or Box.Destroyed or Box.PopOutLocked then
+                Stop(true)
+                return
+            end
+
+            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput ~= Input then
+                return
+            end
+            if not IsHoverInput(ChangedInput) then
+                return
+            end
+
+            local Current = Vector2.new(ChangedInput.Position.X, ChangedInput.Position.Y)
+            local Delta = Current - PressMouse
+            local Threshold = tonumber(Library.PopOutDragThreshold) or (Library.IsMobile and 14 or 8)
+
+            if not Dragging then
+                if Delta.Magnitude < Threshold then
+                    return
+                end
+                Dragging = true
+            end
+
+            if not Box.PoppedOut then
+                local StartAbsolute = Holder.AbsolutePosition
+                Box:SetPoppedOut(true, UDim2.fromOffset(StartAbsolute.X, StartAbsolute.Y))
+                if not Float then
+                    Stop(true)
+                    return
+                end
                 DragStartPosition = Float.Position
             end
-        end)
-    end
-    local function UpdateDrag(Input)
-        if DragState ~= "Dragging" or not PressMouse or Box.PopOutLocked then return end
-        local Current = Vector2.new(Input.Position.X, Input.Position.Y)
-        local Delta = Current - PressMouse
-        local Threshold = tonumber(Library.PopOutDragThreshold) or 8
-        if not Box.PoppedOut then
-            if Delta.Magnitude < Threshold then return end
-            local StartAbsolute = Holder.AbsolutePosition
-            Box:SetPoppedOut(true, UDim2.fromOffset(StartAbsolute.X, StartAbsolute.Y))
-            if not Float then return end
-            DragStartPosition = Float.Position
-            DragMoved = true
-        elseif Delta.Magnitude >= Threshold then
-            DragMoved = true
+
+            if Float and DragStartPosition then
+                local Target = UDim2.fromOffset(DragStartPosition.X.Offset + Delta.X, DragStartPosition.Y.Offset + Delta.Y)
+                Float.Position = ClampPosition(Target, LogicalHolderSize())
+                LastDockPosition = Float.Position
+            end
         end
-        if Float and DragStartPosition then
-            local Target = UDim2.fromOffset(DragStartPosition.X.Offset + Delta.X, DragStartPosition.Y.Offset + Delta.Y)
-            Float.Position = ClampPosition(Target, LogicalHolderSize())
-            LastDockPosition = Float.Position
-        end
+
+        Active = {
+            Input = Input,
+            Owner = Box,
+            Update = Update,
+            Stop = Stop,
+        }
+        Controller.Active = Active
     end
-    Library:GiveSignal(Header.InputBegan:Connect(function(Input)
-        if IsClickInput(Input) then BeginDrag(Input) end
-    end))
-    Library:GiveSignal(UserInputService.InputChanged:Connect(function(Input)
-        if IsHoverInput(Input) then UpdateDrag(Input) end
-    end))
+
+    HeaderConnection = Header.InputBegan:Connect(BeginDrag)
+    if Box.Connections then
+        table.insert(Box.Connections, HeaderConnection)
+    else
+        Library:GiveSignal(HeaderConnection)
+    end
+
     if Box.Destroy and not Box._PopOutDestroyWrapped then
         local BaseDestroy = Box.Destroy
         Box.Destroy = function(Self, ...)
-            if Self.PoppedOut then Self:SetPoppedOut(false) end
+            if Controller.Active and Controller.Active.Owner == Self and Controller.Active.Stop then
+                pcall(Controller.Active.Stop, true)
+            end
+            if Self.PoppedOut then
+                pcall(Self.SetPoppedOut, Self, false)
+            end
             return BaseDestroy(Self, ...)
         end
         Box._PopOutDestroyWrapped = true
     end
+
     return Box
 end
 
@@ -18552,13 +18769,32 @@ function Library:CreateWindow(WindowInfo)
         local Camera = workspace.CurrentCamera
         local Viewport = Camera and Camera.ViewportSize or Vector2.new(800,600)
         if WindowInfo.Size == nil then
-            WindowInfo.Size = UDim2.fromOffset(math.max(360,math.min(680,Viewport.X-24)), math.max(280,math.min(560,Viewport.Y-52)))
+            WindowInfo.Size = UDim2.fromOffset(math.max(340,math.min(680,Viewport.X-20)), math.max(250,math.min(560,Viewport.Y-44)))
         end
-        if WindowInfo.MinContainerWidth == nil then WindowInfo.MinContainerWidth = 220 end
+        if WindowInfo.MinContainerWidth == nil then WindowInfo.MinContainerWidth = 210 end
         if WindowInfo.ShowMobileButtons == nil then WindowInfo.ShowMobileButtons = true end
         if WindowInfo.EnableCompacting == nil then WindowInfo.EnableCompacting = true end
-        if WindowInfo.SearchbarSize == nil then WindowInfo.SearchbarSize = UDim2.fromScale(0.52,1) end
+        if WindowInfo.SearchbarSize == nil then WindowInfo.SearchbarSize = UDim2.fromScale(0.5,1) end
         if WindowInfo.AddGroupboxAnimation == nil then WindowInfo.AddGroupboxAnimation = false end
+        if WindowInfo.ForceMobileSidebarResize ~= true then WindowInfo.EnableSidebarResize = false end
+        if WindowInfo.ForceMobileResize ~= true then WindowInfo.Resizable = false end
+        if WindowInfo.ForceMobileSearchValues ~= true then WindowInfo.SearchValues = false end
+        WindowInfo.ShowCustomCursor = false
+        Library.ShowCustomCursor = false
+        Library.SuppressCallbackErrors = true
+        Library.PopOutDragThreshold = math.max(tonumber(Library.PopOutDragThreshold) or 8, 14)
+        if WindowInfo.MobilePerformanceMode ~= false then
+            WindowInfo.Animations = {
+                ToggleWindow = false,
+                TabSwitch = false,
+                Groupbox = false,
+                Dropdown = false,
+                KeyPicker = false,
+                SubTabUnderline = false,
+                SidebarSubTabs = false,
+            }
+            Library:SetPerformanceMode(true)
+        end
     end
     local Window = BaseCreateWindow(self, WindowInfo)
     ObsidianEnsureFloatLayers()
