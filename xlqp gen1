@@ -9500,8 +9500,7 @@ function XLQPGen1:_CreateClosedTabList(Context)
 				end
 			end
 		end
-		local quickViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
-		local touch = inputService.TouchEnabled and (not inputService.KeyboardEnabled or quickViewport.X<=1600 or quickViewport.Y<=900)
+		local touch = inputService.TouchEnabled and not inputService.KeyboardEnabled
 		local itemSize = touch and 40 or 36
 		local itemGap = touch and 4 or 4
 		layout.Padding = UDim.new(0, itemGap)
@@ -13155,43 +13154,17 @@ XLQPGen1.Folder=WindowConfig.ConfigFolder
 XLQPGen1.SaveCfg=WindowConfig.SaveConfig
 local UserInputService=game:GetService("UserInputService")
 local mobileViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
-local isMobile=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or mobileViewport.X<=1600 or mobileViewport.Y<=900)
+local isMobile=UserInputService.TouchEnabled
 if isMobile then
 	local currentSize=WindowConfig.Size or UDim2.fromOffset(615,380)
-	local preferredWidth=currentSize.X.Offset>0 and currentSize.X.Offset or math.floor(mobileViewport.X*0.94)
-	local preferredHeight=currentSize.Y.Offset>0 and currentSize.Y.Offset or math.floor(mobileViewport.Y*0.90)
-	local maxWidth=math.max(280,mobileViewport.X-12)
-	local maxHeight=math.max(220,mobileViewport.Y-12)
-	WindowConfig.Size=UDim2.fromOffset(math.min(preferredWidth,maxWidth),math.min(preferredHeight,maxHeight))
+	local baseWidth=math.max(1,currentSize.X.Offset>0 and currentSize.X.Offset or 615)
+	local baseHeight=math.max(1,currentSize.Y.Offset>0 and currentSize.Y.Offset or 380)
+	local availableWidth=math.max(1,mobileViewport.X-24)
+	local availableHeight=math.max(1,mobileViewport.Y-72)
+	local fit=math.min(availableWidth/baseWidth,availableHeight/baseHeight,1)
+	WindowConfig.Size=UDim2.fromOffset(math.max(1,math.floor(baseWidth*fit)),math.max(1,math.floor(baseHeight*fit)))
 	WindowConfig.AdaptiveSizing=true
-	WindowConfig.AdaptiveSizingMargin=6
-	WindowConfig.BigUI=false
-	WindowConfig.SidebarTab=false
-	WindowConfig.SidebarTabMenu=false
-	WindowConfig.SideTabsSeparated=false
-	WindowConfig.SeparatedSidebar=false
-	WindowConfig.SidebarWidth=104
-	WindowConfig.SidebarCollapsedWidth=64
-	WindowConfig.SidebarCompactBreakpoint=112
-	WindowConfig.TabListSpacing=math.min(tonumber(WindowConfig.TabListSpacing) or 2,3)
-	WindowConfig.TabListGap=4
-	if type(WindowConfig.Navigation)=="table" then
-		WindowConfig.Navigation.SidebarTab=false
-		WindowConfig.Navigation.SidebarTabMenu=false
-		if type(WindowConfig.Navigation.TabList)=="table" then
-			WindowConfig.Navigation.TabList.Detached=false
-			WindowConfig.Navigation.TabList.External=false
-			WindowConfig.Navigation.TabList.Width=104
-			WindowConfig.Navigation.TabList.Gap=4
-		end
-	end
-	if type(WindowConfig.TabList)=="table" then
-		WindowConfig.TabList.Detached=false
-		WindowConfig.TabList.External=false
-		WindowConfig.TabList.Width=104
-		WindowConfig.TabList.Gap=4
-	end
-	if mobileViewport.X<920 then WindowConfig.ShowTabInfo=false end
+	WindowConfig.AdaptiveSizingMargin=12
 end
 local elemSize=isMobile and 28 or 20
 local halfElem=elemSize/2
@@ -15980,7 +15953,11 @@ openSettingsToTab(privacyTab)
 end)
 originalPos=MainWindow.Position
 originalSize=WindowConfig.Size
-originalSettingsSize=isMobile and UDim2.fromOffset(math.min(600,math.max(320,math.floor(mobileViewport.X*0.88))),math.min(460,math.max(260,math.floor(mobileViewport.Y*0.82)))) or UDim2.new(0,760,0,520)
+local settingsFit=1
+if isMobile then
+	settingsFit=math.min(math.max(1,mobileViewport.X-24)/760,math.max(1,mobileViewport.Y-72)/520,1)
+end
+originalSettingsSize=UDim2.fromOffset(math.max(1,math.floor(760*settingsFit)),math.max(1,math.floor(520*settingsFit)))
 mainWidth=originalSize.X.Offset
 mainHeight=originalSize.Y.Offset
 settingsWidth=originalSettingsSize.X.Offset
@@ -16318,7 +16295,7 @@ end)
 settingsMinimized=false
 settingsVisible=false
 sideBarVisible=true
-sideWidth=isMobile and math.clamp(math.floor(settingsWidth*0.27),122,154) or 218
+sideWidth=isMobile and math.max(120,math.floor(218*settingsFit)) or 218
 sideTweenInfo=TweenInfo.new(0.22,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)
 local function getSettingsSidebarWidth()
 return sideBarVisible and sideWidth or 0
@@ -17045,45 +17022,25 @@ function XLQPGen1:GetScaleEngine()
 	return self.ScaleEngineEnabled~=false
 end
 function XLQPGen1:UpdateScaleEngine()
+	local scale=1
+	if self.ScaleEngineEnabled~=false and UserInputService.TouchEnabled and WindowConfig.AdaptiveSizing~=true then
+		local cam=workspace.CurrentCamera
+		local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
+		local w=math.max(1,WindowConfig.Size and WindowConfig.Size.X.Offset or 860)
+		local h=math.max(1,WindowConfig.Size and WindowConfig.Size.Y.Offset or 560)
+		scale=math.clamp(math.min((vp.X-18)/w,(vp.Y-18)/h,1),0.62,1)
+	end
 	local setupScale=math.clamp(tonumber(self._SetupInterfaceScale or WindowConfig.InterfaceScale) or 1,0.78,1.22)
-	local cam=workspace.CurrentCamera
-	local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
-	local touchLayout=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or vp.X<=1600 or vp.Y<=900)
-	local function fittedScale(width,height)
-		if self.ScaleEngineEnabled==false or not touchLayout then return setupScale end
-		width=math.max(1,tonumber(width) or 1)
-		height=math.max(1,tonumber(height) or 1)
-		local availableW=math.max(220,vp.X-20)
-		local availableH=math.max(180,vp.Y-20)
-		local fit=math.min(availableW/(width*setupScale),availableH/(height*setupScale),1)
-		return math.clamp(fit*setupScale,0.48,setupScale)
+	if MainWindowScale then MainWindowScale.Scale=scale*setupScale end
+	local settingScale=1
+	if self.ScaleEngineEnabled~=false and UserInputService.TouchEnabled and WindowConfig.AdaptiveSizing~=true then
+		local cam=workspace.CurrentCamera
+		local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
+		local w=math.max(1,originalSettingsSize and originalSettingsSize.X.Offset or 620)
+		local h=math.max(1,originalSettingsSize and originalSettingsSize.Y.Offset or 460)
+		settingScale=math.clamp(math.min((vp.X-18)/w,(vp.Y-18)/h,1),0.62,1)
 	end
-	local mainW=MainWindow and MainWindow.Size and (MainWindow.Size.X.Scale*vp.X+MainWindow.Size.X.Offset) or (WindowConfig.Size and WindowConfig.Size.X.Offset) or 860
-	local mainH=MainWindow and MainWindow.Size and (MainWindow.Size.Y.Scale*vp.Y+MainWindow.Size.Y.Offset) or (WindowConfig.Size and WindowConfig.Size.Y.Offset) or 560
-	if MainWindowScale then MainWindowScale.Scale=fittedScale(mainW,mainH) end
-	local settingsW=SettingsWindow and SettingsWindow.Size and (SettingsWindow.Size.X.Scale*vp.X+SettingsWindow.Size.X.Offset) or (originalSettingsSize and originalSettingsSize.X.Offset) or 620
-	local settingsH=SettingsWindow and SettingsWindow.Size and (SettingsWindow.Size.Y.Scale*vp.Y+SettingsWindow.Size.Y.Offset) or (originalSettingsSize and originalSettingsSize.Y.Offset) or 460
-	if SettingsWindowScale then SettingsWindowScale.Scale=fittedScale(settingsW,settingsH) end
-	if touchLayout then
-		local function clampWindow(window)
-			if not window or not window.Parent then return end
-			local scaleObject=window:FindFirstChild("XLQPScaleEngine")
-			local scaleValue=scaleObject and scaleObject:IsA("UIScale") and scaleObject.Scale or 1
-			local size=window.AbsoluteSize*scaleValue
-			local pos=window.AbsolutePosition
-			local margin=8
-			local maxX=math.max(margin,vp.X-margin-size.X)
-			local maxY=math.max(margin,vp.Y-margin-size.Y)
-			local targetX=math.clamp(pos.X,margin,maxX)
-			local targetY=math.clamp(pos.Y,margin,maxY)
-			if math.abs(targetX-pos.X)>1 or math.abs(targetY-pos.Y)>1 then
-				local anchor=window.AnchorPoint
-				window.Position=UDim2.fromOffset(targetX+anchor.X*window.AbsoluteSize.X,targetY+anchor.Y*window.AbsoluteSize.Y)
-			end
-		end
-		clampWindow(MainWindow)
-		clampWindow(SettingsWindow)
-	end
+	if SettingsWindowScale then SettingsWindowScale.Scale=settingScale*setupScale end
 end
 local function queueScaleEngineRefresh()
 	task.defer(function() if XLQPGen1.UpdateScaleEngine then XLQPGen1:UpdateScaleEngine() end end)
@@ -18876,19 +18833,19 @@ if SettingsSideTabHolder then
 SettingsSideTabHolder.ScrollBarImageTransparency=0.55
 SettingsSideTabHolder.BackgroundTransparency=1
 local layout=SettingsSideTabHolder:FindFirstChildOfClass("UIListLayout")
-if layout then layout.Padding=UDim.new(0,isMobile and 6 or 10) end
+if layout then layout.Padding=UDim.new(0,10) end
 local pad=SettingsSideTabHolder:FindFirstChildOfClass("UIPadding")
 if pad then
-pad.PaddingTop=UDim.new(0,isMobile and 8 or 14)
-pad.PaddingLeft=UDim.new(0,isMobile and 8 or 12)
-pad.PaddingRight=UDim.new(0,isMobile and 8 or 12)
+pad.PaddingTop=UDim.new(0,14)
+pad.PaddingLeft=UDim.new(0,12)
+pad.PaddingRight=UDim.new(0,12)
 end
 end
 for _,tab in ipairs(settingsTabs) do
 local selected=tab.Container and tab.Container.Visible
 local button=tab.Button
 if button then
-button.Size=UDim2.new(1,isMobile and -16 or -24,0,isMobile and 50 or 58)
+button.Size=UDim2.new(1,-24,0,58)
 button.BackgroundColor3=selected and secondColor:Lerp(strokeColor,0.16) or mainColor:Lerp(secondColor,0.08)
 button.BackgroundTransparency=selected and 0.12 or 0.42
 button.ClipsDescendants=true
@@ -24473,16 +24430,14 @@ end)
 WindowConfig._LocalRegisterState.addSimpleButton(settingsWindowGroup,"Show Watermark","Show all draggable watermark labels.",function()
 	XLQPGen1:SetWatermarkVisibility(true)
 end)
-if WindowConfig.SetupEnabled==true or type(WindowConfig.Setup)=="table" then
-	WindowConfig._LocalRegisterState.addSimpleButton(settingsWindowGroup,"Reset First-Run Setup","Clear the saved setup so the wizard appears again next execution.",function()
-		WindowConfig._LocalRegisterState.confirmDangerAction("Reset setup","This clears your saved language, look, accent, scale and setup choices. The setup wizard will run again next execution.","Reset Setup",function()
-			XLQPGen1:ClearSetupState(WindowConfig.Setup)
-			XLQPGen1._SetupFlowFinished=false
-			XLQPGen1._SetupMemoryState=nil
-			WindowConfig._LocalRegisterState.notifySettings("Setup","Saved setup cleared. Re-execute to run setup again.")
-		end)
+WindowConfig._LocalRegisterState.addSimpleButton(settingsWindowGroup,"Reset Setup","Clear the saved setup so the wizard appears again next execution.",function()
+	WindowConfig._LocalRegisterState.confirmDangerAction("Reset setup","This clears your saved language, look, accent, scale and setup choices. The setup wizard will run again next execution.","Reset Setup",function()
+		XLQPGen1:ClearSetupState(WindowConfig.Setup)
+		XLQPGen1._SetupFlowFinished=false
+		XLQPGen1._SetupMemoryState=nil
+		WindowConfig._LocalRegisterState.notifySettings("Setup","Saved setup cleared. Re-execute to run setup again.")
 	end)
-end
+end)
  WindowConfig._LocalRegisterState.settingsMainCornerSlider = nil
 WindowConfig._LocalRegisterState.settingsMainCornerSlider=registerMainCornerControl(addSettingsSlider(settingsWindowGroup,{Name="Main Corners",Description="Round the main/settings windows.",Min=0,Max=25,Default=newUICornerRadius,Increment=1,Color=Color3.fromRGB(90,140,255),ValueText=function(v) return tostring(math.floor(v+0.5)).." px" end,Callback=function(v)
 	setMainCornersLive(v,WindowConfig._LocalRegisterState.settingsMainCornerSlider)
@@ -54464,8 +54419,7 @@ function TabFunction:newmaketabtop(TabConfig)
 	end
 	local isMultiTab = TabConfig.MultiTab or false
 	
-	local tabViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
-	local isMobile = game:GetService("UserInputService").TouchEnabled and (not game:GetService("UserInputService").KeyboardEnabled or tabViewport.X<=1600 or tabViewport.Y<=900)
+	local isMobile = game:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled
 	
 	if isMobile and TopTabHolder and TopTabHolder:FindFirstChildOfClass("UIListLayout") then
 		local layout = TopTabHolder:FindFirstChildOfClass("UIListLayout")
@@ -68281,17 +68235,6 @@ function XLQPGen1:MakeWindow(config)
     config.SidebarCornerRadius = config.SidebarCornerRadius or navigationConfig.SidebarCornerRadius or tabListConfig.CornerRadius
     config.TabListGap = config.TabListGap or navigationConfig.TabListGap or tabListConfig.Gap
     config.QuickMenuGap = config.QuickMenuGap or navigationConfig.QuickMenuGap or tabListConfig.QuickMenuGap
-    local responsiveViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
-    local responsiveMobile=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or responsiveViewport.X<=1600 or responsiveViewport.Y<=900)
-    if responsiveMobile then
-        config.SidebarTab=false
-        config.SidebarWidth=112
-        config.SidebarCollapsedWidth=64
-        config.SidebarCompactBreakpoint=118
-        config.TabListGap=6
-        config.TabListSpacing=math.min(tonumber(config.TabListSpacing) or 3,4)
-        if responsiveViewport.X<900 then config.ShowTabInfo=false end
-    end
     config.TabListLogo = config.TabListLogo or config.SidebarLogo or config.SidebarBranding or config.LogoAboveTabs or navigationConfig.TabListLogo or navigationConfig.SidebarLogo or navigationConfig.Logo or tabListConfig.Logo
     config.SidebarLogo = config.TabListLogo
 
