@@ -785,18 +785,20 @@ local function IsMouseInput(Input: InputObject, IncludeM2: boolean?)
         or Input.UserInputType == Enum.UserInputType.Touch
 end
 local function IsClickInput(Input: InputObject, IncludeM2: boolean?)
+    local Focused = Library.IsRobloxFocused or Library.IsMobile or Input.UserInputType == Enum.UserInputType.Touch
     return IsMouseInput(Input, IncludeM2)
         and Input.UserInputState == Enum.UserInputState.Begin
-        and Library.IsRobloxFocused
+        and Focused
 end
 local function IsHoverInput(Input: InputObject)
     return (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch)
         and Input.UserInputState == Enum.UserInputState.Change
 end
 local function IsDragInput(Input: InputObject, IncludeM2: boolean?)
+    local Focused = Library.IsRobloxFocused or Library.IsMobile or Input.UserInputType == Enum.UserInputType.Touch
     return IsMouseInput(Input, IncludeM2)
         and (Input.UserInputState == Enum.UserInputState.Begin or Input.UserInputState == Enum.UserInputState.Change)
-        and Library.IsRobloxFocused
+        and Focused
 end
 local function IsMouseClickInput(Input: InputObject)
     return Input.UserInputType == Enum.UserInputType.MouseButton1 or
@@ -805,7 +807,7 @@ local function IsMouseClickInput(Input: InputObject)
 end
 local function IsMovementInput(Input: InputObject)
     return (Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch)
-        and Library.IsRobloxFocused
+        and (Library.IsRobloxFocused or Library.IsMobile or Input.UserInputType == Enum.UserInputType.Touch)
 end
 
 local function GetTableSize(Table: { [any]: any })
@@ -1705,6 +1707,7 @@ local ScreenGui = New("ScreenGui", {
     Name = "Obsidian",
     DisplayOrder = 998,
     ResetOnSpawn = false,
+    ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 })
 ParentUI(ScreenGui)
 Library.ScreenGui = ScreenGui
@@ -2102,6 +2105,11 @@ function Library:MakeDraggable(
         return
     end
 
+    pcall(function()
+        DragFrame.Active = true
+        DragFrame.Selectable = false
+    end)
+
     local Controller = EnsureObsidianDragController()
     local InputBegan
     local SnapGuideX
@@ -2209,7 +2217,7 @@ function Library:MakeDraggable(
                 return
             end
 
-            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput ~= Input then
+            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput.UserInputType ~= Enum.UserInputType.Touch then
                 return
             end
 
@@ -11417,12 +11425,12 @@ function Library:CreateWindow(WindowInfo)
         Library.KeybindFrame.Position = UDim2.new(0, 6, 0.5, 0)
         Library.KeybindFrame.Visible = false
 
-        MainFrame = New("TextButton", {
+        MainFrame = New("Frame", {
+            Active = true,
             BackgroundColor3 = function()
                 return Library:GetBetterColor(Library.Scheme.BackgroundColor, -1)
             end,
             Name = "Main",
-            Text = "",
             Position = WindowInfo.Position,
             Size = WindowInfo.Size,
             Visible = false,
@@ -11467,13 +11475,14 @@ function Library:CreateWindow(WindowInfo)
 
         local BackgroundIcon = Library:GetCustomIcon(WindowInfo.BackgroundImage)
         BackgroundImage = New("ImageLabel", {
+            Active = false,
             Image = BackgroundIcon and BackgroundIcon.Url or "",
             ImageRectOffset = BackgroundIcon and BackgroundIcon.ImageRectOffset or Vector2.zero,
             ImageRectSize = BackgroundIcon and BackgroundIcon.ImageRectSize or Vector2.zero,
             Position = UDim2.fromScale(0, 0),
             Size = UDim2.fromScale(1, 1),
             ScaleType = Enum.ScaleType.Stretch,
-            ZIndex = 999,
+            ZIndex = 1,
             BackgroundTransparency = 1,
             ImageTransparency = 0.75,
             Visible = BackgroundIcon ~= nil,
@@ -11493,8 +11502,10 @@ function Library:CreateWindow(WindowInfo)
         end
 
         TopBar = New("Frame", {
+            Active = true,
             BackgroundTransparency = 1,
             Size = UDim2.new(1, 0, 0, 48),
+            ZIndex = 4,
             Parent = MainFrame,
         })
         local WindowSnapConfig = {
@@ -11505,6 +11516,20 @@ function Library:CreateWindow(WindowInfo)
         }
         Library._WindowSnapConfig = WindowSnapConfig
         Library:MakeDraggable(MainFrame, TopBar, false, true, WindowSnapConfig)
+        if Library.IsMobile then
+            local MobileDragHandle = New("TextButton", {
+                Active = true,
+                AutoButtonColor = false,
+                AnchorPoint = Vector2.new(0.5, 0),
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0.5, 0, 0, 0),
+                Size = UDim2.new(0.38, 0, 0, 18),
+                Text = "",
+                ZIndex = 30,
+                Parent = TopBar,
+            })
+            Library:MakeDraggable(MainFrame, MobileDragHandle, false, true, WindowSnapConfig)
+        end
         Library:GiveSignal(MainFrame:GetPropertyChangedSignal("Position"):Connect(function()
         end))
 
@@ -16695,8 +16720,10 @@ function Library:CreateWindow(WindowInfo)
             ApplyWindowVisibility()
         end
 
-        if WindowInfo.UnlockMouseWhileOpen then
+        if WindowInfo.UnlockMouseWhileOpen and not Library.IsMobile then
             ModalElement.Modal = Library.Toggled
+        else
+            ModalElement.Modal = false
         end
 
         if Library.Toggled and not Library.IsMobile then
@@ -16952,8 +16979,13 @@ function Library:CreateWindow(WindowInfo)
         Library.IsRobloxFocused = true
     end))
     Library:GiveSignal(UserInputService.WindowFocusReleased:Connect(function()
-        Library.IsRobloxFocused = false
+        if not Library.IsMobile then
+            Library.IsRobloxFocused = false
+        end
     end))
+    if Library.IsMobile then
+        Library.IsRobloxFocused = true
+    end
 
     Library.Window = Window
     return Window
@@ -18073,7 +18105,9 @@ local function ObsidianEnsureFloatLayers()
         Library.Floats = New("Frame", {
             Name = "Floats",
             BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
+            ClipsDescendants = false,
+            Position = UDim2.fromOffset(0, 0),
+            Size = UDim2.fromOffset(0, 0),
             ZIndex = 1,
             Active = false,
             Parent = Library.FloatScreenGui,
@@ -18083,7 +18117,9 @@ local function ObsidianEnsureFloatLayers()
         Library.Overlay = New("Frame", {
             Name = "Overlay",
             BackgroundTransparency = 1,
-            Size = UDim2.fromScale(1, 1),
+            ClipsDescendants = false,
+            Position = UDim2.fromOffset(0, 0),
+            Size = UDim2.fromOffset(0, 0),
             ZIndex = 2,
             Active = false,
             Parent = Library.FloatScreenGui,
@@ -18605,7 +18641,7 @@ function Library:MakeBoxPopOut(Box, Options)
                 return
             end
 
-            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput ~= Input then
+            if Input.UserInputType == Enum.UserInputType.Touch and ChangedInput.UserInputType ~= Enum.UserInputType.Touch then
                 return
             end
             if not IsHoverInput(ChangedInput) then
@@ -18766,6 +18802,7 @@ local BaseCreateWindow = Library.CreateWindow
 function Library:CreateWindow(WindowInfo)
     WindowInfo = typeof(WindowInfo)=="table" and WindowInfo or {}
     if Library.IsMobile then
+        Library.IsRobloxFocused = true
         local Camera = workspace.CurrentCamera
         local Viewport = Camera and Camera.ViewportSize or Vector2.new(800,600)
         if WindowInfo.Size == nil then
