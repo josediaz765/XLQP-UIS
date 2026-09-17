@@ -1,7 +1,3 @@
--- DO NOT MODIFY THIS LIB WITHOUT PERMISSION
--- Copyright © 2026 Itsjose4. All rights reserved.
--- Made by Itsjose4
--- Credits: Itsjose4
 
  UserInputService = game:GetService("UserInputService")
  TweenService = game:GetService("TweenService")
@@ -1951,6 +1947,7 @@ function XLQPGen1:IsLiveColorBound(target)
 end
 
 function XLQPGen1:_RefreshLiveColors()
+	if self._SetupPassivePreset==true then return self end
 	local selectedTheme=self.Themes and self.Themes[self.SelectedTheme or "Default"] or nil
 	local globalLiveSpeed=tonumber(self._LiveColorSpeedOverride)
 	for target,binding in pairs(XLQPLiveColorBindings) do
@@ -1967,6 +1964,7 @@ function XLQPGen1:_RefreshLiveColors()
 end
 
 function XLQPGen1:SetLiveColorTheme(name,colors)
+	self._SetupPassivePreset=false
 	name=tostring(name or "Thermal")
 	if type(colors)=="table" or typeof(colors)=="ColorSequence" then XLQPLiveColorThemes[name]=colors end
 	if not XLQPLiveColorThemes[name] then name="Thermal" end
@@ -1992,6 +1990,7 @@ function XLQPGen1:SetLiveColorTheme(name,colors)
 end
 
 function XLQPGen1:SetLiveColorThemeImages(enabled)
+	self._SetupPassivePreset=false
 	enabled=enabled==true
 	self.LiveColorThemeImagesEnabled=enabled
 	if self._WindowConfig then self._WindowConfig.LiveColorThemeImages=enabled end
@@ -2004,6 +2003,7 @@ function XLQPGen1:SetLiveColorThemeImages(enabled)
 end
 
 function XLQPGen1:SetLiveColorElementBackground(enabled,theme)
+	self._SetupPassivePreset=false
 	enabled=enabled==true
 	if self._WindowConfig then
 		self._WindowConfig.LiveColorElementBackground=enabled
@@ -2021,6 +2021,7 @@ function XLQPGen1:GetLiveColorSpeed()
 end
 
 function XLQPGen1:SetLiveColorSpeed(speed)
+	self._SetupPassivePreset=false
 	speed=math.clamp(tonumber(speed) or self:GetLiveColorSpeed(),.03,3)
 	self._LiveColorSpeedOverride=speed
 	if self._WindowConfig then self._WindowConfig.LiveColorSpeed=speed end
@@ -2037,6 +2038,7 @@ function XLQPGen1:GetLiveColorFPS()
 end
 
 function XLQPGen1:SetLiveColorFPS(value)
+	self._SetupPassivePreset=false
 	value=math.clamp(math.floor(tonumber(value) or self:GetLiveColorFPS())+.5,5,60)
 	self._LiveColorFPSOverride=value
 	if self._WindowConfig then self._WindowConfig.LiveColorFPS=value end
@@ -2054,6 +2056,7 @@ function XLQPGen1:GetLiveColorMode()
 end
 
 function XLQPGen1:SetLiveColorMode(mode,theme)
+	self._SetupPassivePreset=false
 	mode=tostring(mode or "Off")
 	local lower=mode:lower()
 	local background=lower=="background + elements" or lower=="both" or lower=="all" or lower=="background only" or lower=="background"
@@ -4613,52 +4616,156 @@ local function XLQPQueueDragPosition(main,position)
 end
  function MakeDraggable(DragPoint, Main)
 	local s, e = pcall(function()
-		local Dragging, DragInput, MousePos, FramePos = false
-		local dragEndConnection
-		AddConnection(DragPoint.InputBegan, function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseButton1 or Input.UserInputType == Enum.UserInputType.Touch then
-				Dragging = true
-				local motionClock=os.clock()
-				XLQPGen1._WindowDragActiveUntil=motionClock+0.2
-				XLQPGen1._WindowMotionPausedUntil=math.max(tonumber(XLQPGen1._WindowMotionPausedUntil) or 0,motionClock+0.2)
-				MousePos = Input.Position
-				FramePos = Main.Position
-				XLQPDragPending[Main] = nil
-
-				if dragEndConnection then dragEndConnection:Disconnect() dragEndConnection=nil end
-				dragEndConnection=AddConnection(Input.Changed,function()
-					if Input.UserInputState == Enum.UserInputState.End then
-						Dragging = false
-						local pending = XLQPDragPending[Main]
-						if pending then
-							XLQPDragPending[Main] = nil
-							if Main.Parent then Main.Position = pending end
-						end
-						local motionClock=os.clock()
-						XLQPGen1._WindowDragActiveUntil=motionClock+0.08
-						XLQPGen1._WindowMotionPausedUntil=math.max(tonumber(XLQPGen1._WindowMotionPausedUntil) or 0,motionClock+0.08)
-						if dragEndConnection then dragEndConnection:Disconnect() dragEndConnection=nil end
+		if not DragPoint or not Main or not DragPoint:IsA("GuiObject") or not Main:IsA("GuiObject") then return end
+		pcall(function()
+			if Main:IsDescendantOf(DragPoint) then
+				DragPoint, Main = Main, DragPoint
+			end
+		end)
+		local state={Dragging=false,Mode=nil,Touch=nil,StartPointer=nil,StartPosition=nil,TouchChanged=nil}
+		local boundSources=setmetatable({},{__mode="k"})
+		local function rawPoint(position)
+			return Vector2.new(position.X,position.Y)
+		end
+		local function visibleObject(object)
+			local current=object
+			while current do
+				if current:IsA("GuiObject") and current.Visible==false then return false end
+				if current:IsA("LayerCollector") and current.Enabled==false then return false end
+				if current==DragPoint then break end
+				current=current.Parent
+			end
+			return current==DragPoint
+		end
+		local function inside(object,point)
+			if not object or not object.Parent or not visibleObject(object) then return false end
+			local p=object.AbsolutePosition
+			local z=object.AbsoluteSize
+			return z.X>0 and z.Y>0 and point.X>=p.X and point.X<=p.X+z.X and point.Y>=p.Y and point.Y<=p.Y+z.Y
+		end
+		local function resolveHitPoint(position)
+			local point=rawPoint(position)
+			if inside(DragPoint,point) then return point end
+			local ok,inset=pcall(function() return GuiService:GetGuiInset() end)
+			if ok and typeof(inset)=="Vector2" then
+				local minus=point-inset
+				if inside(DragPoint,minus) then return minus end
+				local plus=point+inset
+				if inside(DragPoint,plus) then return plus end
+			end
+			return nil
+		end
+		local function blockedByControl(point)
+			for _,object in ipairs(DragPoint:GetDescendants()) do
+				if (object:IsA("GuiButton") or object:IsA("TextBox") or object:IsA("ScrollingFrame")) and inside(object,point) then
+					return true
+				end
+			end
+			return false
+		end
+		local function setMotionActive(duration)
+			local now=os.clock()
+			XLQPGen1._WindowDragActiveUntil=now+(duration or 0.2)
+			XLQPGen1._WindowMotionPausedUntil=math.max(tonumber(XLQPGen1._WindowMotionPausedUntil) or 0,now+(duration or 0.2))
+		end
+		local function updateDrag(position)
+			if not state.Dragging or not state.StartPointer or not state.StartPosition or not Main.Parent then return end
+			local delta=rawPoint(position)-state.StartPointer
+			Main.Position=UDim2.new(state.StartPosition.X.Scale,state.StartPosition.X.Offset+delta.X,state.StartPosition.Y.Scale,state.StartPosition.Y.Offset+delta.Y)
+			setMotionActive(0.18)
+		end
+		local function finishDrag()
+			if not state.Dragging then return end
+			state.Dragging=false
+			state.Mode=nil
+			state.Touch=nil
+			state.StartPointer=nil
+			state.StartPosition=nil
+			if state.TouchChanged then state.TouchChanged:Disconnect() state.TouchChanged=nil end
+			setMotionActive(0.08)
+			pcall(function() Main:SetAttribute("XLQPWindowDragging",false) end)
+		end
+		local function beginDrag(input,globalTouch)
+			if state.Dragging then return end
+			local inputType=input.UserInputType
+			if inputType~=Enum.UserInputType.MouseButton1 and inputType~=Enum.UserInputType.Touch then return end
+			local hitPoint=resolveHitPoint(input.Position)
+			if not hitPoint then return end
+			if blockedByControl(hitPoint) then return end
+			state.Dragging=true
+			state.Mode=inputType==Enum.UserInputType.Touch and "touch" or "mouse"
+			state.Touch=state.Mode=="touch" and input or nil
+			state.StartPointer=rawPoint(input.Position)
+			if state.Mode=="mouse" then
+				local location=UserInputService:GetMouseLocation()
+				state.StartPointer=Vector2.new(location.X,location.Y)
+			end
+			state.StartPosition=Main.Position
+			XLQPDragPending[Main]=nil
+			setMotionActive(0.25)
+			pcall(function() Main:SetAttribute("XLQPWindowDragging",true) end)
+			if state.Touch then
+				if state.TouchChanged then state.TouchChanged:Disconnect() end
+				state.TouchChanged=AddConnection(state.Touch.Changed,function()
+					if not state.Dragging or state.Touch~=input then return end
+					if input.UserInputState==Enum.UserInputState.End or input.UserInputState==Enum.UserInputState.Cancel then
+						finishDrag()
+					else
+						updateDrag(input.Position)
 					end
 				end)
 			end
+		end
+		local function bindSource(object)
+			if not object or boundSources[object] or not object:IsA("GuiObject") then return end
+			if object:IsA("GuiButton") or object:IsA("TextBox") or object:IsA("ScrollingFrame") then return end
+			boundSources[object]=true
+			pcall(function() object.Active=true end)
+			AddConnection(object.InputBegan,function(input)
+				if input.UserInputType~=Enum.UserInputType.Touch then beginDrag(input,false) end
+			end)
+		end
+		bindSource(DragPoint)
+		for _,descendant in ipairs(DragPoint:GetDescendants()) do bindSource(descendant) end
+		AddConnection(DragPoint.DescendantAdded,bindSource)
+		AddConnection(UserInputService.InputBegan,function(input)
+			if input.UserInputType==Enum.UserInputType.Touch then beginDrag(input,true) end
 		end)
-		AddConnection(DragPoint.InputChanged, function(Input)
-			if Input.UserInputType == Enum.UserInputType.MouseMovement or Input.UserInputType == Enum.UserInputType.Touch then
-				DragInput = Input
+		AddConnection(UserInputService.InputChanged,function(input)
+			if not state.Dragging then return end
+			if state.Mode=="touch" then
+				if input==state.Touch then updateDrag(input.Position) end
+			elseif state.Mode=="mouse" and input.UserInputType==Enum.UserInputType.MouseMovement then
+				updateDrag(input.Position)
 			end
 		end)
-		AddConnection(UserInputService.InputChanged, function(Input)
-			if Input == DragInput and Dragging then
-				local Delta = Input.Position - MousePos
-				XLQPQueueDragPosition(Main, UDim2.new(FramePos.X.Scale,FramePos.X.Offset + Delta.X, FramePos.Y.Scale, FramePos.Y.Offset + Delta.Y))
+		pcall(function()
+			AddConnection(UserInputService.TouchMoved,function(input)
+				if state.Dragging and state.Mode=="touch" then
+					if input==state.Touch then updateDrag(input.Position) end
+				end
+			end)
+			AddConnection(UserInputService.TouchEnded,function(input)
+				if state.Dragging and state.Mode=="touch" and input==state.Touch then finishDrag() end
+			end)
+		end)
+		AddConnection(UserInputService.InputEnded,function(input)
+			if not state.Dragging then return end
+			if state.Mode=="mouse" and input.UserInputType==Enum.UserInputType.MouseButton1 then
+				finishDrag()
+			elseif state.Mode=="touch" and input.UserInputType==Enum.UserInputType.Touch and input==state.Touch then
+				finishDrag()
+			end
+		end)
+		AddConnection(RunService.RenderStepped,function()
+			if state.Dragging and state.Mode=="mouse" then
+				local location=UserInputService:GetMouseLocation()
+				updateDrag(Vector3.new(location.X,location.Y,0))
 			end
 		end)
 	end)
-	if not s then
-		warn("XLQPGen1 Error: ", e)
-	end
+	if not s then warn("XLQPGen1 Error: ", e) end
 end
-
 
 function XLQPGen1:_BeginOptimizedStartupBuild(config)
 	config=type(config)=="table" and config or {}
@@ -5271,6 +5378,38 @@ function XLQPGen1:RegisterPopupGui(gui)
 	end
 	XLQPProtectGui(gui)
 	XLQPProtectGuiAssets(gui)
+	if UserInputService and UserInputService.TouchEnabled and gui:IsA("ScreenGui") then
+		task.defer(function()
+			if not gui.Parent then return end
+			local vp=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
+			local touchLayout=not UserInputService.KeyboardEnabled or vp.X<=1600 or vp.Y<=900
+			if not touchLayout then return end
+			local function candidate(object)
+				if not object:IsA("GuiObject") or object:GetAttribute("XLQPAdaptiveIgnore")==true then return false end
+				if object.Size.X.Scale>=0.92 and object.Size.Y.Scale>=0.92 then return false end
+				local size=object.AbsoluteSize
+				return size.X>=260 and size.Y>=180 and (size.X>vp.X-16 or size.Y>vp.Y-16)
+			end
+			local queue={gui}
+			local index=1
+			local depth=setmetatable({[gui]=0},{__mode="k"})
+			while index<=#queue do
+				local parent=queue[index]
+				index+=1
+				local d=depth[parent] or 0
+				if d<=2 then
+					for _,child in ipairs(parent:GetChildren()) do
+						depth[child]=d+1
+						if candidate(child) then
+							self:RegisterAdaptiveWindow(child,math.min(child.AbsoluteSize.X,vp.X-16),math.min(child.AbsoluteSize.Y,vp.Y-16),math.min(260,vp.X-16),math.min(190,vp.Y-16))
+						elseif child:IsA("GuiObject") then
+							queue[#queue+1]=child
+						end
+					end
+				end
+			end
+		end)
+	end
 	return gui
 end
 
@@ -8404,10 +8543,6 @@ function XLQPGen1:_BindScrollCanvas(container, extraPadding)
 	end
 	local function sync()
 		if container:GetAttribute("XLQPCanvasSyncing") == true or not container.Parent then return end
-		if not branchVisible() then
-			container:SetAttribute("XLQPCanvasDirty",true)
-			return
-		end
 		container:SetAttribute("XLQPCanvasDirty",false)
 		container:SetAttribute("XLQPCanvasSyncing", true)
 		local layout = container:FindFirstChildOfClass("UIListLayout") or container:FindFirstChildOfClass("UIGridLayout")
@@ -8426,18 +8561,14 @@ function XLQPGen1:_BindScrollCanvas(container, extraPadding)
 			return
 		end
 		if container:GetAttribute("XLQPCanvasSyncing") == true then return end
-		if not branchVisible() then
-			container:SetAttribute("XLQPCanvasDirty",true)
-			return
-		end
 		XLQPGen1:_QueueUIWork(syncKey,sync,0.025)
 	end
 	local layout = container:FindFirstChildOfClass("UIListLayout") or container:FindFirstChildOfClass("UIGridLayout")
 	if layout then AddConnection(layout:GetPropertyChangedSignal("AbsoluteContentSize"), queueSync) end
-	AddConnection(container:GetPropertyChangedSignal("Visible"),function()
-		if container.Visible and container:GetAttribute("XLQPCanvasDirty")==true then queueSync() end
-	end)
-	AddConnection(container:GetPropertyChangedSignal("AbsoluteSize"), queueSync)
+	AddConnection(container:GetPropertyChangedSignal("Visible"),queueSync)
+	AddConnection(container:GetPropertyChangedSignal("AbsoluteSize"),queueSync)
+	AddConnection(container:GetPropertyChangedSignal("Parent"),function() task.defer(queueSync) end)
+	AddConnection(container.AncestryChanged,function() task.defer(queueSync) end)
 	AddConnection(container.ChildAdded,queueSync)
 	AddConnection(container.ChildRemoved,queueSync)
 	local refreshSignal=Instance.new("BindableEvent")
@@ -8445,6 +8576,103 @@ function XLQPGen1:_BindScrollCanvas(container, extraPadding)
 	refreshSignal.Parent=container
 	AddConnection(refreshSignal.Event,queueSync)
 	queueSync()
+	task.defer(function()
+		if self._InstallTouchScroll then pcall(function() self:_InstallTouchScroll(container) end) end
+	end)
+	return container
+end
+
+function XLQPGen1:_InstallTouchScroll(container)
+	if typeof(container)~="Instance" or not container:IsA("ScrollingFrame") then return container end
+	if container:GetAttribute("XLQPTouchScrollInstalled")==true then return container end
+	container:SetAttribute("XLQPTouchScrollInstalled",true)
+	container.Active=true
+	container.ScrollingEnabled=true
+	local activeTouch=nil
+	local startPoint=nil
+	local lastPoint=nil
+	local startCanvas=nil
+	local moved=false
+	local function visible()
+		local current=container
+		while current do
+			if current:IsA("GuiObject") and current.Visible==false then return false end
+			if current:IsA("LayerCollector") and current.Enabled==false then return false end
+			current=current.Parent
+		end
+		return true
+	end
+	local function pointInside(position)
+		if not visible() then return false end
+		local point=Vector2.new(position.X,position.Y)
+		local p=container.AbsolutePosition
+		local s=container.AbsoluteSize
+		if point.X>=p.X and point.X<=p.X+s.X and point.Y>=p.Y and point.Y<=p.Y+s.Y then return true end
+		local ok,inset=pcall(function() return GuiService:GetGuiInset() end)
+		if ok and typeof(inset)=="Vector2" then
+			local q=point-inset
+			return q.X>=p.X and q.X<=p.X+s.X and q.Y>=p.Y and q.Y<=p.Y+s.Y
+		end
+		return false
+	end
+	local function maximumY()
+		return math.max(0,container.AbsoluteCanvasSize.Y-container.AbsoluteWindowSize.Y)
+	end
+	local function begin(input)
+		if activeTouch or input.UserInputType~=Enum.UserInputType.Touch or not pointInside(input.Position) then return end
+		if self._RefreshScrollCanvas then pcall(function() self:_RefreshScrollCanvas(container) end) end
+		activeTouch=input
+		startPoint=Vector2.new(input.Position.X,input.Position.Y)
+		lastPoint=startPoint
+		startCanvas=container.CanvasPosition
+		moved=false
+	end
+	local function update(input)
+		if input~=activeTouch or not startPoint or not startCanvas then return end
+		local point=Vector2.new(input.Position.X,input.Position.Y)
+		local delta=point-startPoint
+		if not moved and math.abs(delta.Y)<4 and math.abs(delta.X)<4 then return end
+		moved=true
+		local targetY=math.clamp(startCanvas.Y-delta.Y,0,maximumY())
+		container.CanvasPosition=Vector2.new(container.CanvasPosition.X,targetY)
+		lastPoint=point
+	end
+	local function finish(input)
+		if input~=activeTouch then return end
+		activeTouch=nil
+		startPoint=nil
+		lastPoint=nil
+		startCanvas=nil
+		moved=false
+	end
+	pcall(function()
+		AddConnection(UserInputService.TouchStarted,begin)
+		AddConnection(UserInputService.TouchMoved,update)
+		AddConnection(UserInputService.TouchEnded,finish)
+	end)
+	pcall(function()
+		AddConnection(container.TouchPan,function(touchPositions,totalTranslation,velocity,state)
+			if not UserInputService.TouchEnabled or not visible() then return end
+			if state==Enum.UserInputState.Begin then
+				container:SetAttribute("XLQPTouchPanStartY",container.CanvasPosition.Y)
+			elseif state==Enum.UserInputState.Change then
+				local startY=tonumber(container:GetAttribute("XLQPTouchPanStartY")) or container.CanvasPosition.Y
+				local deltaY=typeof(totalTranslation)=="Vector2" and totalTranslation.Y or 0
+				container.CanvasPosition=Vector2.new(container.CanvasPosition.X,math.clamp(startY-deltaY,0,maximumY()))
+			elseif state==Enum.UserInputState.End or state==Enum.UserInputState.Cancel then
+				container:SetAttribute("XLQPTouchPanStartY",nil)
+			end
+		end)
+	end)
+	AddConnection(UserInputService.InputBegan,function(input)
+		if input.UserInputType==Enum.UserInputType.Touch then begin(input) end
+	end)
+	AddConnection(UserInputService.InputChanged,function(input)
+		if input.UserInputType==Enum.UserInputType.Touch then update(input) end
+	end)
+	AddConnection(UserInputService.InputEnded,function(input)
+		if input.UserInputType==Enum.UserInputType.Touch then finish(input) end
+	end)
 	return container
 end
 
@@ -9272,7 +9500,8 @@ function XLQPGen1:_CreateClosedTabList(Context)
 				end
 			end
 		end
-		local touch = inputService.TouchEnabled and not inputService.KeyboardEnabled
+		local quickViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
+		local touch = inputService.TouchEnabled and (not inputService.KeyboardEnabled or quickViewport.X<=1600 or quickViewport.Y<=900)
 		local itemSize = touch and 40 or 36
 		local itemGap = touch and 4 or 4
 		layout.Padding = UDim.new(0, itemGap)
@@ -9667,16 +9896,20 @@ function XLQPGen1:OpenSetupWizard(setupConfig)
 	local selectedAccent=baseAccent
 	local savedLanguage=self.GetSavedLanguage and self:GetSavedLanguage() or nil
 	local originalThemeName=tostring(self.SelectedTheme or setupConfig.OriginalTheme or "Default")
+	local currentWindowConfig=type(self._WindowConfig)=="table" and self._WindowConfig or {}
 	local result={
 		Language=tostring(savedLanguage or setupConfig.DefaultLanguage or self._SelectedLanguage or "en"),
 		Look=tostring(setupConfig.DefaultLook or "Modern Dark"),
 		Theme=XLQPSetupLookThemes[tostring(setupConfig.DefaultLook or "Modern Dark")] or "Dark",
 		OriginalTheme=originalThemeName,
-		UseOriginalAppearance=false,
-		Scale=math.clamp(tonumber(setupConfig.DefaultScale) or tonumber(self._SetupInterfaceScale) or tonumber((self._WindowConfig or {}).InterfaceScale) or 1,0.78,1.22),
+		UseOriginalAppearance=tostring(setupConfig.DefaultLook or "Modern Dark")=="Custom",
+		ApplyCustomOptions=false,
+		Scale=math.clamp(tonumber(setupConfig.DefaultScale) or tonumber(self._SetupInterfaceScale) or tonumber(currentWindowConfig.InterfaceScale) or 1,0.78,1.22),
 		Accent=baseAccent,
-		NewUI=setupConfig.DefaultNewUI~=false,
-		LiquidGlass=setupConfig.DefaultLiquidGlass==true,
+		OriginalNewUI=currentWindowConfig.NewUI==true,
+		OriginalLiquidGlass=currentWindowConfig.LiquidGlass==true,
+		CustomNewUI=currentWindowConfig.NewUI==true,
+		CustomLiquidGlass=currentWindowConfig.LiquidGlass==true,
 		completed=false
 	}
 	local gui=Instance.new("ScreenGui")
@@ -9963,6 +10196,7 @@ function XLQPGen1:OpenSetupWizard(setupConfig)
 				result.Look=entry.Name
 				result.Theme=XLQPSetupLookThemes[entry.Name] or result.OriginalTheme or "Default"
 				result.UseOriginalAppearance=entry.Name=="Custom"
+				result.ApplyCustomOptions=entry.Name=="Custom"
 				clearContent()
 				renderLook()
 				applySetupLook()
@@ -10003,11 +10237,13 @@ function XLQPGen1:OpenSetupWizard(setupConfig)
 			end)
 			return holder
 		end
-		local toggleY=266
-		local newUIHolder=addSetupToggle(toggleY,"Modern UI","Cleaner spacing and layout.","NewUI")
-		newUIHolder.Size=UDim2.new(0.5,-8,0,50)
-		local liquidHolder=addSetupToggle(toggleY,"Liquid Glass","Glass surfaces and refraction.","LiquidGlass")
-		liquidHolder.Position=UDim2.new(0.5,8,0,toggleY)
+		if result.Look=="Custom" then
+			local toggleY=266
+			local newUIHolder=addSetupToggle(toggleY,"Modern UI","Cleaner spacing and layout.","CustomNewUI")
+			newUIHolder.Size=UDim2.new(0.5,-8,0,50)
+			local liquidHolder=addSetupToggle(toggleY,"Liquid Glass","Glass surfaces and refraction.","CustomLiquidGlass")
+			liquidHolder.Position=UDim2.new(0.5,8,0,toggleY)
+		end
 	end
 
 	local function renderDone()
@@ -10101,11 +10337,22 @@ function XLQPGen1:OpenSetupWizard(setupConfig)
 		if transitioning then return end
 		if currentPage>=5 then
 			finished=true
-			result.Accent=result.Look=="Custom" and nil or selectedAccent
-			result.UseOriginalAppearance=result.Look=="Custom"
-			result.Theme=result.Look=="Custom" and (result.OriginalTheme or "Default") or (XLQPSetupLookThemes[result.Look] or result.Theme or "Dark")
-			result.NewUI=result.NewUI==true
-			result.LiquidGlass=result.LiquidGlass==true
+			local customSelected=result.Look=="Custom"
+			result.Accent=customSelected and nil or selectedAccent
+			result.UseOriginalAppearance=customSelected
+			result.Theme=customSelected and (result.OriginalTheme or "Default") or (XLQPSetupLookThemes[result.Look] or result.Theme or "Dark")
+			result.ApplyCustomOptions=customSelected
+			if customSelected then
+				result.NewUI=result.CustomNewUI==true
+				result.LiquidGlass=result.CustomLiquidGlass==true
+			else
+				result.NewUI=nil
+				result.LiquidGlass=nil
+			end
+			result.CustomNewUI=nil
+			result.CustomLiquidGlass=nil
+			result.OriginalNewUI=nil
+			result.OriginalLiquidGlass=nil
 			result.completed=true
 			result.Completed=true
 			TweenService:Create(card,TweenInfo.new(0.18,Enum.EasingStyle.Quad,Enum.EasingDirection.In),{BackgroundTransparency=1}):Play()
@@ -12907,7 +13154,45 @@ end
 XLQPGen1.Folder=WindowConfig.ConfigFolder
 XLQPGen1.SaveCfg=WindowConfig.SaveConfig
 local UserInputService=game:GetService("UserInputService")
-local isMobile=UserInputService.TouchEnabled
+local mobileViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
+local isMobile=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or mobileViewport.X<=1600 or mobileViewport.Y<=900)
+if isMobile then
+	local currentSize=WindowConfig.Size or UDim2.fromOffset(615,380)
+	local preferredWidth=currentSize.X.Offset>0 and currentSize.X.Offset or math.floor(mobileViewport.X*0.94)
+	local preferredHeight=currentSize.Y.Offset>0 and currentSize.Y.Offset or math.floor(mobileViewport.Y*0.90)
+	local maxWidth=math.max(280,mobileViewport.X-12)
+	local maxHeight=math.max(220,mobileViewport.Y-12)
+	WindowConfig.Size=UDim2.fromOffset(math.min(preferredWidth,maxWidth),math.min(preferredHeight,maxHeight))
+	WindowConfig.AdaptiveSizing=true
+	WindowConfig.AdaptiveSizingMargin=6
+	WindowConfig.BigUI=false
+	WindowConfig.SidebarTab=false
+	WindowConfig.SidebarTabMenu=false
+	WindowConfig.SideTabsSeparated=false
+	WindowConfig.SeparatedSidebar=false
+	WindowConfig.SidebarWidth=104
+	WindowConfig.SidebarCollapsedWidth=64
+	WindowConfig.SidebarCompactBreakpoint=112
+	WindowConfig.TabListSpacing=math.min(tonumber(WindowConfig.TabListSpacing) or 2,3)
+	WindowConfig.TabListGap=4
+	if type(WindowConfig.Navigation)=="table" then
+		WindowConfig.Navigation.SidebarTab=false
+		WindowConfig.Navigation.SidebarTabMenu=false
+		if type(WindowConfig.Navigation.TabList)=="table" then
+			WindowConfig.Navigation.TabList.Detached=false
+			WindowConfig.Navigation.TabList.External=false
+			WindowConfig.Navigation.TabList.Width=104
+			WindowConfig.Navigation.TabList.Gap=4
+		end
+	end
+	if type(WindowConfig.TabList)=="table" then
+		WindowConfig.TabList.Detached=false
+		WindowConfig.TabList.External=false
+		WindowConfig.TabList.Width=104
+		WindowConfig.TabList.Gap=4
+	end
+	if mobileViewport.X<920 then WindowConfig.ShowTabInfo=false end
+end
 local elemSize=isMobile and 28 or 20
 local halfElem=elemSize/2
 local knobSize=isMobile and 24 or 14
@@ -12976,6 +13261,7 @@ end
 end
 TabHolder=AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame",Color3.fromRGB(255,255,255),4),WindowConfig.SearchBar and {Size=UDim2.new(1,0,1,-90),Position=UDim2.new(0,0,0,40)} or {Size=UDim2.new(1,0,1,-50)}),{MakeElement("List",0,tonumber(WindowConfig.TabListSpacing) or 0),MakeElement("Padding",8,0,0,8)}),"Divider")
 XLQPGen1:_BindScrollCanvas(TabHolder,16)
+XLQPGen1:_InstallTouchScroll(TabHolder)
 ThemesBtn=SetChildren(SetProps(MakeElement("Button"),{Size=UDim2.new(0.2,0,1,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1}),{AddThemeObject(SetProps(MakeElement("Image",GetIcon("settings") or "rbxassetid://7734053495"),{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,18,0,18)}),"Text")})
 PrivacyBtn=SetChildren(SetProps(MakeElement("Button"),{Size=UDim2.new(0.2,0,1,0),Position=UDim2.new(0.2,0,0,0),BackgroundTransparency=1}),{AddThemeObject(SetProps(MakeElement("Image",GetIcon("shield") or "rbxassetid://6031071053"),{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,18,0,18)}),"Text")})
 FullScreenBtn=SetChildren(SetProps(MakeElement("Button"),{Size=UDim2.new(0.2,0,1,0),Position=UDim2.new(0.4,0,0,0),BackgroundTransparency=1}),{AddThemeObject(SetProps(MakeElement("Image",GetIcon("maximize-2") or "rbxassetid://4483362458"),{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,18,0,18)}),"Text")})
@@ -12985,7 +13271,7 @@ if XLQPPluginsFeatureEnabled then
 	PluginsBtn=SetChildren(SetProps(MakeElement("Button"),{Size=UDim2.new(1,0,1,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1}),{AddThemeObject(SetProps(MakeElement("Image",GetIcon("folder") or "rbxassetid://7733799185"),{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0.5,0,0.5,0),Size=UDim2.new(0,18,0,18)}),"Text")})
 	PluginsButtonFrame=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Color3.fromRGB(255,255,255),0,7),{Size=UDim2.new(0,30,0,30),Position=UDim2.new(1,-235,0,10),ZIndex=23000}),{PluginsBtn}),"Second")
 end
-DragPoint=SetProps(MakeElement("TFrame"),{Size=UDim2.new(1,0,0,60)})
+DragPoint=SetProps(MakeElement("TFrame"),{Size=UDim2.new(1,-210,0,60),Position=UDim2.new(0,0,0,0),ZIndex=22000,Active=true})
 loadedThumbnail=nil
 PlayerImage=SetProps(MakeElement("Image",""),{Size=UDim2.new(1,0,1,0),Position=UDim2.new(0,0,0,0),BackgroundTransparency=1,ScaleType=Enum.ScaleType.Crop})
 AnonImage=SetProps(MakeElement("Image","rbxassetid://6031071053"),{Size=UDim2.new(0.72,0,0.72,0),Position=UDim2.new(0.14,0,0.14,0),BackgroundTransparency=1,ScaleType=Enum.ScaleType.Fit,Visible=false})
@@ -13657,13 +13943,13 @@ end
 end
 hasSubName=WindowConfig.SubName and WindowConfig.SubName~=""
 nameOffset=WindowConfig.ShowIcon and 50 or 25
-WindowName=AddThemeObject(SetProps(MakeElement("Label",WindowConfig.Name,14),{Size=UDim2.new(1,-430,0,20),Position=UDim2.new(0,nameOffset,0,hasSubName and 5 or 15),Font=Enum.Font.GothamBlack,TextSize=hasSubName and 18 or 20}),"Text")
+WindowName=AddThemeObject(SetProps(MakeElement("Label",WindowConfig.Name,14),{Size=isMobile and UDim2.new(1,-180,0,20) or UDim2.new(1,-430,0,20),Position=UDim2.new(0,nameOffset,0,hasSubName and 5 or 15),Font=Enum.Font.GothamBlack,TextSize=isMobile and (hasSubName and 15 or 17) or (hasSubName and 18 or 20),TextTruncate=Enum.TextTruncate.AtEnd,TextWrapped=false}),"Text")
 if hasSubName then
-SubNameLabel=AddThemeObject(SetProps(MakeElement("Label",WindowConfig.SubName,12),{Size=UDim2.new(1,-430,0,12),Position=UDim2.new(0,nameOffset,0,25),Font=Enum.Font.Gotham,TextSize=12}),"TextDark")
+SubNameLabel=AddThemeObject(SetProps(MakeElement("Label",WindowConfig.SubName,12),{Size=isMobile and UDim2.new(1,-180,0,12) or UDim2.new(1,-430,0,12),Position=UDim2.new(0,nameOffset,0,25),Font=Enum.Font.Gotham,TextSize=isMobile and 10 or 12,TextTruncate=Enum.TextTruncate.AtEnd,TextWrapped=false}),"TextDark")
 end
 WindowTopBarLine=AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(1,0,0,1),Position=UDim2.new(0,0,1,-1)}),"Stroke")
 TopTabHolder=SetChildren(Create("ScrollingFrame",{Name="TopTabHolder",Size=UDim2.new(1,-10,1,0),Position=UDim2.new(0,10,0,0),BackgroundTransparency=1,ZIndex=3,ScrollBarThickness=4,ScrollBarImageColor3=Color3.fromRGB(100,100,100),CanvasSize=UDim2.new(0,0,0,0),ScrollingDirection=Enum.ScrollingDirection.X,AutomaticCanvasSize=Enum.AutomaticSize.X}),{Create("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,VerticalAlignment=Enum.VerticalAlignment.Center,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,5)})})
-TopButtonsFrame=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Color3.fromRGB(255,255,255),0,7),{Size=UDim2.new(0,175,0,30),Position=UDim2.new(1,-195,0,10)}),{AddThemeObject(MakeElement("Stroke"),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.2,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.4,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.6,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.8,0,0,0)}),"Stroke"),ThemesBtn,PrivacyBtn,FullScreenBtn,MinimizeBtn,CloseBtn}),"Second")
+TopButtonsFrame=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Color3.fromRGB(255,255,255),0,7),{Size=UDim2.new(0,isMobile and 145 or 175,0,30),Position=isMobile and UDim2.new(1,-153,0,10) or UDim2.new(1,-195,0,10)}),{AddThemeObject(MakeElement("Stroke"),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.2,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.4,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.6,0,0,0)}),"Stroke"),AddThemeObject(SetProps(MakeElement("Frame"),{Size=UDim2.new(0,1,1,0),Position=UDim2.new(0.8,0,0,0)}),"Stroke"),ThemesBtn,PrivacyBtn,FullScreenBtn,MinimizeBtn,CloseBtn}),"Second")
 TopBar=SetChildren(SetProps(MakeElement("TFrame"),{Size=UDim2.new(1,0,0,60),Name="TopBar",ZIndex=2}),{WindowName,WindowTopBarLine,TopButtonsFrame,PluginsButtonFrame})
 if hasSubName then
 SubNameLabel.Parent=TopBar
@@ -14106,6 +14392,7 @@ XLQPGen1._ApplySetupSelections=function(library,state)
 	local look=tostring(state.Look or state.look or state.Theme or state.theme or WindowConfig.SetupLook or "Modern Dark")
 	WindowConfig.SetupLook=look
 	local useOriginal=look=="Custom" or state.UseOriginalAppearance==true
+	library._SetupPassivePreset=not useOriginal
 	if not useOriginal then
 		local baseThemeName=XLQPSetupLookThemes[look] or tostring(state.Theme or "Dark")
 		local baseTheme=library.Themes[baseThemeName] or library.Themes.Default
@@ -14130,22 +14417,38 @@ XLQPGen1._ApplySetupSelections=function(library,state)
 		end
 		library.Themes.Custom=setupTheme
 		library.SelectedTheme="Custom"
-		if library.SetTheme then
-			pcall(function() library:SetTheme("Custom") end)
-		elseif type(ApplyTheme)=="function" then
-			pcall(ApplyTheme)
-		elseif type(SetTheme)=="function" then
-			pcall(SetTheme)
+		library._ThemeRevision=(tonumber(library._ThemeRevision) or 0)+1
+		for name,objects in pairs(library.ThemeObjects or {}) do
+			local baseColor=setupTheme[name]
+			local roleColor=baseColor and (GetEffectiveThemeColor and GetEffectiveThemeColor(name,baseColor) or baseColor)
+			if roleColor then
+				for _,object in pairs(objects) do
+					pcall(function()
+						local property=ReturnProperty(object)
+						if property then
+							local resolvedColor=roleColor
+							local textOverride=object:GetAttribute("XLQPTextColorOverride")
+							if property=="TextColor3" and textOverride~=nil then resolvedColor=XLQPResolveTextColor(textOverride) or resolvedColor end
+							if object[property]~=resolvedColor then object[property]=resolvedColor end
+						end
+					end)
+				end
+			end
 		end
 	else
 		WindowConfig.SetupDarkAppearance=nil
 		WindowConfig.SetupAccentColor=nil
 	end
-	WindowConfig.NewUI=state.NewUI==true
-	WindowConfig.LiquidGlass=state.LiquidGlass==true
+	local applyCustomOptions=useOriginal and state.ApplyCustomOptions==true
+	if applyCustomOptions then
+		WindowConfig.NewUI=state.NewUI==true
+		WindowConfig.LiquidGlass=state.LiquidGlass==true
+	end
 	task.defer(function()
-		if library.SetNewUIEnabled then pcall(function() library:SetNewUIEnabled(WindowConfig.NewUI,true) end) end
-		if library.SetLiquidGlassEnabled then pcall(function() library:SetLiquidGlassEnabled(WindowConfig.LiquidGlass,true) end) end
+		if applyCustomOptions then
+			if library.SetNewUIEnabled then pcall(function() library:SetNewUIEnabled(WindowConfig.NewUI,true) end) end
+			if library.SetLiquidGlassEnabled then pcall(function() library:SetLiquidGlassEnabled(WindowConfig.LiquidGlass,true) end) end
+		end
 		if library.UpdateScaleEngine then pcall(function() library:UpdateScaleEngine() end) end
 		if not useOriginal and library._RepairSetupTextContrast then
 			if library._StartupBuildActive==true or library._LoadingActive==true or library._BuildSettled~=true then
@@ -14252,6 +14555,8 @@ XLQPGen1._ReapplySavedSetupAppearance=function(library,repairOnly)
 end
 local existingSetupState=XLQPGen1:GetSetupState(XLQPGen1._SetupConfig)
 if type(existingSetupState)=="table" and (existingSetupState.completed==true or existingSetupState.Completed==true) and XLQPSetupStateMatchesConfig(existingSetupState,XLQPGen1._SetupConfig) then
+	local existingLook=tostring(existingSetupState.Look or existingSetupState.look or existingSetupState.Theme or existingSetupState.theme or "Modern Dark")
+	XLQPGen1._SetupPassivePreset=not (existingLook=="Custom" or existingSetupState.UseOriginalAppearance==true)
 	XLQPGen1._SetupFlowFinished=true
 	task.defer(function() if type(XLQPGen1._ApplySetupSelections)=="function" then pcall(function() XLQPGen1:_ApplySetupSelections(existingSetupState) end) end end)
 end
@@ -14261,6 +14566,14 @@ XLQPGen1._RefreshWindowLiveColor=function(self)
 	local liveConfig=type(WindowConfig.LiveColor)=="table" and WindowConfig.LiveColor or {}
 	local liveTheme=liveConfig.Theme or WindowConfig.LiveColorTheme or (type(WindowConfig.LiveColor)=="string" and WindowConfig.LiveColor) or (theme and theme.LiveColorTheme) or "Thermal"
 	local liveThemeData=self:GetLiveColorThemeData(liveTheme) or {}
+	if self._SetupPassivePreset==true then
+		self:UnbindLiveColor(MainWindow)
+		if MainHeaderFill and MainHeaderFill.Parent then self:UnbindLiveColor(MainHeaderFill) end
+		if WindowStuff and WindowStuff.Parent then self:UnbindLiveColor(WindowStuff) end
+		if SettingsWindow and SettingsWindow.Parent then self:UnbindLiveColor(SettingsWindow) end
+		if self._ApplyLiveThemeVisuals then pcall(function() self:_ApplyLiveThemeVisuals(liveTheme,false) end) end
+		return self
+	end
 	local bindConfig={
 		Theme=liveTheme,
 		Colors=liveConfig.Colors or WindowConfig.LiveColors,
@@ -15082,7 +15395,7 @@ WindowName.Position=UDim2.new(0,iconOffset,0,hasSubName and 5 or 15)
 WindowIcon=SetProps(MakeElement("Image",WindowConfig.Icon),{Size=UDim2.new(0,30,0,30),Position=UDim2.new(0,15,0,hasSubName and 5 or 10)})
 WindowIcon.Parent=TopBar
 end
-MakeDraggable(DragPoint,MainWindow)
+MakeDraggable(TopBar,MainWindow)
 MobileReopenButton=SetChildren(SetProps(MakeElement("Button"),{Parent=XLQPGen1Gui,Size=UDim2.new(0,178,0,44),Position=UDim2.new(0.5,-89,0,28),BackgroundTransparency=0.08,BackgroundColor3=XLQPGen1.Themes[XLQPGen1.SelectedTheme].Second,Visible=false,AnchorPoint=Vector2.new(0.5,0.5),AutoButtonColor=false}),{MakeElement("Corner",0,14),AddThemeObject(MakeElement("Stroke"),"Stroke"),AddThemeObject(SetProps(MakeElement("Image",GetIcon("home") or "rbxassetid://7733960981"),{AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,12,0.5,0),Size=UDim2.new(0,24,0,24),BackgroundTransparency=1}),"Text"),AddThemeObject(SetProps(MakeElement("Label","Open XLQP Gen1",13),{Position=UDim2.new(0,44,0,5),Size=UDim2.new(1,-52,0,18),Font=Enum.Font.GothamBlack,TextXAlignment=Enum.TextXAlignment.Left}),"Text"),AddThemeObject(SetProps(MakeElement("Label",WindowConfig.KeyToOpenWindow,11),{Position=UDim2.new(0,44,0,23),Size=UDim2.new(1,-52,0,14),Font=Enum.Font.GothamMedium,TextTransparency=0.28,TextXAlignment=Enum.TextXAlignment.Left}),"TextDark")})
 for _, object in ipairs(MobileReopenButton:GetDescendants()) do
 	if object:IsA("TextLabel") and object.Text == tostring(WindowConfig.KeyToOpenWindow) then
@@ -15667,7 +15980,7 @@ openSettingsToTab(privacyTab)
 end)
 originalPos=MainWindow.Position
 originalSize=WindowConfig.Size
-originalSettingsSize=isMobile and UDim2.new(0,540,0,430) or UDim2.new(0,760,0,520)
+originalSettingsSize=isMobile and UDim2.fromOffset(math.min(600,math.max(320,math.floor(mobileViewport.X*0.88))),math.min(460,math.max(260,math.floor(mobileViewport.Y*0.82)))) or UDim2.new(0,760,0,520)
 mainWidth=originalSize.X.Offset
 mainHeight=originalSize.Y.Offset
 settingsWidth=originalSettingsSize.X.Offset
@@ -16005,7 +16318,7 @@ end)
 settingsMinimized=false
 settingsVisible=false
 sideBarVisible=true
-sideWidth=isMobile and 184 or 218
+sideWidth=isMobile and math.clamp(math.floor(settingsWidth*0.27),122,154) or 218
 sideTweenInfo=TweenInfo.new(0.22,Enum.EasingStyle.Quint,Enum.EasingDirection.Out)
 local function getSettingsSidebarWidth()
 return sideBarVisible and sideWidth or 0
@@ -16040,6 +16353,7 @@ SettingsSideSearchWrap=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFra
 SettingsSideSearchBox=Create("TextBox",{Name="SearchBox",Text="",PlaceholderText="Search settings",ClearTextOnFocus=false,Size=UDim2.new(1,-42,1,0),Position=UDim2.new(0,38,0,0),BackgroundTransparency=1,Font=Enum.Font.GothamSemibold,TextSize=11,TextColor3=Color3.fromRGB(245,247,252),PlaceholderColor3=Color3.fromRGB(145,153,168),TextXAlignment=Enum.TextXAlignment.Left,Parent=SettingsSideSearchWrap})
 SettingsSideTabHolder=SetChildren(Create("ScrollingFrame",{Name="SideTabHolder",Size=UDim2.new(1,0,1,-102),Position=UDim2.new(0,0,0,68),BackgroundTransparency=1,ScrollBarThickness=isMobile and 6 or 3,ScrollBarImageColor3=Color3.fromRGB(130,140,160),ScrollingDirection=Enum.ScrollingDirection.Y,ElasticBehavior=Enum.ElasticBehavior.Never,VerticalScrollBarInset=Enum.ScrollBarInset.ScrollBar}),{Create("UIListLayout",{FillDirection=Enum.FillDirection.Vertical,SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,6)}),MakeElement("Padding",8,4,8,4)})
 XLQPGen1:_BindScrollCanvas(SettingsSideTabHolder,12)
+XLQPGen1:_InstallTouchScroll(SettingsSideTabHolder)
 SettingsSideFooter=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Color3.fromRGB(255,255,255),0,8),{Size=UDim2.new(1,-16,0,27),Position=UDim2.new(0,8,1,-31),BackgroundTransparency=0.32}),{AddThemeObject(MakeElement("Stroke"),"Stroke"),SetProps(MakeElement("RoundFrame",Color3.fromRGB(68,224,132),0,4),{Size=UDim2.new(0,8,0,8),Position=UDim2.new(0,9,0.5,-4)}),AddThemeObject(SetProps(MakeElement("Label","XLQP GEN1  •  READY",10),{Size=UDim2.new(1,-28,1,0),Position=UDim2.new(0,24,0,0),Font=Enum.Font.GothamBlack,TextSize=9,TextXAlignment=Enum.TextXAlignment.Left}),"Text")}),"Main")
 SettingsSideTabBar=AddThemeObject(SetChildren(Create("Frame",{Name="SideTabBar",Size=UDim2.new(0,sideWidth,1,-64),Position=UDim2.new(0,0,0,64),BackgroundTransparency=1}),{SettingsSideTitle,SettingsSideSearchWrap,SettingsSideTabHolder,SettingsSideFooter,AddThemeObject(Create("Frame",{Size=UDim2.new(0,1,1,0),Position=UDim2.new(1,-1,0,0)}),"Stroke")}),"Second")
 SettingsDotsBtn=AddThemeObject(SetChildren(SetProps(MakeElement("Button"),{Name="SettingsSidebarToggle",Size=UDim2.new(0,24,0,58),Position=UDim2.new(0,getSettingsSidebarInset()+getSettingsSidebarWidth(),0.5,0),AnchorPoint=Vector2.new(1,0.5),BackgroundTransparency=0.18,AutoButtonColor=false}),{MakeElement("Corner",0,10),AddThemeObject(MakeElement("Stroke"),"Stroke"),AddThemeObject(SetProps(MakeElement("Image",GetIcon("chevron-left") or normalizeIconAsset("chevron-left")),{Name="Ico",Size=UDim2.fromOffset(15,15),AnchorPoint=Vector2.new(.5,.5),Position=UDim2.fromScale(.5,.5)}),"Text")}),"Second")
@@ -16731,25 +17045,45 @@ function XLQPGen1:GetScaleEngine()
 	return self.ScaleEngineEnabled~=false
 end
 function XLQPGen1:UpdateScaleEngine()
-	local scale=1
-	if self.ScaleEngineEnabled~=false and UserInputService.TouchEnabled and WindowConfig.AdaptiveSizing~=true then
-		local cam=workspace.CurrentCamera
-		local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
-		local w=math.max(1,WindowConfig.Size and WindowConfig.Size.X.Offset or 860)
-		local h=math.max(1,WindowConfig.Size and WindowConfig.Size.Y.Offset or 560)
-		scale=math.clamp(math.min((vp.X-18)/w,(vp.Y-18)/h,1),0.62,1)
-	end
 	local setupScale=math.clamp(tonumber(self._SetupInterfaceScale or WindowConfig.InterfaceScale) or 1,0.78,1.22)
-	if MainWindowScale then MainWindowScale.Scale=scale*setupScale end
-	local settingScale=1
-	if self.ScaleEngineEnabled~=false and UserInputService.TouchEnabled and WindowConfig.AdaptiveSizing~=true then
-		local cam=workspace.CurrentCamera
-		local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
-		local w=math.max(1,originalSettingsSize and originalSettingsSize.X.Offset or 620)
-		local h=math.max(1,originalSettingsSize and originalSettingsSize.Y.Offset or 460)
-		settingScale=math.clamp(math.min((vp.X-18)/w,(vp.Y-18)/h,1),0.62,1)
+	local cam=workspace.CurrentCamera
+	local vp=cam and cam.ViewportSize or Vector2.new(1280,720)
+	local touchLayout=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or vp.X<=1600 or vp.Y<=900)
+	local function fittedScale(width,height)
+		if self.ScaleEngineEnabled==false or not touchLayout then return setupScale end
+		width=math.max(1,tonumber(width) or 1)
+		height=math.max(1,tonumber(height) or 1)
+		local availableW=math.max(220,vp.X-20)
+		local availableH=math.max(180,vp.Y-20)
+		local fit=math.min(availableW/(width*setupScale),availableH/(height*setupScale),1)
+		return math.clamp(fit*setupScale,0.48,setupScale)
 	end
-	if SettingsWindowScale then SettingsWindowScale.Scale=settingScale*setupScale end
+	local mainW=MainWindow and MainWindow.Size and (MainWindow.Size.X.Scale*vp.X+MainWindow.Size.X.Offset) or (WindowConfig.Size and WindowConfig.Size.X.Offset) or 860
+	local mainH=MainWindow and MainWindow.Size and (MainWindow.Size.Y.Scale*vp.Y+MainWindow.Size.Y.Offset) or (WindowConfig.Size and WindowConfig.Size.Y.Offset) or 560
+	if MainWindowScale then MainWindowScale.Scale=fittedScale(mainW,mainH) end
+	local settingsW=SettingsWindow and SettingsWindow.Size and (SettingsWindow.Size.X.Scale*vp.X+SettingsWindow.Size.X.Offset) or (originalSettingsSize and originalSettingsSize.X.Offset) or 620
+	local settingsH=SettingsWindow and SettingsWindow.Size and (SettingsWindow.Size.Y.Scale*vp.Y+SettingsWindow.Size.Y.Offset) or (originalSettingsSize and originalSettingsSize.Y.Offset) or 460
+	if SettingsWindowScale then SettingsWindowScale.Scale=fittedScale(settingsW,settingsH) end
+	if touchLayout then
+		local function clampWindow(window)
+			if not window or not window.Parent then return end
+			local scaleObject=window:FindFirstChild("XLQPScaleEngine")
+			local scaleValue=scaleObject and scaleObject:IsA("UIScale") and scaleObject.Scale or 1
+			local size=window.AbsoluteSize*scaleValue
+			local pos=window.AbsolutePosition
+			local margin=8
+			local maxX=math.max(margin,vp.X-margin-size.X)
+			local maxY=math.max(margin,vp.Y-margin-size.Y)
+			local targetX=math.clamp(pos.X,margin,maxX)
+			local targetY=math.clamp(pos.Y,margin,maxY)
+			if math.abs(targetX-pos.X)>1 or math.abs(targetY-pos.Y)>1 then
+				local anchor=window.AnchorPoint
+				window.Position=UDim2.fromOffset(targetX+anchor.X*window.AbsoluteSize.X,targetY+anchor.Y*window.AbsoluteSize.Y)
+			end
+		end
+		clampWindow(MainWindow)
+		clampWindow(SettingsWindow)
+	end
 end
 local function queueScaleEngineRefresh()
 	task.defer(function() if XLQPGen1.UpdateScaleEngine then XLQPGen1:UpdateScaleEngine() end end)
@@ -18329,8 +18663,9 @@ if TopTabHolder then
 end
 local holderWidth=TopTabHolder and TopTabHolder.AbsoluteSize.X or 0
 local mainWidth=MainWindow and MainWindow.AbsoluteSize.X or holderWidth
-local compact=mainWidth<720 or holderWidth<560
-local ultra=mainWidth<520 or holderWidth<420
+local touchCompact=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or mainWidth<1100)
+local compact=touchCompact or mainWidth<720 or holderWidth<560
+local ultra=touchCompact or mainWidth<520 or holderWidth<420
 local tabStyle=type(WindowConfig.TabButtonsStyle)=="table" and WindowConfig.TabButtonsStyle or nil
 local padding=math.max(0,math.floor(tonumber(tabStyle and tabStyle.Gap) or 5))
 local totalDesired=0
@@ -18339,7 +18674,7 @@ for _,topTab in ipairs(visibleTopTabs) do
 	local button=topTab.Button
 	local title=button and button:FindFirstChild("Title")
 	local text=title and tostring(title.Text or topTab.Name or "Tab") or tostring(topTab.Name or "Tab")
-	local desired=math.clamp((#text*9)+(compact and 30 or 40), ultra and 58 or 72, compact and 122 or 168)
+	local desired=math.clamp((#text*(touchCompact and 7 or 9))+(compact and 24 or 40), ultra and 52 or 72, touchCompact and 96 or (compact and 122 or 168))
 	desiredMap[button]=desired
 	totalDesired=totalDesired+desired
 end
@@ -18438,6 +18773,7 @@ for _,topTab in ipairs(AllTopTabObjects) do
 end
 if TopTabHolder then
 	TopTabHolder.ScrollingEnabled=needsScroll
+	if touchCompact then TopTabHolder.ScrollBarThickness=0 end
 end
 end
 local topTabFitPending=false
@@ -18540,19 +18876,19 @@ if SettingsSideTabHolder then
 SettingsSideTabHolder.ScrollBarImageTransparency=0.55
 SettingsSideTabHolder.BackgroundTransparency=1
 local layout=SettingsSideTabHolder:FindFirstChildOfClass("UIListLayout")
-if layout then layout.Padding=UDim.new(0,10) end
+if layout then layout.Padding=UDim.new(0,isMobile and 6 or 10) end
 local pad=SettingsSideTabHolder:FindFirstChildOfClass("UIPadding")
 if pad then
-pad.PaddingTop=UDim.new(0,14)
-pad.PaddingLeft=UDim.new(0,12)
-pad.PaddingRight=UDim.new(0,12)
+pad.PaddingTop=UDim.new(0,isMobile and 8 or 14)
+pad.PaddingLeft=UDim.new(0,isMobile and 8 or 12)
+pad.PaddingRight=UDim.new(0,isMobile and 8 or 12)
 end
 end
 for _,tab in ipairs(settingsTabs) do
 local selected=tab.Container and tab.Container.Visible
 local button=tab.Button
 if button then
-button.Size=UDim2.new(1,-24,0,58)
+button.Size=UDim2.new(1,isMobile and -16 or -24,0,isMobile and 50 or 58)
 button.BackgroundColor3=selected and secondColor:Lerp(strokeColor,0.16) or mainColor:Lerp(secondColor,0.08)
 button.BackgroundTransparency=selected and 0.12 or 0.42
 button.ClipsDescendants=true
@@ -18889,9 +19225,11 @@ local iconHolder=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Co
 tabButton=AddThemeObject(SetChildren(SetProps(MakeElement("Button"),{Size=UDim2.new(1,-16,0,54),AutoButtonColor=false,BackgroundTransparency=1,ClipsDescendants=true}),{MakeElement("Corner",0,getNewUICornerRadius(0.72,9)),AddThemeObject(MakeElement("Stroke"),"Stroke"),accent,iconHolder,AddThemeObject(SetProps(MakeElement("Label",tabName,13),{Size=UDim2.new(1,-58,0,19),Position=UDim2.new(0,50,0,8),TextSize=13,Font=Enum.Font.GothamBold,Name="Title",TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd}),"TextDark"),AddThemeObject(SetProps(MakeElement("Label",description,9),{Size=UDim2.new(1,-60,0,14),Position=UDim2.new(0,50,0,29),TextSize=9,Font=Enum.Font.GothamMedium,Name="Subtitle",TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd}),"TextDark")}),"Second")
 tabButton.LayoutOrder=#settingsTabs+1
 tabButton.Parent=SettingsSideTabHolder
+if XLQPGen1._RefreshScrollCanvas then task.defer(function() XLQPGen1:_RefreshScrollCanvas(SettingsSideTabHolder) end) end
 tabContainer=AddThemeObject(SetChildren(SetProps(MakeElement("ScrollFrame",Color3.fromRGB(255,255,255),4),{Size=UDim2.new(1,0,1,0),Position=UDim2.new(0,0,0,0),Visible=false,Active=true,ScrollingEnabled=true,AutomaticCanvasSize=Enum.AutomaticSize.Y,ScrollingDirection=Enum.ScrollingDirection.Y,ElasticBehavior=Enum.ElasticBehavior.Never,VerticalScrollBarInset=Enum.ScrollBarInset.None,ScrollBarThickness=3,ScrollBarImageTransparency=0.45,BorderSizePixel=0}),{Create("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,12)}),MakeElement("Padding",12,12,12,18),AddThemeObject(Create("Frame",{Size=UDim2.new(1,0,0,1),Position=UDim2.new(0,0,1,-1)}),"Stroke")}),"Second")
 tabContainer.Parent=SettingsContent
 XLQPGen1:_BindScrollCanvas(tabContainer,24)
+XLQPGen1:_InstallTouchScroll(tabContainer)
 AddThemeObject(MakeElement("Stroke"),"Stroke").Parent=tabContainer
 tabHeader=AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame",Color3.fromRGB(255,255,255),0,getNewUICornerRadius(0.82,13)),{Name="SectionHeader",Size=UDim2.new(1,-16,0,68),LayoutOrder=-1000,BackgroundTransparency=0.28}),{AddThemeObject(SetProps(MakeElement("Stroke"),{Transparency=0.42,Thickness=1}),"Stroke"),SetProps(MakeElement("RoundFrame",Color3.fromRGB(95,125,255),0,4),{Size=UDim2.new(0,6,0,40),Position=UDim2.new(0,12,0.5,-20)}),AddThemeObject(SetProps(MakeElement("Label",tabName,19),{Size=UDim2.new(1,-48,0,26),Position=UDim2.new(0,30,0,9),Font=Enum.Font.GothamBlack,TextSize=18,TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd}),"Text"),AddThemeObject(SetProps(MakeElement("Label",description,11),{Size=UDim2.new(1,-48,0,18),Position=UDim2.new(0,30,0,37),Font=Enum.Font.GothamMedium,TextSize=11,TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd}),"TextDark")}),"Main")
 tabHeader.Parent=tabContainer
@@ -18964,6 +19302,7 @@ for _,tab in ipairs(settingsTabs) do
 local searchable=(tostring(tab.Name).." "..tostring(settingsTabDescriptions[tab.Name] or "")):lower()
 tab.Button.Visible=query=="" or searchable:find(query,1,true)~=nil
 end
+if XLQPGen1._RefreshScrollCanvas then task.defer(function() XLQPGen1:_RefreshScrollCanvas(SettingsSideTabHolder) end) end
 end)
 SelectSettingsTab(overviewTab,true)
 WindowConfig._LocalRegisterState.SettingsSliderElementsReady=false
@@ -21626,6 +21965,7 @@ XLQPGen1._DeactivateLiveColorScript=function(self,reason)
 end
 
 XLQPGen1._ApplyLiveThemeVisuals=function(self,themeName,backgroundEnabled)
+	local passiveSetup=self._SetupPassivePreset==true
 	if self._ReduceLagEnabled and not self._LiveColorAllowedInReduceLag then
 		cleanupLiveColorScript("reduce-lag")
 		clearLiveThemeEffects()
@@ -21634,9 +21974,10 @@ XLQPGen1._ApplyLiveThemeVisuals=function(self,themeName,backgroundEnabled)
 	local performanceLive=self._ReduceLagEnabled==true or self._PerformanceMode==true
 	local data=themeName and self:GetLiveColorThemeData(themeName) or nil
 	if backgroundEnabled==nil then backgroundEnabled=WindowConfig.LiveColorBackground==true end
-	local liveEffectsEnabled=backgroundEnabled or (self.LiveColorElementsEnabled~=false and WindowConfig.LiveColorElements~=false)
-	if themeName and liveEffectsEnabled then runLiveColorScript(themeName,data) else cleanupLiveColorScript("disabled") end
-	if WindowConfig.LiveColorThemeImages~=false and data and data.CustomMedia==true and tostring(data.MediaLink or "")~="" then
+	if passiveSetup then backgroundEnabled=false end
+	local liveEffectsEnabled=not passiveSetup and (backgroundEnabled or (self.LiveColorElementsEnabled~=false and WindowConfig.LiveColorElements~=false))
+	if themeName and liveEffectsEnabled then runLiveColorScript(themeName,data) else cleanupLiveColorScript(passiveSetup and "setup-preset" or "disabled") end
+	if not passiveSetup and WindowConfig.LiveColorThemeImages~=false and data and data.CustomMedia==true and tostring(data.MediaLink or "")~="" then
 		if not liveThemePreviousBackground then
 			liveThemePreviousBackground={Enabled=WindowConfig.URLBackgroundEnabled==true,Link=WindowConfig._LocalRegisterState.currentBackgroundLink or "",Transparency=WindowConfig.BackgroundTransparency or 0}
 		end
@@ -25903,6 +26244,12 @@ sideBarVisible=true
 applySettingsSidebarLayout(true)
 end
 SelectSettingsTab(tab)
+if XLQPGen1._RefreshScrollCanvas then
+	task.defer(function()
+		XLQPGen1:_RefreshScrollCanvas(SettingsSideTabHolder)
+		if selectedSettingsTab and selectedSettingsTab.Container then XLQPGen1:_RefreshScrollCanvas(selectedSettingsTab.Container) end
+	end)
+end
 end
 XLQPGen1._OpenSettingsWindow=function(target)
 if WindowConfig._LocalRegisterState.forceSettingsHeaderClear then
@@ -31421,7 +31768,7 @@ end
 			local initialLiveColor=Config.LiveColor
 			if initialLiveColor==nil then initialLiveColor=Config.livecolor end
 			ReturnedObject._LiveColorRequested=initialLiveColor
-			if XLQPGen1.LiveColorElementsEnabled~=false and (initialLiveColor==true or type(initialLiveColor)=="table" or type(initialLiveColor)=="string") then ReturnedObject:SetLiveColor(initialLiveColor) end
+			if XLQPGen1._SetupPassivePreset~=true and XLQPGen1.LiveColorElementsEnabled~=false and (initialLiveColor==true or type(initialLiveColor)=="table" or type(initialLiveColor)=="string") then ReturnedObject:SetLiveColor(initialLiveColor) end
 
 			ReturnedObject._XLQPFrame = Frame
 			ReturnedObject.Wrapper = ReturnedObject.Wrapper or Frame
@@ -31963,7 +32310,8 @@ end
 					Label = label,
 					Icon = iconImage,
 					Name=labelText,
-					Config=pageConfig
+					Config=pageConfig,
+					Elements=elements
 				}
 				table.insert(tabItems, tabData)
 
@@ -31992,6 +32340,21 @@ end
 			tabbox.TitleLabel = titleLabel
 			function tabbox:SetTitle(newTitle)
 				titleLabel.Text = tostring(newTitle or "")
+			end
+			local function activeTabElements()
+				if activeTab and activeTab.Elements then return activeTab.Elements end
+				local created=tabbox:AddTab({Name="Main"})
+				return created
+			end
+			for _,methodName in ipairs({"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddKeybind","AddKeyPicker"}) do
+				if tabbox[methodName]==nil then
+					tabbox[methodName]=function(self,...)
+						local elements=activeTabElements()
+						local method=elements and elements[methodName]
+						if type(method)=="function" then return method(elements,...) end
+						return nil
+					end
+				end
 			end
 			queueTabboxSize()
 			return tabbox
@@ -32460,58 +32823,9 @@ end
 		function ElementFunction:AddSection(SectionConfig)
 			SectionConfig = type(SectionConfig) == "table" and SectionConfig or {Name = tostring(SectionConfig or "Section")}
 			SectionConfig.Name = SectionConfig.Name or SectionConfig.Title or "Section"
+			SectionConfig.Collapsible = true
+			SectionConfig.DefaultOpen = true
 			local subtitle = SectionConfig.Subtitle or SectionConfig.Description or SectionConfig.Desc
-			local collapsible = SectionConfig.Collapsible == true or SectionConfig.Open ~= nil or SectionConfig.DefaultOpen ~= nil
-
-			if not collapsible then
-				local holder = SetProps(MakeElement("TFrame"), {
-					Name = "Section",
-					Size = UDim2.new(1, 0, 0, subtitle and 40 or 20),
-					Parent = ItemParent
-				})
-				local SectionLabel = AddThemeObject(SetProps(MakeElement("Label", ("- "..SectionConfig.Name.." -"), 14), {
-					Name = "Content",
-					Size = UDim2.new(1, 0, 0, 20),
-					Font = Enum.Font.GothamSemibold,
-					TextXAlignment = Enum.TextXAlignment.Center,
-					TextYAlignment = Enum.TextYAlignment.Center,
-					BackgroundTransparency = 1,
-					Parent = holder
-				}), "TextDark")
-				local SubLabel
-				if subtitle then
-					SubLabel = AddThemeObject(SetProps(MakeElement("Label", tostring(subtitle), 11), {
-						Name = "Description",
-						Size = UDim2.new(1, -20, 0, 16),
-						Position = UDim2.new(0, 10, 0, 21),
-						Font = Enum.Font.Gotham,
-						TextXAlignment = Enum.TextXAlignment.Center,
-						TextWrapped = true,
-						BackgroundTransparency = 1,
-						Parent = holder
-					}), "TextDark")
-				end
-				local Section = {Frame = holder, Wrapper = holder, Label = SectionLabel, SubtitleLabel = SubLabel, Name = SectionConfig.Name, Type = "Section"}
-				function Section:Set(text) SectionConfig.Name = tostring(text or "") SectionLabel.Text = "- "..SectionConfig.Name.." -" return self end
-				Section.SetTitle = Section.Set
-				function Section:SetSubtitle(text)
-					if not SubLabel then return self end
-					SubLabel.Text = tostring(text or "")
-					return self
-				end
-				function Section:SetLine() return self end
-				function Section:SetSpacing(top, bottom)
-					holder.Size = UDim2.new(1, 0, 0, math.max(8, (tonumber(top) or 20) + (tonumber(bottom) or 0)))
-					return self
-				end
-				XLQPApplyElementStyle(holder, SectionConfig, Section)
-				if not XLQPGen1:_ResolveLock(SectionConfig) then
-					holder.Visible = false
-					holder.Parent = XLQPGen1:_LockedVault()
-					Section.LockedOut = true
-				end
-				return Section
-			end
 
 			local opened = SectionConfig.Open ~= false and SectionConfig.DefaultOpen ~= false
 			local accent = XLQPResolveTagColor(SectionConfig.Color, (XLQPGen1.Themes[XLQPGen1.SelectedTheme] or {}).Bloom or Color3.fromRGB(150,120,255))
@@ -39888,10 +40202,18 @@ end
 			return Rating
 		end
 		ElementFunction.AddStars=ElementFunction.AddRating
-		function ElementFunction:AddButton(ButtonConfig)
+		function ElementFunction:AddButton(ButtonConfig,CompatConfig)
+			if type(ButtonConfig)~="table" then
+				local key=tostring(ButtonConfig or "")
+				local source=type(CompatConfig)=="table" and CompatConfig or {}
+				ButtonConfig={}
+				for k,v in pairs(source) do ButtonConfig[k]=v end
+				ButtonConfig.Flag=ButtonConfig.Flag or (key~="" and key or nil)
+				ButtonConfig.Name=ButtonConfig.Name or ButtonConfig.Text or ButtonConfig.Title or key
+			end
 			ButtonConfig = ButtonConfig or {}
-			ButtonConfig.Name = ButtonConfig.Name or ButtonConfig.Title or "Button"
-			ButtonConfig.Callback = ButtonConfig.Callback or function() end
+			ButtonConfig.Name = ButtonConfig.Name or ButtonConfig.Text or ButtonConfig.Title or "Button"
+			ButtonConfig.Callback = ButtonConfig.Callback or ButtonConfig.Func or ButtonConfig.Function or function() end
 			ButtonConfig.Icon = ButtonConfig.Icon or GetIcon("chevron-right") or "rbxassetid://7733717755"
 			ButtonConfig.Locked = ButtonConfig.Locked or false
 			ButtonConfig.Image = ButtonConfig.Image or nil
@@ -40111,9 +40433,17 @@ end
 		ElementFunction.CreateSmoothToggle=ElementFunction.AddSmoothToggle
 		ElementFunction.SmoothToggle=ElementFunction.AddSmoothToggle
 
-		function ElementFunction:AddToggle(ToggleConfig)
+		function ElementFunction:AddToggle(ToggleConfig,CompatConfig)
+	if type(ToggleConfig)~="table" then
+		local key=tostring(ToggleConfig or "")
+		local source=type(CompatConfig)=="table" and CompatConfig or {}
+		ToggleConfig={}
+		for k,v in pairs(source) do ToggleConfig[k]=v end
+		ToggleConfig.Flag=ToggleConfig.Flag or (key~="" and key or nil)
+		ToggleConfig.Name=ToggleConfig.Name or ToggleConfig.Text or ToggleConfig.Title or key
+	end
 	ToggleConfig = ToggleConfig or {}
-	ToggleConfig.Name = ToggleConfig.Name or ToggleConfig.Title or "Toggle"
+	ToggleConfig.Name = ToggleConfig.Name or ToggleConfig.Text or ToggleConfig.Title or "Toggle"
 	ToggleConfig.Default = ToggleConfig.Default or false
 	ToggleConfig.Callback = ToggleConfig.Callback or function() end
 	ToggleConfig.Color = ToggleConfig.Color or Color3.fromRGB(130, 80, 220)
@@ -40707,10 +41037,20 @@ end
 	end
 	return Toggle
 end
-		function ElementFunction:AddSlider(SliderConfig)
+		function ElementFunction:AddSlider(SliderConfig,CompatConfig)
+			if type(SliderConfig)~="table" then
+				local key=tostring(SliderConfig or "")
+				local source=type(CompatConfig)=="table" and CompatConfig or {}
+				SliderConfig={}
+				for k,v in pairs(source) do SliderConfig[k]=v end
+				SliderConfig.Flag=SliderConfig.Flag or (key~="" and key or nil)
+				SliderConfig.Name=SliderConfig.Name or SliderConfig.Text or SliderConfig.Title or key
+			end
 			SliderConfig = SliderConfig or {}
 			local sliderTheme=XLQPGen1.Themes[XLQPGen1.SelectedTheme] or XLQPGen1.Themes.Default
-			SliderConfig.Name = SliderConfig.Name or SliderConfig.Title or "Slider"
+			SliderConfig.Name = SliderConfig.Name or SliderConfig.Text or SliderConfig.Title or "Slider"
+			SliderConfig.ValueName = SliderConfig.ValueName or SliderConfig.Suffix or ""
+			if SliderConfig.Increment==nil and tonumber(SliderConfig.Rounding) then SliderConfig.Increment=10^(-math.max(0,tonumber(SliderConfig.Rounding))) end
 			SliderConfig.Min = tonumber(SliderConfig.Min) or 0
 			SliderConfig.Max = tonumber(SliderConfig.Max) or 100
 			SliderConfig.Increment = tonumber(SliderConfig.Increment) or 1
@@ -41055,10 +41395,18 @@ end
 			return Slider
 		end
 
-	function ElementFunction:AddDropdown(DropdownConfig)
+	function ElementFunction:AddDropdown(DropdownConfig,CompatConfig)
+    if type(DropdownConfig)~="table" then
+        local key=tostring(DropdownConfig or "")
+        local source=type(CompatConfig)=="table" and CompatConfig or {}
+        DropdownConfig={}
+        for k,v in pairs(source) do DropdownConfig[k]=v end
+        DropdownConfig.Flag=DropdownConfig.Flag or (key~="" and key or nil)
+        DropdownConfig.Name=DropdownConfig.Name or DropdownConfig.Text or DropdownConfig.Title or key
+    end
     DropdownConfig = DropdownConfig or {}
-    DropdownConfig.Name = DropdownConfig.Name or DropdownConfig.Title or "Dropdown"
-    DropdownConfig.Options = DropdownConfig.Options or {}
+    DropdownConfig.Name = DropdownConfig.Name or DropdownConfig.Text or DropdownConfig.Title or "Dropdown"
+    DropdownConfig.Options = DropdownConfig.Options or DropdownConfig.Values or {}
     DropdownConfig.Default = DropdownConfig.Default or ""
     DropdownConfig.Callback = DropdownConfig.Callback or function() end
     DropdownConfig.Flag = DropdownConfig.Flag or nil
@@ -42332,7 +42680,7 @@ function ElementFunction:AddTextArea(AreaConfig)
 	return Area
 end
 ElementFunction.AddTextarea = ElementFunction.AddTextArea
-function ElementFunction:AddTextbox(TextboxConfig)
+function ElementFunction:AddTextbox(TextboxConfig,CompatConfig)
 	local TweenService = game:GetService("TweenService")
 	local HttpService = game:GetService("HttpService")
 	local UserInputService = game:GetService("UserInputService")
@@ -42341,8 +42689,16 @@ function ElementFunction:AddTextbox(TextboxConfig)
 	local RunService = game:GetService("RunService")
 	local HttpRequest = XLQPResolveRequest()
 
+	if type(TextboxConfig)~="table" then
+		local key=tostring(TextboxConfig or "")
+		local source=type(CompatConfig)=="table" and CompatConfig or {}
+		TextboxConfig={}
+		for k,v in pairs(source) do TextboxConfig[k]=v end
+		TextboxConfig.Flag=TextboxConfig.Flag or (key~="" and key or nil)
+		TextboxConfig.Name=TextboxConfig.Name or TextboxConfig.Text or TextboxConfig.Title or key
+	end
 	TextboxConfig = TextboxConfig or {}
-	TextboxConfig.Name = TextboxConfig.Name or TextboxConfig.Title or "Input"
+	TextboxConfig.Name = TextboxConfig.Name or TextboxConfig.Text or TextboxConfig.Title or "Input"
 	TextboxConfig.Default = TextboxConfig.Default or ""
 	TextboxConfig.Ai = TextboxConfig.Ai or false
 	TextboxConfig.Gui = TextboxConfig.Gui or false
@@ -51953,6 +52309,20 @@ end
 				end
 			end
 		end
+		ElementFunction.CreateToggle=ElementFunction.CreateToggle or ElementFunction.AddToggle
+		ElementFunction.Toggle=ElementFunction.Toggle or ElementFunction.AddToggle
+		ElementFunction.AddSwitch=ElementFunction.AddSwitch or ElementFunction.AddToggle
+		ElementFunction.CreateSwitch=ElementFunction.CreateSwitch or ElementFunction.AddToggle
+		ElementFunction.CreateSlider=ElementFunction.CreateSlider or ElementFunction.AddSlider
+		ElementFunction.Slider=ElementFunction.Slider or ElementFunction.AddSlider
+		ElementFunction.CreateDropdown=ElementFunction.CreateDropdown or ElementFunction.AddDropdown
+		ElementFunction.Dropdown=ElementFunction.Dropdown or ElementFunction.AddDropdown
+		ElementFunction.CreateButton=ElementFunction.CreateButton or ElementFunction.AddButton
+		ElementFunction.Button=ElementFunction.Button or ElementFunction.AddButton
+		ElementFunction.CreateTextbox=ElementFunction.CreateTextbox or ElementFunction.AddTextbox
+		ElementFunction.Textbox=ElementFunction.Textbox or ElementFunction.AddTextbox
+		ElementFunction.AddInput=ElementFunction.AddInput or ElementFunction.AddTextbox
+		ElementFunction.CreateInput=ElementFunction.CreateInput or ElementFunction.AddTextbox
 		return ElementFunction
 	end
 	WindowConfig._LocalRegisterState.GetElements=GetElements
@@ -54094,7 +54464,8 @@ function TabFunction:newmaketabtop(TabConfig)
 	end
 	local isMultiTab = TabConfig.MultiTab or false
 	
-	local isMobile = game:GetService("UserInputService").TouchEnabled and not game:GetService("UserInputService").KeyboardEnabled
+	local tabViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
+	local isMobile = game:GetService("UserInputService").TouchEnabled and (not game:GetService("UserInputService").KeyboardEnabled or tabViewport.X<=1600 or tabViewport.Y<=900)
 	
 	if isMobile and TopTabHolder and TopTabHolder:FindFirstChildOfClass("UIListLayout") then
 		local layout = TopTabHolder:FindFirstChildOfClass("UIListLayout")
@@ -54219,11 +54590,43 @@ function TabFunction:newmaketabtop(TabConfig)
 	
 	if not isMultiTab then
 		local elements=GetElements(topTabInfo.Container)
+		topTabInfo.Elements=elements
+		for _,methodName in ipairs({"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddColorPicker","AddKeybind","AddKeyPicker","AddBind","AddLeftGroupbox","AddRightGroupbox"}) do
+			local name=methodName
+			if type(topTabInfo[name])~="function" then
+				topTabInfo[name]=function(self,...)
+					local method=elements and elements[name]
+					if type(method)=="function" then return method(elements,...) end
+					return nil
+				end
+			end
+		end
 		elements.OnSelect=topTabInfo.OnSelect
 		elements.Tab=topTabInfo
 		function elements:Select(bypass) SelectTopTab(topTabInfo,false,bypass==true) return self end
 		return elements
 	else
+		local function resolveCompatElements()
+			if topTabInfo._CompatElements then return topTabInfo._CompatElements end
+			local first=topTabInfo.SideTabs and topTabInfo.SideTabs[1]
+			if first and first.Container then
+				topTabInfo._CompatElements=GetElements(first.Container)
+				return topTabInfo._CompatElements
+			end
+			local created=TabFunction:MakeTab({Name=topTabInfo.Name or "Main",Icon=TabConfig.Icon or "layout-grid",ParentTopTab=topTabInfo,AutoSelect=true})
+			topTabInfo._CompatElements=created
+			return created
+		end
+		for _,methodName in ipairs({"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddKeybind","AddKeyPicker","AddLeftGroupbox","AddRightGroupbox"}) do
+			if topTabInfo[methodName]==nil then
+				topTabInfo[methodName]=function(self,...)
+					local elements=resolveCompatElements()
+					local method=elements and elements[methodName]
+					if type(method)=="function" then return method(elements,...) end
+					return nil
+				end
+			end
+		end
 		return topTabInfo
 	end
 end
@@ -54655,11 +55058,22 @@ local sideTabInfo = {
    Button = TabButton,
    Name = TabConfig.Name,
    Container = Container,
+   Elements = Elements,
    ParentTopTab = parentTopTab,
    Group = sideGroup,
    Config = TabConfig,
    OnSelect = CreateXLQPSignal()
 }
+for _,methodName in ipairs({"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddColorPicker","AddKeybind","AddKeyPicker","AddBind","AddLeftGroupbox","AddRightGroupbox"}) do
+	local name=methodName
+	if type(sideTabInfo[name])~="function" then
+		sideTabInfo[name]=function(self,...)
+			local method=Elements and Elements[name]
+			if type(method)=="function" then return method(Elements,...) end
+			return nil
+		end
+	end
+end
 if type(TabConfig.OnSelect) == "function" then sideTabInfo.OnSelect:Connect(TabConfig.OnSelect) end
 Elements.OnSelect = sideTabInfo.OnSelect
 Elements.Tab = sideTabInfo
@@ -60735,6 +61149,7 @@ end
 	end
 
 	function TabFunction:SetLiveColor(enabled,theme)
+		XLQPGen1._SetupPassivePreset=false
 		if type(enabled)=="table" or type(enabled)=="string" then WindowConfig.LiveColor=enabled else WindowConfig.LiveColor=enabled==true end
 		WindowConfig.LiveColorBackground=enabled==true or type(enabled)=="table" or type(enabled)=="string"
 		if theme~=nil then WindowConfig.LiveColorTheme=tostring(theme) end
@@ -60743,6 +61158,7 @@ end
 	end
 
 	function TabFunction:SetLiveColorBackground(enabled,theme)
+		XLQPGen1._SetupPassivePreset=false
 		WindowConfig.LiveColorBackground=enabled==true
 		WindowConfig.LiveColor=WindowConfig.LiveColorBackground
 		if theme~=nil then WindowConfig.LiveColorTheme=tostring(theme) end
@@ -60761,6 +61177,7 @@ end
 	end
 
 	function TabFunction:SetLiveColorElements(enabled,theme)
+		XLQPGen1._SetupPassivePreset=false
 		WindowConfig.LiveColorElements=enabled==true
 		if theme~=nil then WindowConfig.LiveColorTheme=tostring(theme) end
 		XLQPGen1:SetElementLiveColors(WindowConfig.LiveColorElements,WindowConfig.LiveColorTheme)
@@ -61134,6 +61551,28 @@ end
 		return currentTopTabForCreation
 	end
 
+	local function resolveWindowCompatElements()
+		if activeSideTabObject and activeSideTabObject.Container then return GetElements(activeSideTabObject.Container) end
+		if activeTopTabObject and activeTopTabObject.Container then return GetElements(activeTopTabObject.Container) end
+		if currentTopTabForCreation then
+			if currentTopTabForCreation.Container then return GetElements(currentTopTabForCreation.Container) end
+			local first=currentTopTabForCreation.SideTabs and currentTopTabForCreation.SideTabs[1]
+			if first and first.Container then return GetElements(first.Container) end
+		end
+		local created=TabFunction:newmaketabtop({Name="Main",MultiTab=false,AutoSelect=true})
+		return created
+	end
+	for _,methodName in ipairs({"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddKeybind","AddKeyPicker","AddLeftGroupbox","AddRightGroupbox"}) do
+		if TabFunction[methodName]==nil then
+			TabFunction[methodName]=function(self,...)
+				local elements=resolveWindowCompatElements()
+				local method=elements and elements[methodName]
+				if type(method)=="function" then return method(elements,...) end
+				return nil
+			end
+		end
+	end
+
 	XLQPGen1._ActiveWindow = TabFunction
 	task.defer(function()
 		local code = XLQPGen1._PendingLanguage or XLQPGen1:GetSavedLanguage()
@@ -61186,6 +61625,7 @@ function XLQPGen1:ResetTheme()
 end
 
 function XLQPGen1:SetWindowLiveColor(enabled,theme)
+	self._SetupPassivePreset=false
 	local window=self:_GetWindow()
 	if window~=self and type(window.SetLiveColor)=="function" then return window:SetLiveColor(enabled,theme) end
 	if self._ReduceLagEnabled and (enabled==true or type(enabled)=="table" or type(enabled)=="string") then self._LiveColorAllowedInReduceLag=true end
@@ -61199,6 +61639,7 @@ function XLQPGen1:SetWindowLiveColor(enabled,theme)
 end
 
 function XLQPGen1:SetLiveColorBackground(enabled,theme)
+	self._SetupPassivePreset=false
 	local window=self:_GetWindow()
 	if window~=self and type(window.SetLiveColorBackground)=="function" then return window:SetLiveColorBackground(enabled,theme) end
 	if self._ReduceLagEnabled and enabled==true then self._LiveColorAllowedInReduceLag=true end
@@ -61212,6 +61653,7 @@ function XLQPGen1:SetLiveColorBackground(enabled,theme)
 end
 
 function XLQPGen1:SetElementLiveColors(enabled,theme)
+	self._SetupPassivePreset=false
 	local cfg=self._WindowConfig
 	local wasEnabled=self.LiveColorElementsEnabled~=false
 	if self._ReduceLagEnabled and enabled==true then self._LiveColorAllowedInReduceLag=true end
@@ -66868,8 +67310,42 @@ local function XLQPGetTabListLogoFromConfig(tabConfig)
     return nil
 end
 
+local XLQPElementCompatMethods={"AddToggle","AddSlider","AddDropdown","AddTextbox","AddInput","AddButton","AddLabel","AddParagraph","AddColorpicker","AddColorPicker","AddKeybind","AddKeyPicker","AddBind","AddLeftGroupbox","AddRightGroupbox","AddLeftTabbox","AddRightTabbox"}
+local function XLQPEnsureElementApi(target,host)
+	if type(target)~="table" then return target end
+	local nested=type(target.Elements)=="table" and target.Elements or nil
+	local resolved
+	local function resolve()
+		if nested then return nested end
+		if resolved then return resolved end
+		local container=host
+		if typeof(container)~="Instance" then
+			container=target.Container or target.Page or target.Frame or target.Wrapper
+		end
+		if typeof(container)=="Instance" and type(GetElements)=="function" then
+			local ok,value=pcall(GetElements,container)
+			if ok and type(value)=="table" and value~=target then resolved=value end
+		end
+		return resolved
+	end
+	for _,methodName in ipairs(XLQPElementCompatMethods) do
+		local name=methodName
+		if type(target[name])~="function" then
+			target[name]=function(self,...)
+				local api=resolve()
+				local method=api and api[name]
+				if type(method)=="function" then return method(api,...) end
+				return nil
+			end
+		end
+	end
+	return target
+end
+
 local function XLQPDecorateElementHost(library, window, elements, config)
-    if type(elements) ~= "table" or elements._XLQPSidebarMenuReady then return elements end
+    if type(elements) ~= "table" then return elements end
+    XLQPEnsureElementApi(elements)
+    if elements._XLQPSidebarMenuReady then return elements end
     elements._XLQPSidebarMenuReady = true
 
     function elements:AddSidebarMenu(menuConfig)
@@ -67213,7 +67689,10 @@ local function XLQPDecorateElementHost(library, window, elements, config)
             if opened then syncPosition(true) else panel.Visible = false overlay.Visible = false end
         end)
 
+        if library._BindScrollCanvas then pcall(function() library:_BindScrollCanvas(content,20) end) end
+        if library._InstallTouchScroll then pcall(function() library:_InstallTouchScroll(content) end) end
         local api = GetElements and GetElements(content) or {}
+        XLQPEnsureElementApi(api,content)
         api.Frame = panel
         api.Container = content
         api.Side = side
@@ -67802,6 +68281,17 @@ function XLQPGen1:MakeWindow(config)
     config.SidebarCornerRadius = config.SidebarCornerRadius or navigationConfig.SidebarCornerRadius or tabListConfig.CornerRadius
     config.TabListGap = config.TabListGap or navigationConfig.TabListGap or tabListConfig.Gap
     config.QuickMenuGap = config.QuickMenuGap or navigationConfig.QuickMenuGap or tabListConfig.QuickMenuGap
+    local responsiveViewport=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize) or Vector2.new(800,600)
+    local responsiveMobile=UserInputService.TouchEnabled and (not UserInputService.KeyboardEnabled or responsiveViewport.X<=1600 or responsiveViewport.Y<=900)
+    if responsiveMobile then
+        config.SidebarTab=false
+        config.SidebarWidth=112
+        config.SidebarCollapsedWidth=64
+        config.SidebarCompactBreakpoint=118
+        config.TabListGap=6
+        config.TabListSpacing=math.min(tonumber(config.TabListSpacing) or 3,4)
+        if responsiveViewport.X<900 then config.ShowTabInfo=false end
+    end
     config.TabListLogo = config.TabListLogo or config.SidebarLogo or config.SidebarBranding or config.LogoAboveTabs or navigationConfig.TabListLogo or navigationConfig.SidebarLogo or navigationConfig.Logo or tabListConfig.Logo
     config.SidebarLogo = config.TabListLogo
 
