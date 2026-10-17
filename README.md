@@ -8,6 +8,8 @@
 
 XLQP Gen1 is a complete Roblox Luau interface library for building polished hubs, tools, dashboards, menus, and interactive experiences from one configurable window API. It includes flexible navigation, a large element collection, themes, media tools, data views, notifications, key systems, configuration persistence, and advanced window controls.
 
+The current release adds an AI agent with planning, workspace context, tools, and permission controls; a redesigned key system with provider adapters and themed get-key menus; nested subtabs; selectable option grids; responsive element grids; and compact sliders with named stops and plugin hooks.
+
 Created by [Sirus](https://www.sentivel.com) and Itsjose4.
 
 ## Quick start
@@ -29,12 +31,15 @@ local Window = Library:MakeWindow({
 | File | Description |
 | --- | --- |
 | [`xlqp gen1`](./xlqp%20gen1) | Current XLQP Gen1 UI source used by the public loader. |
-| [`xlqp example full`](./xlqp%20example%20full) | Complete, comment-free example covering the available XLQP Gen1 APIs and elements. |
+| [`xlqp example full`](./xlqp%20example%20full) | Current comment-free AI Agent example, including controls, navigation, grids, media, and the optional key gate. |
 | [`LICENSE`](./LICENSE) | License and usage terms for XLQP Gen1. |
 
 ## Resources
 
 - [Documentation](https://xlqp-docs.vercel.app/docs)
+- [AI agent guide](https://xlqp-docs.vercel.app/docs/ai-agent)
+- [Key system guide](https://xlqp-docs.vercel.app/docs/key-system)
+- [Latest API additions](https://xlqp-docs.vercel.app/docs/reference/october-update)
 - [XLQP website](https://xlqp.lol/)
 - [Verbal Discord](https://discord.com/invite/verbal)
 - [Sentivel](https://www.sentivel.com)
