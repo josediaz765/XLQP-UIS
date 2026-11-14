@@ -30139,7 +30139,7 @@ __modules["components/nothing.com/yeahnothing"] = function()
 end
 
 __modules["components/window/dialog"] = function()
-                                                                             
+-- was been removed from ui and not working anymore, dont try to add back pls
 
 local Dialog = {}
 
@@ -30297,7 +30297,7 @@ local Lighting = game:GetService("Lighting")
 
 local Notification = {}
 
-                                                                                         
+-- NotifStyle: "1" Stripe | "2" Pill | "3" Island | "4" Ring | "5" Solid (names work too)
 local STYLE_BY_NAME = { stripe = "1", pill = "2", island = "3", ring = "4", solid = "5" }
 
 function Notification.new(ctx)
@@ -30340,7 +30340,7 @@ function Notification.new(ctx)
 		return C.accent
 	end
 
-	                                                    
+	-- Readable icon/text color on top of a filled color
 	local function contrastOn(color)
 		local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
 		return luminance > 0.55 and DARK or WHITE
@@ -30350,7 +30350,7 @@ function Notification.new(ctx)
 		return NOTIF_COLOR == "bg" and C.card or C.btn2
 	end
 
-	                                                 
+	-- Bottom-right stack (Stripe, Pill, Ring, Solid)
 	local cornerHolder = make("Frame", {
 		AnchorPoint = Vector2.new(1, 1),
 		Position = UDim2.new(1, -16, 1, -8),
@@ -30365,7 +30365,7 @@ function Notification.new(ctx)
 		HorizontalAlignment = Enum.HorizontalAlignment.Right,
 	}, cornerHolder)
 
-	                            
+	-- Top-center stack (Island)
 	local islandHolder = make("Frame", {
 		AnchorPoint = Vector2.new(0.5, 0),
 		Position = UDim2.new(0.5, 0, 0, 12),
@@ -30424,7 +30424,7 @@ function Notification.new(ctx)
 		end
 	end)
 
-	                  
+	-- Shared builders
 
 	local function newWrapper(holder, width, height)
 		return make("Frame", {
@@ -30453,9 +30453,9 @@ function Notification.new(ctx)
 	local function label(parent, str, x, y, w, h, size, color, bold)
 		local l = text(parent, str, x, y, w, h, size, color)
 		if bold then
-			                                                                       
-			                                                            
-			                                                                      
+			-- Route through markBoldFont (not a raw FontFace assign) so this label
+			-- is registered as bold in fontBindings; otherwise the next
+			-- SetUIFont/SetTitleFont call flattens it back to the regular weight.
 			markBoldFont(l)
 		end
 		l.TextTruncate = Enum.TextTruncate.AtEnd
@@ -30473,7 +30473,7 @@ function Notification.new(ctx)
 		}, parent)
 	end
 
-	                                                                   
+	-- 1 · Stripe: color bar on the left + countdown line at the bottom
 	local function buildStripe(title, message, color)
 		local W, H = NOTIF_W, 62
 		local wrapper = newWrapper(cornerHolder, W, H)
@@ -30511,7 +30511,7 @@ function Notification.new(ctx)
 		}
 	end
 
-	                                                                       
+	-- 2 · Pill: compact capsule; long text wraps to more lines (never cut)
 	local function escapeRich(str)
 		return (str:gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"))
 	end
@@ -30589,7 +30589,7 @@ function Notification.new(ctx)
 		}
 	end
 
-	                                                             
+	-- 3 · Island: dark capsule at the top center that expands in
 	local function buildIsland(title, message, color, spec)
 		local W, H = ISLAND_W, 52
 		local border = Color3.fromRGB(42, 42, 48)
@@ -30643,7 +30643,7 @@ function Notification.new(ctx)
 		}
 	end
 
-	                                         
+	-- 4 · Ring: icon inside a circular timer
 	local function buildRing(title, message, color, spec)
 		local W, H = NOTIF_W, 60
 		local wrapper = newWrapper(cornerHolder, W, H)
@@ -30694,7 +30694,7 @@ function Notification.new(ctx)
 		}
 	end
 
-	                                          
+	-- 5 · Solid: filled with the status color
 	local function buildSolid(title, message, color, spec)
 		local W, H = NOTIF_W, 58
 		local onColor = contrastOn(color)
@@ -31256,9 +31256,9 @@ local COLOR_PROPS = {
 local bindings = {}
 local gradients = {}
 
-                                                                                         
-                                                                                          
-                                                  
+-- UI/Title font (Ophyn:SetUIFont / Ophyn:SetTitleFont). Every label built through make()
+-- with FontFace = FONT or FONT_BOLD is tracked here so both setters can restyle text that
+-- already exists, not just text built afterwards.
 local fontBindings = {}
 local fontSettings = { ui = nil, title = nil }
 
@@ -31288,8 +31288,8 @@ local function applyFontAll()
 	end
 end
 
-                                                                                      
-                                                                               
+-- Marks an already-created label as the window title, so SetTitleFont targets only it
+-- (SetUIFont still applies to it too, as a fallback, same as everything else).
 local function markTitleFont(inst)
 	for _, entryFont in ipairs(fontBindings) do
 		if entryFont.inst == inst then
@@ -31300,8 +31300,8 @@ local function markTitleFont(inst)
 	end
 end
 
-                                                                                       
-                                                                               
+-- Same idea for a bold label created via text() then switched to FONT_BOLD afterwards,
+-- so SetUIFont/SetTitleFont don't flatten it back to the regular weight later.
 local function markBoldFont(inst)
 	for _, entryFont in ipairs(fontBindings) do
 		if entryFont.inst == inst then
@@ -31312,9 +31312,9 @@ local function markBoldFont(inst)
 	end
 end
 
-                                                                                        
-                                                                                 
-                                               
+-- Accepts a Font instance, a Roblox Enum.Font name ("Gotham", "SourceSansBold", ...), a
+-- custom font family asset ("rbxassetid://..." or a bare numeric id), or a table
+-- { Family = ..., Weight = ..., Style = ... }.
 local function resolveFont(input)
 	if input == nil then
 		return nil
@@ -31827,8 +31827,8 @@ end
 local UI = {}
 UI.Jnkie = Jnkie
 
-                                                                            
-                                                                                                
+-- Get key button customisation (KeySystem:SetGetkeyTitle / :SetGetkeyIcon).
+-- Stored here so it works before or after KeySystem.new, and updates a UI that is already open.
 local getkeySettings = { title = nil, icon = nil }
 local getkeyAppliers = {}
 
@@ -31838,13 +31838,13 @@ local function applyGetkeyAll()
 	end
 end
 
-                                                                     
-                                                                             
-                                                                       
-                                                                                              
-                                                                                          
-                                                                                        
-                                                                       
+-- Get key dropdown (KeySystem:GetMethod). Each call adds one option:
+-- Ophyn:GetMethod({ Title = "...", Icon = "rbxassetid://...", URL = "..." })
+-- or, for a dynamic link (matches a custom service's GetKeyLink(ctx)):
+-- Ophyn:GetMethod({ Title = "...", Icon = "...", GetKeyLink = function(ctx) return url end })
+-- Once 2+ methods are registered, the get key button grows an arrow that opens a dropdown
+-- to pick between them; picking one only changes the button's text/icon (SetGetkeyTitle
+-- keeps working as the fallback label when no method is selected yet).
 local getMethods = {}
 local selectedMethodIndex = nil
 
@@ -31855,7 +31855,7 @@ function UI.GetMethod(entry)
 		icon = entry.Icon,
 		url = entry.URL,
 		getKeyLink = entry.GetKeyLink or entry.getKeyLink,
-		fields = entry,                                                         
+		fields = entry, -- extra custom fields, passed back as ctx to GetKeyLink
 	}
 	table.insert(getMethods, method)
 	if not selectedMethodIndex then
@@ -31865,13 +31865,13 @@ function UI.GetMethod(entry)
 	return #getMethods
 end
 
-                                                    
+-- Readable icon/text color on top of a filled color
 local function contrastOn(color)
 	local luminance = 0.299 * color.R + 0.587 * color.G + 0.114 * color.B
 	return luminance > 0.55 and Color3.fromRGB(11, 11, 11) or Color3.fromRGB(255, 255, 255)
 end
 
-                                                                                                      
+-- Notification style (NotifStyle / KeySystem:SetNotifStyle). Read every time a notification is shown.
 local notifSettings = { style = nil }
 
 function UI.SetNotifStyle(style)
@@ -31965,10 +31965,10 @@ function UI.new(options)
 	local FOLDER = cfg.Folder
 	local LOGO = assetId(cfg.Logo) or Images.LOGO
 
-	                                                                                
-	                                                                            
-	                                                                         
-	                               
+	-- Preloads every icon (+ the logo) as early as possible. The Key System content
+	-- only becomes visible/interactive once this finishes (see `iconsPreloaded`
+	-- below), so icons and images are guaranteed to be loaded before the Key
+	-- System is shown to the user.
 	local iconsPreloaded = false
 	task.spawn(function()
 		pcall(function()
@@ -31985,7 +31985,7 @@ function UI.new(options)
 	end)
 
 	local INTRO_SIZE = tonumber(cfg.startintro_size) or 80
-	local LOADING_TIME = 3                                                
+	local LOADING_TIME = 3 -- fixed: icons/images preload during this time
 	local SQUARE_TIME = tonumber(cfg.squareintro_time) or 1.2
 	local SHOW_SQUARE_CONTORN = asBool(cfg.squarecontorn, true)
 
@@ -32006,11 +32006,11 @@ function UI.new(options)
 	local HAS_DISCORD = DISCORD_LINK ~= ""
 	local HAS_WEBSITE = WEBSITE_LINK ~= ""
 
-	                                                                                 
-	                                                                                     
-	                                                                                       
-	                                                                                   
-	                                                                          
+	-- card = whether each card shows up at all, separate from whether a link is set.
+	-- Discord and Information default to shown; Website defaults to whatever HAS_WEBSITE
+	-- is (most people don't have one, so it stays hidden unless a link is actually given).
+	-- What the person passes to KeySystem.new wins over the defaults in variables.lua.
+	-- Accepts Discord/Website (or lowercase) as true/false or "true"/"false".
 	local function cardFlag(default, ...)
 		for _, source in ipairs({ options or {}, Variables }) do
 			for _, key in ipairs({ ... }) do
@@ -32025,11 +32025,11 @@ function UI.new(options)
 	local SHOW_DISCORD_CARD = cardFlag(true, "Discord", "discord")
 	local SHOW_WEBSITE_CARD = cardFlag(HAS_WEBSITE, "Website", "website")
 	local SHOW_INFO_CARD = cardFlag(true, "Informations", "Information", "informations", "information")
-	                                                                                    
+	-- Only Discord enabled (no Website card): it starts expanded to fill the free space
 	local SHOW_INTRO = cardFlag(true, "Intro", "intro")
 	local DISCORD_STARTS_OPEN = SHOW_DISCORD_CARD and not SHOW_WEBSITE_CARD and HAS_DISCORD
 
-	                                                                            
+	-- Notification style: "1" Stripe, "2" Pill, "3" Island, "4" Ring, "5" Solid
 	local NOTIF_STYLE = "1"
 	for _, source in ipairs({ options or {}, Variables }) do
 		local value = source.NotifStyle
@@ -32060,21 +32060,21 @@ function UI.new(options)
 	end
 
 
-	                                                                                                        
-	                                                                             
+	-- KeySystem = { Key = {"1234", "5678"} or function(key) -> valid, reason, URL = "...", SaveKey = false,
+	--               API = { { Type = "platoboost" | "panda" | "jnkie", ... } } }
 	local KEY_CFG = cfg.KeySystem or {}
 	local KEY_LIST = KEY_CFG.Key
 
-	                                                                 
+	-- Key services (KeySystem.API). Each entry is built by its Type.
 	local SERVICE_BUILDERS = {
 		platoboost = function(entry)
 			return Platoboost.new(entry)
 		end,
-		                                        
+		-- { Type = "panda", ServiceId = "..." }
 		panda = function(entry)
 			return Panda.new(entry)
 		end,
-		                                                                              
+		-- { Type = "jnkie", Service = "...", Identifier = "...", Provider = "Mixed" }
 		jnkie = function(entry)
 			local instance = Jnkie.new(entry)
 			return {
@@ -32090,12 +32090,12 @@ function UI.new(options)
 		end,
 	}
 
-	                    
-	                                                                   
-	                                                                          
-	                                                                                               
-	                                                                        
-	                                                                                          
+	-- Your own service:
+	-- { Type = "custom", ServiceId = 1234, --[[ any fields you want ]]
+	--   CheckKey = function(key, ctx) return valid, reason end,   -- required
+	--   GetKeyLink = function(ctx) return url end }               -- optional ("Get a key" button)
+	-- ctx = every field of the entry (ServiceId, Secret, ...) + ctx.Request
+	-- (the executor's HTTP function, or nil). GetKeyLink can return nil, "reason" on failure.
 	local function customRequestFunction()
 		return request or http_request or (syn and syn.request) or (http and http.request)
 	end
@@ -32107,7 +32107,7 @@ function UI.new(options)
 		end
 		local getLink = entry.GetKeyLink or entry.getKeyLink
 
-		                                                                        
+		-- Built on every call, so the person's own fields can override Request.
 		local function context()
 			local ctx = { Request = customRequestFunction() }
 			for k, v in pairs(entry) do
@@ -32127,14 +32127,14 @@ function UI.new(options)
 		}
 	end
 
-	SERVICE_BUILDERS.pandaauth = SERVICE_BUILDERS.panda         
+	SERVICE_BUILDERS.pandaauth = SERVICE_BUILDERS.panda -- alias
 	SERVICE_BUILDERS.junkie = SERVICE_BUILDERS.jnkie
 	SERVICE_BUILDERS.plato = SERVICE_BUILDERS.platoboost
 	SERVICE_BUILDERS.auths = SERVICE_BUILDERS.custom
 
 	local apiEntries = type(KEY_CFG.API) == "table" and KEY_CFG.API or {}
 	if apiEntries.Type ~= nil or apiEntries.type ~= nil then
-		apiEntries = { apiEntries }                                         
+		apiEntries = { apiEntries } -- a single entry without the outer list
 	end
 
 	local API_SERVICES = {}
@@ -32159,7 +32159,7 @@ function UI.new(options)
 	local KEY_URL = tostring(KEY_CFG.URL or "")
 	local KEY_SAVE = asBool(KEY_CFG.SaveKey, false)
 
-	                                                            
+	-- Links usados pelos botões (Get a key / Discord / Website)
 	local LINKS = {
 		getKey = KEY_URL,
 		website = WEBSITE_URL,
@@ -32174,21 +32174,21 @@ function UI.new(options)
 		return mt ~= nil and mt.__call ~= nil
 	end
 
-	                                                                  
-	                                                                 
-	                                                              
-	                                                          
+	-- Auto-detect a Jnkie.Validator() adapter so "Get a key" can call
+	-- Jnkie:GetKeyLink() on its own, with no KeySystem.URL required.
+	-- Also accepts a *raw* Jnkie instance (Key = jnkie instead of
+	-- Key = jnkie:Validator()) and upgrades it automatically.
 	if type(KEY_LIST) == "table" and KEY_LIST.__isJnkieInstance and not KEY_LIST.__isJnkie then
 		KEY_LIST = KEY_LIST:Validator()
 	end
 	local KEY_JNKIE = type(KEY_LIST) == "table" and KEY_LIST.__isJnkie and KEY_LIST.__instance or nil
 
-	                                                             
-	                                                                           
+	-- Retorna valid (boolean) e reason (string quando inválida).
+	-- Erros aqui são pegos pelo pcall do runKeyCheck ("Something went wrong").
 	local function validateKey(key)
 		local reason
 
-		                                                               
+		-- Key = { "a", "b" } | "a" | function(key) | Jnkie:Validator()
 		if KEY_LIST ~= nil then
 			if isCallable(KEY_LIST) then
 				local valid, why = KEY_LIST(key)
@@ -32207,7 +32207,7 @@ function UI.new(options)
 			end
 		end
 
-		                                             
+		-- KeySystem.API (Platoboost / Panda / Jnkie)
 		for _, service in ipairs(API_SERVICES) do
 			local ok, valid, why = pcall(service.CheckKey, service, key)
 			if ok and valid then
@@ -32251,7 +32251,7 @@ function UI.new(options)
 		return pcall(writefile, path, contents) == true
 	end
 
-	                                                                                              
+	-- Nome do arquivo da key = hash gerada (determinística: mesmo Folder + Title = mesmo arquivo)
 	local function hashName(seed)
 		local bxor = bit32 and bit32.bxor
 		local parts = {}
@@ -32282,9 +32282,9 @@ function UI.new(options)
 		end
 	end
 
-	                                                                             
-	                                                                               
-	                                                             
+	-- Information card stats: how many key checks were valid, how many came back
+	-- expired, and when a key last passed. Stored locally per Folder + Title, same
+	-- as the saved key, just under a different hashed file name.
 	local STATS_HASH = hashName(tostring(FOLDER or "") .. "|" .. HUB_NAME .. "|stats")
 	local STATS_FILE = (FOLDER and FOLDER ~= "" and (FOLDER .. "/" .. STATS_HASH)) or STATS_HASH
 
@@ -32523,7 +32523,7 @@ function UI.new(options)
 	local morph = centered(canvas, NOTIF_W, 62)
 	morph.Visible = false
 
-	                                                                                                     
+	-- "Loading Script.." card. It follows NotifStyle: the window shrinks into that notification's shape.
 	local MORPH_TITLE, MORPH_HINT = "Loading Script..", "Can take 1-2s..."
 
 	local function morphLoader(parent, size, thickness, arcColor, trackColor, trackTransparency)
@@ -32560,7 +32560,7 @@ function UI.new(options)
 		local spin
 
 		if key == "2" then
-			       
+			-- Pill
 			w, h = 240, 36
 			spec.radius = 18
 			local box = frame(morph, 6, 6, 24, 24)
@@ -32579,7 +32579,7 @@ function UI.new(options)
 				FontFace = FONT,
 			}, morph)
 		elseif key == "3" then
-			         
+			-- Island
 			w, h = 260, 52
 			spec.top = true
 			spec.radius = 26
@@ -32593,14 +32593,14 @@ function UI.new(options)
 			morphLabel(54, 9, w - 70, 16, MORPH_TITLE, 13, Color3.fromRGB(244, 244, 245), true)
 			morphLabel(54, 27, w - 70, 14, MORPH_HINT, 12, Color3.fromRGB(154, 154, 162))
 		elseif key == "4" then
-			       
+			-- Ring
 			h = 60
 			local box = frame(morph, 10, 10, 40, 40)
 			spin = morphLoader(box, 34, 3, "accent", "muted", 0.75)
 			morphLabel(62, 11, w - 76, 18, MORPH_TITLE, 13, "text", true)
 			morphLabel(62, 31, w - 76, 16, MORPH_HINT, 12, "muted")
 		elseif key == "5" then
-			        
+			-- Solid
 			h = 58
 			local accent = C.accent
 			local onColor = contrastOn(accent)
@@ -32612,7 +32612,7 @@ function UI.new(options)
 			morphLabel(48, 10, w - 62, 18, MORPH_TITLE, 13, onColor, true)
 			morphLabel(48, 30, w - 62, 16, MORPH_HINT, 12, onColor:Lerp(accent, 0.35))
 		else
-			         
+			-- Stripe
 			round(frame(morph, 8, 10, 3, h - 20, "accent", 0), 2)
 			morphLabel(22, 11, w - 36, 18, MORPH_TITLE, 13, "text", true)
 			morphLabel(22, 30, w - 36, 16, MORPH_HINT, 12, "muted")
@@ -32724,24 +32724,24 @@ markTitleFont(hubTitle)
 	local getKeyIcon = icon(getKey, -12, 9, "text", Images.KEY)
 	keyEnhanceButton(getKey, false)
 
-	                                                                                 
-	                                                                                     
-	                                                                               
+	-- Dropdown arrow: a separate hit area over the button's right edge, only visible
+	-- once there are 2+ methods (see Ophyn:GetMethod above). Being its own TextButton on
+	-- top of "getKey" means clicking it never also fires getKey's own click below.
 	local methodArrow = make("TextButton", {
 		Name = "TextButton",
 		Position = UDim2.new(1, -26, 0, 0),
 		Size = UDim2.new(0, 26, 1, 0),
 		BackgroundTransparency = 1,
 		AutoButtonColor = false,
-		Text = "\226\150\190",                                        
+		Text = "\226\150\190", -- U+25BE, small down-pointing triangle
 		TextSize = 11,
 		TextColor3 = "text",
 		FontFace = FONT,
 		Visible = false,
 	}, getKey)
 
-	                                                                              
-	                                                       
+	-- Dropdown list, parented to "main" (not "canvas") so it isn't clipped by the
+	-- window's edges when it opens above/below the button.
 	local methodDropdown = make("Frame", {
 		Name = "GetKeyDropdown",
 		BackgroundColor3 = "card",
@@ -32796,7 +32796,7 @@ markTitleFont(hubTitle)
 		rebuildMethodDropdown()
 		local pos = getKey.AbsolutePosition - main.AbsolutePosition
 		local h = methodDropdown.AbsoluteSize.Y
-		methodDropdown.Position = UDim2.new(0, pos.X, 0, pos.Y - h - 6)                
+		methodDropdown.Position = UDim2.new(0, pos.X, 0, pos.Y - h - 6) -- opens upward
 		methodDropdown.Visible = true
 	end)
 
@@ -32834,7 +32834,7 @@ markTitleFont(hubTitle)
 	end
 
 
-	                                    
+	-- Avatar + "Welcome Back / <nome>!"
 	local avatar = make("ImageLabel", {
 		Position = UDim2.new(0, 22, 0, 214),
 		Size = UDim2.new(0, 32, 0, 32),
@@ -32951,7 +32951,7 @@ markTitleFont(hubTitle)
 	local rowsItems = prep(rows)
 	local discordIconItems = prep(discordIcon)
 
-	                                                                           
+	-- Information card: local stats only (valid keys, expired keys, last used)
 	local infoCard, infoIcon, infoTitle, infoSub = linkButton(254, "Information", "Tap to view", Images.KEY)
 	infoCard.Visible = SHOW_INFO_CARD
 
@@ -33015,9 +33015,9 @@ markTitleFont(hubTitle)
 	fade(spinnerItems, 0)
 	fade(contentItems, 0)
 
-	local SUPPORTED_GAMES = {}                    
-	                                                                                       
-	                                                                                  
+	local SUPPORTED_GAMES = {} -- [PlaceId] = true
+	-- SupportedGames: { [PlaceId] = true, ... } or a plain list { PlaceId, PlaceId, ... }.
+	-- What the person passes to KeySystem.new wins over the default in variables.lua.
 	for _, source in ipairs({ options or {}, Variables }) do
 		local value = source.SupportedGames
 		if value == nil then
@@ -33134,7 +33134,7 @@ markTitleFont(hubTitle)
 			return
 		end
 
-		                                                                  
+		-- Services that can generate a key link (KeySystem.API and Jnkie)
 		local linkProviders = {}
 		for _, service in ipairs(API_SERVICES) do
 			if service.GetKeyLink then
@@ -33295,9 +33295,9 @@ markTitleFont(hubTitle)
 		task.spawn(fetchDiscord)
 	end
 
-	                                                                             
-	                                                                               
-	                        
+	-- Stacks whichever cards are enabled (Discord, Website, Information, in that
+	-- order), shifting Website/Information down while Discord is expanded and back
+	-- up when it collapses.
 	local CARD_GAP = 8
 	local cardOrder = {}
 	if SHOW_DISCORD_CARD then
@@ -33379,7 +33379,7 @@ markTitleFont(hubTitle)
 		end
 	end
 
-	                                                                                            
+	-- Same end state as setDiscord(true), without animation (content is still hidden at launch)
 	if DISCORD_STARTS_OPEN then
 		discordOpen = true
 		discordToken += 1
@@ -33698,7 +33698,7 @@ markTitleFont(hubTitle)
 		runKeyCheck(key)
 	end)
 
-	                                                           
+	-- Fechar a UI (o X fecha direto, sem popup de confirmação)
 	closeGui = function()
 		if state.closing then
 			return
@@ -33711,7 +33711,7 @@ markTitleFont(hubTitle)
 		tween(closeBtn, 0.15, { BackgroundTransparency = 1 })
 
 		if not SHOW_INTRO then
-			                           
+			-- No intro: plain fade-out
 			fadeContent(0, 0.3)
 			tween(canvas, 0.35, { BackgroundTransparency = 1 })
 			tween(decorGroup, 0.35, { GroupTransparency = 1 })
@@ -33749,7 +33749,7 @@ markTitleFont(hubTitle)
 		task.spawn(closeGui)
 	end)
 
-	         
+	-- Hovers
 	closeBtn.MouseEnter:Connect(function()
 		if not state.ready or state.closing then
 			return
@@ -33857,9 +33857,9 @@ markTitleFont(hubTitle)
 			task.wait(0.2)
 			spin:Cancel()
 		else
-			                                                                           
-			                                                                       
-			                                        
+			-- No intro animation: sit at final size, invisible, for LoadingTime (still
+			-- needed to detect the game/executor and let icons finish preloading),
+			-- then simply fade the whole window in.
 			main.Size = UDim2.new(0, FINAL_W, 0, FINAL_H)
 			task.wait(LOADING_TIME)
 
@@ -33869,8 +33869,8 @@ markTitleFont(hubTitle)
 			task.wait(0.25)
 		end
 
-		                                                                       
-		                                      
+		-- Make sure every icon/image finished preloading before the Key System
+		-- content itself is loaded and shown.
 		while not iconsPreloaded do
 			task.wait()
 		end
@@ -33899,8 +33899,8 @@ markTitleFont(hubTitle)
 		end
 	end)
 
-	                                                                                                
-	                                                                 
+	-- KeySystem.new(...) returns this object: :SetGetkeyTitle / :SetGetkeyIcon, and everything else
+	-- (Destroy, Enabled, Parent, ...) is forwarded to the ScreenGui.
 	local api = {}
 	function api:SetGetkeyTitle(title)
 		UI.SetGetkeyTitle(title)
@@ -33949,8 +33949,8 @@ return UI
 end
 
 __modules["images/images"] = function()
-                        
-                                                                 
+-- src/images/images.lua
+-- All Roblox asset IDs (images, icons, and font) used by the UI.
 
 local Images = {
 	FONT = "rbxassetid://12187365364",
@@ -34235,7 +34235,7 @@ __modules["utilities/platoboost"] = function()
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
-                                                             
+-- SHA-256 (hex digest) from the official Platoboost library.
 local sha256 = function(value)
 	return XLQPGen1KeyCrypt.hash(tostring(value or ""))
 end
@@ -34243,7 +34243,7 @@ end
 local Platoboost = {}
 Platoboost.__index = Platoboost
 
-                                                           
+-- Tried in this order; the first one that answers is used.
 local HOSTS = { "https://api.platoboost.app", "https://api.platoboost.com", "https://api.platoboost.net" }
 local LINK_CACHE_TIME = 10 * 60
 local RATE_LIMIT_MESSAGE = "you are being rate limited, please wait 20 seconds and try again."
@@ -34298,7 +34298,7 @@ function Platoboost.new(config)
 	end
 	self.useNonce = useNonce ~= false
 
-	                                                                         
+	-- Optional: force one API host, e.g. Host = "https://api.platoboost.app"
 	local host = config.Host or config.host
 	if type(host) == "string" and host ~= "" then
 		host = host:gsub("/+$", "")
@@ -34322,8 +34322,8 @@ function Platoboost.new(config)
 	return self
 end
 
-                                                                       
-                                                   
+-- Picks the first host that answers /public/connectivity (200 or 429).
+-- If none answers, the first one in HOSTS is used.
 function Platoboost:_host()
 	if self.host then
 		return self.host
@@ -34364,7 +34364,7 @@ function Platoboost:_send(options)
 	return res
 end
 
-                                
+-- Returns link, or nil + reason
 function Platoboost:GetKeyLink()
 	if self.cachedLink and self.cachedTime + LINK_CACHE_TIME > os.time() then
 		return self.cachedLink
@@ -34402,7 +34402,7 @@ function Platoboost:GetKeyLink()
 	return nil, "Failed to get link."
 end
 
-                                                                       
+-- With UseNonce the server signs its answer with the secret; check it.
 function Platoboost:_integrityOk(data, nonce)
 	if not self.useNonce then
 		return true
@@ -34498,14 +34498,14 @@ function Platoboost:_verify(key)
 		return true
 	end
 
-	                                                                           
+	-- Keys from the Platoboost site start with KEY_ and must be redeemed first
 	if key:sub(1, 4) == "KEY_" then
 		return self:_redeem(key)
 	end
 	return false, "key is invalid."
 end
 
-                                                        
+-- Returns valid (boolean), reason (string when invalid)
 function Platoboost:CheckKey(key)
 	key = tostring(key or ""):match("^%s*(.-)%s*$")
 	if key == "" then
@@ -34548,40 +34548,40 @@ end
 
 __modules["variables"] = function()
 return {
-	                
+	-- Window Config
 	Title = "Ophyn",
 	Description = "Key System",
-	Logo = "rbxassetid://111673746737789",              
+	Logo = "rbxassetid://111673746737789", -- rbxassetid
 	Theme = "Plant-Dark",
 	Folder = "Ophyn-KSY",
 
-	                 
+	-- Buttons Config
 	getkey = true,
 
-	               
-	Intro = "true",                                               
-	startintro_size = 80,                       
+	-- Intro Config
+	Intro = "true", -- "false": fade-in on open, fade-out on close
+	startintro_size = 80, -- initial square size
 	squareintro_time = 1.2,
-	squarecontorn = "true",                                                        
+	squarecontorn = "true", -- "false": removes the outline around the intro square
 
-	                
+	-- Themes Config
 	Changelogocolor = true,
 	Changeiconscolor = true,
-	ChangeTheme = true,                                             
+	ChangeTheme = true, -- false: hides the moon (theme switch) icon
 
-	                 
+	-- Section Config
 	discord_link = "",
 	website_link = "",
 
-	                           
+	-- Cards ("true" / "false")
 	Discord = "true",
 	Website = "false",
 	Informations = "true",
 
-	                     
+	-- Notification style
 	NotifStyle = "1",
 
-	                                
+	-- Interaction / quality-of-life
 	Draggable = true,
 	ShowDragGrip = true,
 	ImplementationNotice = true,
@@ -34589,12 +34589,12 @@ return {
 	ImplementationNoticeText = "Make sure you implement the elements correctly.",
 	ImplementationNoticeDuration = 5.5,
 
-	        
+	-- Games
 	SupportedGames = {},
 
-	                   
+	-- Script Execution
 	Callback = function(key)
-		                   
+		-- your script here
 	end,
 }
 end
@@ -34605,7 +34605,7 @@ function KeySystem.new(options)
 	return import("components/window/ui").new(options)
 end
 
-                                                                              
+-- Works as KeySystem:SetGetkeyTitle("...") or KeySystem.SetGetkeyTitle("...")
 local function firstArg(a, b)
 	if a == KeySystem then
 		return b
@@ -34623,7 +34623,7 @@ function KeySystem.SetGetkeyIcon(a, b)
 	return KeySystem
 end
 
-                                                                    
+-- Works as KeySystem:SetNotifStyle("3") / KeySystem:NotifStyle("3")
 function KeySystem.SetNotifStyle(a, b)
 	import("components/window/ui").SetNotifStyle(firstArg(a, b))
 	return KeySystem
@@ -34631,19 +34631,19 @@ end
 
 KeySystem.NotifStyle = KeySystem.SetNotifStyle
 
-                                                                                
-                                                                                 
+-- Works as KeySystem:GetMethod({...}) / KeySystem.GetMethod({...}), same as the
+-- other Set* helpers above: usable standalone, before KeySystem.new(...) exists.
 function KeySystem.GetMethod(a, b)
 	return import("components/window/ui").GetMethod(firstArg(a, b))
 end
 
-                                                                   
+-- Works as KeySystem:SetUIFont("...") / KeySystem.SetUIFont("...")
 function KeySystem.SetUIFont(a, b)
 	import("components/window/ui").SetUIFont(firstArg(a, b))
 	return KeySystem
 end
 
-                                                                         
+-- Works as KeySystem:SetTitleFont("...") / KeySystem.SetTitleFont("...")
 function KeySystem.SetTitleFont(a, b)
 	import("components/window/ui").SetTitleFont(firstArg(a, b))
 	return KeySystem
