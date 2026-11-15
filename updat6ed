@@ -1864,6 +1864,21 @@ local function New(ClassName: string, Properties: { [string]: any }): any
 end
 
 local IconTextProperties = { ImageColor3 = "TextColor3", ImageTransparency = "TextTransparency" }
+local IconImageProperties = {
+    Image = true,
+    ImageContent = true,
+    ImageRectOffset = true,
+    ImageRectSize = true,
+    ScaleType = true,
+    SliceCenter = true,
+    SliceScale = true,
+    TileSize = true,
+    ResampleMode = true,
+    HoverImage = true,
+    PressedImage = true,
+    IsLoaded = true,
+}
+
 local IconSharedProperties = {
     "Name",
     "AnchorPoint",
@@ -1885,7 +1900,9 @@ local function IconProperties(ClassName: string, Properties: { [string]: any }):
 
     local Mapped: { [string]: any } = {}
     for Property, Value in Properties do
-        Mapped[IconTextProperties[Property] or Property] = Value
+        if not IconImageProperties[Property] then
+            Mapped[IconTextProperties[Property] or Property] = Value
+        end
     end
 
     return Mapped
@@ -12677,9 +12694,7 @@ function Library:RefreshNotificationHistory()
 
             if CopyImage then
                 if Ok and ClipboardCheckIcon then
-                    CopyImage.Image = ClipboardCheckIcon.Url
-                    CopyImage.ImageRectOffset = ClipboardCheckIcon.ImageRectOffset
-                    CopyImage.ImageRectSize = ClipboardCheckIcon.ImageRectSize
+                    CopyImage = Library:ApplyIcon(CopyImage, ClipboardCheckIcon)
                 end
                 SetIconProperties(CopyImage, {
                     ImageColor3 = Ok and SuccessColor
@@ -12708,9 +12723,7 @@ function Library:RefreshNotificationHistory()
             task.delay(0.9, function()
                 if CopyImage and CopyImage.Parent then
                     if ClipboardIcon then
-                        CopyImage.Image = ClipboardIcon.Url
-                        CopyImage.ImageRectOffset = ClipboardIcon.ImageRectOffset
-                        CopyImage.ImageRectSize = ClipboardIcon.ImageRectSize
+                        CopyImage = Library:ApplyIcon(CopyImage, ClipboardIcon)
                     end
                     SetIconProperties(CopyImage, { ImageColor3 = Library.Scheme.FontColor })
                     TweenService:Create(
@@ -14009,10 +14022,7 @@ function Library:CreateWindow(WindowInfo)
             TitleHolder.Position = UDim2.new(0, -40, 0, 0)
             for _, desc in TitleHolder:GetDescendants() do
                 if desc:IsA("TextLabel") or desc:IsA("ImageLabel") then
-                    SetIconProperties(
-                        desc,
-                        { ImageTransparency = desc:IsA("ImageLabel") and 1 or desc.ImageTransparency }
-                    )
+                    SetIconProperties(desc, { ImageTransparency = 1 })
                     if desc:IsA("TextLabel") then
                         desc.TextTransparency = 1
                     end
@@ -14907,9 +14917,7 @@ function Library:CreateWindow(WindowInfo)
                 end
 
                 if CopiedIcon then
-                    CopyImage.Image = CopiedIcon.Url
-                    CopyImage.ImageRectOffset = CopiedIcon.ImageRectOffset
-                    CopyImage.ImageRectSize = CopiedIcon.ImageRectSize
+                    CopyImage = Library:ApplyIcon(CopyImage, CopiedIcon)
                 end
 
                 if ResetThread then
@@ -14920,9 +14928,7 @@ function Library:CreateWindow(WindowInfo)
                     ResetThread = nil
 
                     if CopyIcon then
-                        CopyImage.Image = CopyIcon.Url
-                        CopyImage.ImageRectOffset = CopyIcon.ImageRectOffset
-                        CopyImage.ImageRectSize = CopyIcon.ImageRectSize
+                        CopyImage = Library:ApplyIcon(CopyImage, CopyIcon)
                     end
                 end)
             end
@@ -19706,9 +19712,7 @@ function Library:CreateWindow(WindowInfo)
             PasswordBox.TextTransparency = PasswordVisible and 0 or 1
             local Icon = Library:GetCustomIcon(PasswordVisible and "eye-off" or "eye")
             if Icon then
-                ShowImage.Image = Icon.Url
-                ShowImage.ImageRectOffset = Icon.ImageRectOffset
-                ShowImage.ImageRectSize = Icon.ImageRectSize
+                ShowImage = Library:ApplyIcon(ShowImage, Icon)
             end
         end)
 
@@ -20021,9 +20025,7 @@ function Library:CreateWindow(WindowInfo)
         })
         local IconData = Library:GetCustomIcon(IconName)
         if IconData then
-            BtnIcon.Image = IconData.Url
-            BtnIcon.ImageRectOffset = IconData.ImageRectOffset
-            BtnIcon.ImageRectSize = IconData.ImageRectSize
+            BtnIcon = Library:ApplyIcon(BtnIcon, IconData)
         end
         Library:MakeDraggable(Btn, Btn, true)
         T.Button = Btn
@@ -21461,13 +21463,11 @@ function Library:ApplyLucideIcon(ImageGui, Icon, Rotation)
     if not Icon then
         return ImageGui
     end
-    ImageGui.Image = Icon.Url or Icon.Image or ""
-    ImageGui.ImageRectOffset = Icon.ImageRectOffset or Vector2.zero
-    ImageGui.ImageRectSize = Icon.ImageRectSize or Vector2.zero
+    local Target = Library:ApplyIcon(ImageGui, Icon)
     if Rotation ~= nil then
-        ImageGui.Rotation = Rotation
+        Target.Rotation = Rotation
     end
-    return ImageGui
+    return Target
 end
 
 function Library.Cursor:ResetIcon()
